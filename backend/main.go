@@ -229,14 +229,20 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main(){
-    log.Println("启动中，ACLiveChat，0.0.3")
+    log.Println("启动中，ACLiveChat，0.0.4")
     r := mux.NewRouter()
     r.HandleFunc("/chat", serveHome)
     r.HandleFunc("/room/{key}", func(w http.ResponseWriter, r *http.Request) {
         http.ServeFile(w, r, "frontend/dist/index.html")
     })
+    r.HandleFunc("/stylegen", func(w http.ResponseWriter, r *http.Request) {
+        http.ServeFile(w, r, "frontend/dist/index.html")
+    })
+    r.HandleFunc("/help", func(w http.ResponseWriter, r *http.Request) {
+        http.ServeFile(w, r, "frontend/dist/index.html")
+    })
     r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
-        w.Write([]byte(`{"version": "v0.0.1", "config": {"enableTranslate": false}}`))
+        w.Write([]byte(`{"version": "v0.0.4", "config": {"enableTranslate": false}}`))
     })
     r.PathPrefix("/").Handler(http.FileServer(http.Dir("frontend/dist")))
     http.Handle("/", r)

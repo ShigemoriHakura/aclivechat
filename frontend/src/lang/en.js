@@ -111,7 +111,7 @@ export default {
   },
   help: {
     help: 'Help',
-    p1: '1. Copy the room ID from the Bilibili live room webpage',
+    p1: '1. Copy the room ID from the ACfun live room webpage',
     p2: '2. Enter the room ID into the room ID on the home page. Copy the room URL',
     p3: '3. Generate styles with the style generator. Copy the CSS',
     p4: '4. Add browser source in OBS',
