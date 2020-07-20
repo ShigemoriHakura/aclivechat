@@ -211,11 +211,13 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                             var err = conn.WriteMessage(1, val)
                                             if(err != nil){
                                                 log.Println("错误，可能链接断开，我懒得处理了")
+                                                conn.Close()
                                                 return
                                             }
                                         }
                                     } else {
                                         log.Println("直播结束")
+                                        conn.Close()
                                         break
                                     }
                                 }
@@ -229,7 +231,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main(){
-    log.Println("启动中，ACLiveChat，0.0.5")
+    log.Println("启动中，ACLiveChat，0.0.6")
     r := mux.NewRouter()
     r.HandleFunc("/chat", serveHome)
     r.HandleFunc("/room/{key}", func(w http.ResponseWriter, r *http.Request) {
