@@ -154,7 +154,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                                 data.Data.AvatarUrl = avatar
                                                 data.Data.Timestamp = time.Now().Unix()
                                                 data.Data.AuthorName = d.Nickname
-                                                data.Data.AuthorType = 1
+                                                data.Data.AuthorType = 0
                                                 data.Data.PrivilegeType = 0
                                                 data.Data.Content = d.Comment
                                                 ddata, err := json.Marshal(data)
@@ -172,7 +172,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                                 data.Data.AvatarUrl = avatar
                                                 data.Data.Timestamp = time.Now().Unix()
                                                 data.Data.AuthorName = d.Nickname
-                                                data.Data.AuthorType = 1
+                                                data.Data.AuthorType = 0
                                                 data.Data.PrivilegeType = 0
                                                 data.Data.Content = "加入直播间"
                                                 ddata, err := json.Marshal(data)
@@ -229,7 +229,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main(){
-    log.Println("启动中，ACLiveChat，0.0.4")
+    log.Println("启动中，ACLiveChat，0.0.5")
     r := mux.NewRouter()
     r.HandleFunc("/chat", serveHome)
     r.HandleFunc("/room/{key}", func(w http.ResponseWriter, r *http.Request) {
