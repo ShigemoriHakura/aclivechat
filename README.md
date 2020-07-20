@@ -37,4 +37,10 @@
    go build
    ```
    
-3. 用浏览器打开[http://localhost:12451](http://localhost:12451)，以下略
+3. 正确放置文件
+   ```sh
+   前端 /frontend/dist
+   后端 /
+   ```
+
+4. 用浏览器打开[http://localhost:12451](http://localhost:12451)，以下略
