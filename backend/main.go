@@ -194,7 +194,11 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                                 data.Data.AuthorName = d.Nickname
                                                 data.Data.GiftName = d.Gift.Name
                                                 data.Data.Num = d.Gift.Count
-                                                data.Data.TotalCoin = d.Gift.Price * 100
+                                                var price = d.Gift.Price * 100
+                                                if(d.Gift.Name == "香蕉"){
+                                                    price = 0
+                                                }
+                                                data.Data.TotalCoin = price
                                                 ddata, err := json.Marshal(data)
                                                 if(err == nil){
                                                     val = ddata
@@ -225,7 +229,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main(){
-    log.Println("启动中，ACLiveChat，0.0.2")
+    log.Println("启动中，ACLiveChat，0.0.3")
     r := mux.NewRouter()
     r.HandleFunc("/chat", serveHome)
     r.HandleFunc("/room/{key}", func(w http.ResponseWriter, r *http.Request) {
