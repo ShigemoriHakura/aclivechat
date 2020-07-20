@@ -2,11 +2,14 @@ package main
 
 import(
     "log"
-    "net/http"
     "fmt"
     "time"
-    //"strconv"
+    "regexp"
+    "strings"
+    "strconv"
     "context"
+    "net/http"
+    "io/ioutil"
     "github.com/gorilla/mux"
     "github.com/gorilla/websocket"
     "github.com/orzogc/acfundanmu"
@@ -21,17 +24,6 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-/*
-
-id: data.id,
-avatarUrl: data.avatarUrl,
-time: new Date(data.timestamp * 1000),
-authorName: data.authorName,
-price: price,
-giftName: data.giftName,
-num: data.num
-data.totalCoin
-*/
 type dataGift struct {
 	Id          int64     `json:"id"`// 用户ID
 	AvatarUrl   string    `json:"avatarUrl"`// 礼物URL
@@ -64,6 +56,45 @@ type dataUserStruct struct {
 }
 
 var ConnMap = make(map[string]([]websocket.Conn))
+var PhotoMap = make(map[int64]string)
+
+func getUserPhoto(id int64) (string, error){
+    client := &http.Client{}
+    var str =  strconv.Itoa(int(id))
+    var url = "https://www.acfun.cn/u/" + str
+    req, err := http.NewRequest("GET", url, nil)
+
+    if err != nil {
+        log.Fatalln(err)
+        return "", err
+    }
+
+    req.Header.Set("User-Agent", "Chrome/83.0.4103.61")
+
+    resp, err := client.Do(req)
+    if err != nil {
+        log.Fatalln(err)
+        return "", err
+    }
+    defer resp.Body.Close()
+    body, err := ioutil.ReadAll(resp.Body)
+    if(err != nil){
+        return "", err
+    }
+
+    var cleanBody = strings.Replace(string(body), " ", "", -1)
+    cleanBody = strings.Replace(cleanBody, "\n", "", -1)
+    var hrefRegexp = regexp.MustCompile("(?m)ac-space-info.cover.user-photo{background:url\\(.*\\)0%0%/100%no-repeat;\\}")
+    match := hrefRegexp.FindStringSubmatch(cleanBody)
+    if(match != nil){
+        var matches = match[0]
+        matches = strings.Replace(matches, "ac-space-info.cover.user-photo{background:url(", "", -1)
+        matches = strings.Replace(matches, ")0%0%/100%no-repeat;}", "", -1)
+        log.Printf("UserId(%v) match: %v", str, matches)
+        return matches, nil
+    }
+    return "", nil
+}
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
     var conn, err = upgrader.Upgrade(w, r, nil)
@@ -100,13 +131,27 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                     if danmu := dq.GetDanmu(); danmu != nil {
                                         for _, d := range danmu {
                                             var val = []byte(`{}`)
+                                            var avatar = ""
+                                            //avatar, err = getUserPhoto(d.UserID)
+                                            if _, ok := PhotoMap[d.UserID]; !ok {
+                                                avatar, err = getUserPhoto(d.UserID)
+                                                if(err != nil){
+                                                    avatar = ""
+                                                }
+                                                if(avatar != ""){
+                                                    PhotoMap[d.UserID] = avatar
+                                                }
+                                            }else{
+                                                avatar = PhotoMap[d.UserID] 
+                                            }
+                                            //log.Println("Data Photo", avatar)
                                             // 根据Type处理弹幕
                                             switch d.Type {
                                             case acfundanmu.Comment:
                                                 var data = new(dataUserStruct)
                                                 data.Cmd = 1
                                                 data.Data.Id = d.UserID
-                                                data.Data.AvatarUrl = "//cdn.aixifan.com/dotnet/20130418/umeditor/dialogs/emotion/images/ac/23.gif"
+                                                data.Data.AvatarUrl = avatar
                                                 data.Data.Timestamp = time.Now().Unix()
                                                 data.Data.AuthorName = d.Nickname
                                                 data.Data.AuthorType = 1
@@ -117,14 +162,14 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                                     val = ddata
                                                     //log.Println("Conn Comment", string(ddata))
                                                 }
-                                                fmt.Printf("%s（%d）：%s\n", d.Nickname, d.UserID, d.Comment)
+                                                log.Printf("%s（%d）：%s\n", d.Nickname, d.UserID, d.Comment)
                                             case acfundanmu.Like:
-                                                fmt.Printf("%s（%d）点赞\n", d.Nickname, d.UserID)
+                                                log.Printf("%s（%d）点赞\n", d.Nickname, d.UserID)
                                             case acfundanmu.EnterRoom:
                                                 var data = new(dataUserStruct)
                                                 data.Cmd = 1
                                                 data.Data.Id = d.UserID
-                                                data.Data.AvatarUrl = "//cdn.aixifan.com/dotnet/20130418/umeditor/dialogs/emotion/images/ac/23.gif"
+                                                data.Data.AvatarUrl = avatar
                                                 data.Data.Timestamp = time.Now().Unix()
                                                 data.Data.AuthorName = d.Nickname
                                                 data.Data.AuthorType = 1
@@ -135,11 +180,11 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                                     val = ddata
                                                     //log.Println("Conn Join", string(ddata))
                                                 }
-                                                fmt.Printf("%s（%d）进入直播间\n", d.Nickname, d.UserID)
+                                                log.Printf("%s（%d）进入直播间\n", d.Nickname, d.UserID)
                                             case acfundanmu.FollowAuthor:
-                                                fmt.Printf("%s（%d）关注了主播\n", d.Nickname, d.UserID)
+                                                log.Printf("%s（%d）关注了主播\n", d.Nickname, d.UserID)
                                             case acfundanmu.ThrowBanana:
-                                                fmt.Printf("%s（%d）送出香蕉 * %d\n", d.Nickname, d.UserID, d.BananaCount)
+                                                log.Printf("%s（%d）送出香蕉 * %d\n", d.Nickname, d.UserID, d.BananaCount)
                                             case acfundanmu.Gift:
                                                 var data = new(dataGiftStruct)
                                                 data.Cmd = 3
@@ -156,17 +201,17 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                                     //log.Println("Conn Gift", string(ddata))
                                                 }
                                                 //log.Println("Conn Gift", data)
-                                                fmt.Printf("%s（%d）送出礼物 %s * %d，连击数：%d\n", d.Nickname, d.UserID, d.Gift.Name, d.Gift.Count, d.Gift.Combo)
+                                                log.Printf("%s（%d）送出礼物 %s * %d，连击数：%d\n", d.Nickname, d.UserID, d.Gift.Name, d.Gift.Count, d.Gift.Combo)
                                             }
                                             
                                             var err = conn.WriteMessage(1, val)
                                             if(err != nil){
-                                                fmt.Println("错误，可能链接断开，我懒得处理了")
+                                                log.Println("错误，可能链接断开，我懒得处理了")
                                                 return
                                             }
                                         }
                                     } else {
-                                        fmt.Println("直播结束")
+                                        log.Println("直播结束")
                                         break
                                     }
                                 }
@@ -180,7 +225,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main(){
-    fmt.Println("启动中，ACLiveChat，0.0.1")
+    log.Println("启动中，ACLiveChat，0.0.2")
     r := mux.NewRouter()
     r.HandleFunc("/chat", serveHome)
     r.HandleFunc("/room/{key}", func(w http.ResponseWriter, r *http.Request) {
