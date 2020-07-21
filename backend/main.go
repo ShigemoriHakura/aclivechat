@@ -14,6 +14,7 @@ import(
     "github.com/gorilla/websocket"
     "github.com/orzogc/acfundanmu"
     "github.com/json-iterator/go"
+    "github.com/akkuman/parseConfig"
 )
 
 var upgrader = websocket.Upgrader{
@@ -55,6 +56,7 @@ type dataUserStruct struct {
     Data       dataUser `json:"data"`
 }
 
+var BanString []string
 var ConnMap = make(map[string]([]websocket.Conn))
 var PhotoMap = make(map[int64]string)
 
@@ -148,19 +150,21 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                             // 根据Type处理弹幕
                                             switch d.Type {
                                             case acfundanmu.Comment:
-                                                var data = new(dataUserStruct)
-                                                data.Cmd = 1
-                                                data.Data.Id = d.UserID
-                                                data.Data.AvatarUrl = avatar
-                                                data.Data.Timestamp = time.Now().Unix()
-                                                data.Data.AuthorName = d.Nickname
-                                                data.Data.AuthorType = 0
-                                                data.Data.PrivilegeType = 0
-                                                data.Data.Content = d.Comment
-                                                ddata, err := json.Marshal(data)
-                                                if(err == nil){
-                                                    val = ddata
-                                                    //log.Println("Conn Comment", string(ddata))
+                                                if(!checkComments(d.Comment)){
+                                                    var data = new(dataUserStruct)
+                                                    data.Cmd = 1
+                                                    data.Data.Id = d.UserID
+                                                    data.Data.AvatarUrl = avatar
+                                                    data.Data.Timestamp = time.Now().Unix()
+                                                    data.Data.AuthorName = d.Nickname
+                                                    data.Data.AuthorType = 0
+                                                    data.Data.PrivilegeType = 0
+                                                    data.Data.Content = d.Comment
+                                                    ddata, err := json.Marshal(data)
+                                                    if(err == nil){
+                                                        val = ddata
+                                                        //log.Println("Conn Comment", string(ddata))
+                                                    }
                                                 }
                                                 log.Printf("%s（%d）：%s\n", d.Nickname, d.UserID, d.Comment)
                                             case acfundanmu.Like:
@@ -230,7 +234,22 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+func checkComments(comment string)(bool){
+    for _, word := range BanString {
+		if(strings.Contains(comment,word)){
+            return true
+        }
+    }
+    return false
+}
+
 func main(){
+    var config = parseConfig.New("config.json")
+    var BanWords = config.Get("BanWords").([]interface{})
+    for _,v := range BanWords {
+        BanString = append(BanString, v.(string))
+    }
+
     log.Println("启动中，ACLiveChat，0.0.6")
     r := mux.NewRouter()
     r.HandleFunc("/chat", serveHome)
