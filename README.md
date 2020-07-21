@@ -34,12 +34,13 @@
    go get github.com/gorilla/mux
    go get github.com/gorilla/websocket
    go get github.com/json-iterator/go
+   go get github.com/akkuman/parseConfig
    go build
    ```
    
 3. 正确放置文件
    ```sh
-   前端 /frontend/dist
+   前端 /dist
    后端 /
    ```
 

@@ -2,3 +2,4 @@
 frontend/frontend.exe
 frontend/main.go
 frontend/config.json
+backend/backend.exe
