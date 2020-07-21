@@ -12,7 +12,8 @@ export default {
     roomIdInteger: '房间ID必须为正整数',
 
     general: '常规',
-    roomId: '房间ID',
+    roomId: 'AC 房间ID',
+    broomId: 'B 房间ID',
     showDanmaku: '显示弹幕',
     showGift: '显示打赏和新舰长',
     showGiftName: '显示礼物名',

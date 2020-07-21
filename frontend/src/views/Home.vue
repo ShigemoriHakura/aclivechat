@@ -10,6 +10,9 @@
         <el-form-item :label="$t('home.roomId')" required prop="roomId">
           <el-input v-model.number="form.roomId" type="number" min="1"></el-input>
         </el-form-item>
+        <el-form-item :label="$t('home.broomId')" required prop="broomId">
+          <el-input v-model.number="form.broomId" type="number" min="1"></el-input>
+        </el-form-item>
         <el-form-item :label="$t('home.showDanmaku')">
           <el-switch v-model="form.showDanmaku"></el-switch>
         </el-form-item>

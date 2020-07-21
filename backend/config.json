@@ -1,0 +1,15 @@
+{
+    "HideGift" : true,
+    "HideJoin" : true,
+    "NormalGift" : "普通猫粮",
+    "YAAAAAGift" : "高级猫粮",
+    "BanWords"   : [
+        "b站",
+        "bilibili",
+        "Bilibili",
+        "a站",
+        "acfun",
+        "ACfun"
+    ]
+
+}

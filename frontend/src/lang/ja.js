@@ -13,6 +13,7 @@ export default {
 
     general: '常規',
     roomId: 'ルームID',
+    broomId: 'B ルームID',
     showDanmaku: 'コメントを表示する',
     showGift: 'スーパーチャットと新メンバーを表示する',
     showGiftName: 'ギフト名を表示する',

@@ -10,10 +10,12 @@ import(
     "context"
     "net/http"
     "io/ioutil"
+    "biliDanMu/models"
     "github.com/gorilla/mux"
     "github.com/gorilla/websocket"
     "github.com/orzogc/acfundanmu"
     "github.com/json-iterator/go"
+    "github.com/akkuman/parseConfig"
 )
 
 var upgrader = websocket.Upgrader{
@@ -31,7 +33,7 @@ type dataGift struct {
 	AuthorName  string    `json:"authorName"`// 用户名
 	GiftName    string    `json:"giftName"`// 礼物的描述
 	Num         int       `json:"num"`// 礼物的数量
-	TotalCoin   int       `json:"totalCoin"`// 礼物价格，非免费礼物时单位为AC币，免费礼物（香蕉）时为1
+	TotalCoin   int       `json:"totalCoin"`// 礼物价格
 }
 
 type dataUser struct {
@@ -55,10 +57,17 @@ type dataUserStruct struct {
     Data       dataUser `json:"data"`
 }
 
-var ConnMap = make(map[string]([]websocket.Conn))
-var PhotoMap = make(map[int64]string)
+var HideGift bool
+var HideJoin bool
+var NormalGift = "一般"
+var YAAAAAGift = "高端"
+var BanString []string
 
-func getUserPhoto(id int64) (string, error){
+var ConnMap = make(map[string]([]websocket.Conn))
+var ACPhotoMap = make(map[int64]string)
+var BPhotoMap = make(map[int64]string)
+
+func getACUserPhoto(id int64) (string, error){
     client := &http.Client{}
     var str =  strconv.Itoa(int(id))
     var url = "https://www.acfun.cn/u/" + str
@@ -90,10 +99,52 @@ func getUserPhoto(id int64) (string, error){
         var matches = match[0]
         matches = strings.Replace(matches, "ac-space-info.cover.user-photo{background:url(", "", -1)
         matches = strings.Replace(matches, ")0%0%/100%no-repeat;}", "", -1)
-        log.Printf("UserId(%v) match: %v", str, matches)
+        log.Printf("AC UserId(%v) match: %v", str, matches)
         return matches, nil
     }
     return "", nil
+}
+
+func getBUserPhoto(id int64) (string, error){
+    client := &http.Client{}
+    var str =  strconv.Itoa(int(id))
+    var url = "https://api.bilibili.com/x/space/acc/info?mid=" + str
+    req, err := http.NewRequest("GET", url, nil)
+
+    if err != nil {
+        log.Fatalln(err)
+        return "", err
+    }
+
+    req.Header.Set("User-Agent", "Chrome/83.0.4103.61")
+
+    resp, err := client.Do(req)
+    if err != nil {
+        log.Fatalln(err)
+        return "", err
+    }
+    defer resp.Body.Close()
+    body, err := ioutil.ReadAll(resp.Body)
+    if(err != nil){
+        return "", err
+    }
+
+    any := jsoniter.Get(body)
+    var avatar = any.Get("data", "face").ToString()
+    if(avatar != ""){
+        log.Printf("B UserId(%v) match: %v", str, avatar)
+        return avatar, nil
+    }
+    return "", nil
+}
+
+func checkComments(comment string)(bool){
+    for _, word := range BanString {
+		if(strings.Contains(comment,word)){
+            return true
+        }
+    }
+    return false
 }
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
@@ -120,7 +171,8 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                             break
                         case "1":
                             var roomID = any.Get("data", "roomId").ToInt()
-                            //log.Println("Conn roomID: ", roomID)
+                            var broomID = any.Get("data", "broomId").ToUint32()
+                            log.Println("Conn aroomID: ", roomID)
                             go func(conn *websocket.Conn, roomID int){
                                 ctx, cancel := context.WithCancel(context.Background())
                                 defer cancel()
@@ -133,63 +185,87 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                             var val = []byte(`{}`)
                                             var avatar = ""
                                             //avatar, err = getUserPhoto(d.UserID)
-                                            if _, ok := PhotoMap[d.UserID]; !ok {
-                                                avatar, err = getUserPhoto(d.UserID)
+                                            if _, ok := ACPhotoMap[d.UserID]; !ok {
+                                                avatar, err = getACUserPhoto(d.UserID)
                                                 if(err != nil){
                                                     avatar = ""
                                                 }
                                                 if(avatar != ""){
-                                                    PhotoMap[d.UserID] = avatar
+                                                    ACPhotoMap[d.UserID] = avatar
                                                 }
                                             }else{
-                                                avatar = PhotoMap[d.UserID] 
+                                                avatar = ACPhotoMap[d.UserID] 
                                             }
                                             //log.Println("Data Photo", avatar)
                                             // 根据Type处理弹幕
                                             switch d.Type {
                                             case acfundanmu.Comment:
-                                                var data = new(dataUserStruct)
-                                                data.Cmd = 1
-                                                data.Data.Id = d.UserID
-                                                data.Data.AvatarUrl = avatar
-                                                data.Data.Timestamp = time.Now().Unix()
-                                                data.Data.AuthorName = d.Nickname
-                                                data.Data.AuthorType = 0
-                                                data.Data.PrivilegeType = 0
-                                                data.Data.Content = d.Comment
-                                                ddata, err := json.Marshal(data)
-                                                if(err == nil){
-                                                    val = ddata
-                                                    //log.Println("Conn Comment", string(ddata))
+                                                if(!checkComments(d.Comment)){
+                                                    var data = new(dataUserStruct)
+                                                    data.Cmd = 1
+                                                    data.Data.Id = d.UserID
+                                                    data.Data.AvatarUrl = avatar
+                                                    data.Data.Timestamp = time.Now().Unix()
+                                                    data.Data.AuthorName = d.Nickname
+                                                    data.Data.AuthorType = 0
+                                                    data.Data.PrivilegeType = 0
+                                                    data.Data.Content = d.Comment
+                                                    ddata, err := json.Marshal(data)
+                                                    if(err == nil){
+                                                        val = ddata
+                                                        //log.Println("Conn Comment", string(ddata))
+                                                    }
                                                 }
                                                 log.Printf("%s（%d）：%s\n", d.Nickname, d.UserID, d.Comment)
                                             case acfundanmu.Like:
                                                 log.Printf("%s（%d）点赞\n", d.Nickname, d.UserID)
                                             case acfundanmu.EnterRoom:
-                                                var data = new(dataUserStruct)
-                                                data.Cmd = 1
-                                                data.Data.Id = d.UserID
-                                                data.Data.AvatarUrl = avatar
-                                                data.Data.Timestamp = time.Now().Unix()
-                                                data.Data.AuthorName = d.Nickname
-                                                data.Data.AuthorType = 0
-                                                data.Data.PrivilegeType = 0
-                                                data.Data.Content = "加入直播间"
-                                                ddata, err := json.Marshal(data)
-                                                if(err == nil){
-                                                    val = ddata
-                                                    //log.Println("Conn Join", string(ddata))
+                                                if(!HideJoin){
+                                                    var data = new(dataUserStruct)
+                                                    data.Cmd = 1
+                                                    data.Data.Id = d.UserID
+                                                    data.Data.AvatarUrl = avatar
+                                                    data.Data.Timestamp = time.Now().Unix()
+                                                    data.Data.AuthorName = d.Nickname
+                                                    data.Data.AuthorType = 0
+                                                    data.Data.PrivilegeType = 0
+                                                    data.Data.Content = "加入直播间"
+                                                    ddata, err := json.Marshal(data)
+                                                    if(err == nil){
+                                                        val = ddata
+                                                        //log.Println("Conn Join", string(ddata))
+                                                    }
                                                 }
                                                 log.Printf("%s（%d）进入直播间\n", d.Nickname, d.UserID)
                                             case acfundanmu.FollowAuthor:
                                                 log.Printf("%s（%d）关注了主播\n", d.Nickname, d.UserID)
                                             case acfundanmu.ThrowBanana:
+                                                var data = new(dataGiftStruct)
+                                                data.Cmd = 3
+                                                data.Data.Id = d.UserID
+                                                //data.Data.AvatarUrl = "https://static.yximgs.com/bs2/giftCenter/giftCenter-20200316101317UbXssBoH.webp"
+                                                data.Data.AvatarUrl = avatar
+                                                data.Data.Timestamp = time.Now().Unix()
+                                                data.Data.AuthorName = d.Nickname
+                                                if(!HideGift){
+                                                    data.Data.GiftName = "香蕉"
+                                                }else{
+                                                    data.Data.GiftName = NormalGift
+                                                }
+                                                data.Data.Num = d.BananaCount
+                                                data.Data.TotalCoin = 0
+                                                ddata, err := json.Marshal(data)
+                                                if(err == nil){
+                                                    val = ddata
+                                                    //log.Println("Conn Gift", string(ddata))
+                                                }
                                                 log.Printf("%s（%d）送出香蕉 * %d\n", d.Nickname, d.UserID, d.BananaCount)
                                             case acfundanmu.Gift:
                                                 var data = new(dataGiftStruct)
                                                 data.Cmd = 3
                                                 data.Data.Id = d.UserID
-                                                data.Data.AvatarUrl = d.Gift.WebpPic
+                                                //data.Data.AvatarUrl = d.Gift.WebpPic
+                                                data.Data.AvatarUrl = avatar
                                                 data.Data.Timestamp = time.Now().Unix()
                                                 data.Data.AuthorName = d.Nickname
                                                 data.Data.GiftName = d.Gift.Name
@@ -197,6 +273,13 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                                 var price = d.Gift.Price * 100
                                                 if(d.Gift.Name == "香蕉"){
                                                     price = 0
+                                                }
+                                                if(HideGift){
+                                                    if(price <= 0){
+                                                        data.Data.GiftName = NormalGift
+                                                    }else {
+                                                        data.Data.GiftName = YAAAAAGift
+                                                    }
                                                 }
                                                 data.Data.TotalCoin = price
                                                 ddata, err := json.Marshal(data)
@@ -222,6 +305,143 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                     }
                                 }
                             }(conn, roomID)
+                            //log.Println("Conn broomID: ", broomID)
+                            if(broomID > 0){
+                                log.Println("Conn broomID: ", broomID)
+                                go func(conn *websocket.Conn, roomid uint32){
+                                    json := jsoniter.ConfigCompatibleWithStandardLibrary
+                                    if roomid >= 100 && roomid < 1000 {
+                                        roomid,err = models.GetRealRoomID(int(roomid))
+                                        if err != nil {
+                                            log.Println("房间号输入错误，请退出重新输入！")
+                                            return
+                                        }
+                                    }
+
+                                    c, err := models.NewClient(roomid)
+                                    if err != nil {
+                                        fmt.Println("models.NewClient err: ", err)
+                                        return
+                                    }
+                                    pool, err := c.Start();
+                                    if err != nil {
+                                        fmt.Println("c.Start err :", err)
+                                        return
+                                    }
+
+                                    for {
+                                        var val = []byte(`{}`)
+                                        var avatar = ""
+                                        select {
+                                        /*case uc := <-pool.MsgUncompressed:
+                                            // 目前只处理未压缩数据的关注数变化信息
+                                            if cmd := json.Get([]byte(uc), "cmd").ToString(); models.CMD(cmd) == models.CMDRoomRealTimeMessageUpdate {
+                                                fans := json.Get([]byte(uc), "data", "fans").ToInt()
+                                                fmt.Println("当前房间关注数变动：", fans)
+                                            }*/
+                                        case src := <-pool.UserMsg:
+                                            m := models.NewDanmu()
+                                            m.GetDanmuMsg([]byte(src))
+                                            if(!checkComments(m.Text)){
+                                                if _, ok := BPhotoMap[int64(m.UID)]; !ok {
+                                                    avatar, err = getBUserPhoto(int64(m.UID))
+                                                    if(err != nil){
+                                                        avatar = ""
+                                                    }
+                                                    if(avatar != ""){
+                                                        BPhotoMap[int64(m.UID)] = avatar
+                                                    }
+                                                }else{
+                                                    avatar = BPhotoMap[int64(m.UID)] 
+                                                }
+
+                                                //log.Println(string([]byte(src)))
+                                                var data = new(dataUserStruct)
+                                                data.Cmd = 1
+                                                data.Data.Id = int64(m.UID)
+                                                data.Data.AvatarUrl = avatar
+                                                data.Data.Timestamp = time.Now().Unix()
+                                                data.Data.AuthorName = m.Uname
+                                                data.Data.AuthorType = 0
+                                                data.Data.PrivilegeType = 0
+                                                data.Data.Content = m.Text
+                                                ddata, err := json.Marshal(data)
+                                                if(err == nil){
+                                                    val = ddata
+                                                    //log.Println("Conn Comment", string(ddata))
+                                                }
+                                            }
+                                            fmt.Printf("%d-%s | %d-%s: %s\n", m.MedalLevel, m.MedalName, m.Ulevel, m.Uname, m.Text)
+                                        case src := <-pool.UserGift:
+                                            g := models.NewGift()
+                                            g.GetGiftMsg([]byte(src))
+                                            if(g.GiftName != ""){
+                                                var data = new(dataGiftStruct)
+                                                data.Cmd = 3
+                                                data.Data.Id = int64(g.UID)
+                                                data.Data.AvatarUrl = g.Face
+                                                data.Data.Timestamp = time.Now().Unix()
+                                                data.Data.AuthorName = g.UUname
+                                                data.Data.GiftName = g.GiftName
+                                                data.Data.Num = int(g.Num)
+                                                var price = int(g.Price)
+                                                if(g.CoinType == "silver"){
+                                                    price = 0
+                                                }
+                                                if(HideGift){
+                                                    if(price <= 0){
+                                                        data.Data.GiftName = NormalGift
+                                                    }else {
+                                                        data.Data.GiftName = YAAAAAGift
+                                                    }
+                                                }
+                                                data.Data.TotalCoin = price
+                                                ddata, err := json.Marshal(data)
+                                                if(err == nil){
+                                                    val = ddata
+                                                    //log.Println("Conn Gift", string(ddata))
+                                                }
+                                                fmt.Printf("%s %s 价值 %d 的 %s\n", g.UUname, g.Action, g.Price, g.GiftName)
+                                            }
+                                        case src := <-pool.UserEnter:
+                                            /*
+                                                var data = new(dataUserStruct)
+                                                data.Cmd = 1
+                                                data.Data.Id = d.UserID
+                                                data.Data.AvatarUrl = avatar
+                                                data.Data.Timestamp = time.Now().Unix()
+                                                data.Data.AuthorName = d.Nickname
+                                                data.Data.AuthorType = 0
+                                                data.Data.PrivilegeType = 0
+                                                data.Data.Content = "加入直播间"
+                                                ddata, err := json.Marshal(data)
+                                                if(err == nil){
+                                                    val = ddata
+                                                    //log.Println("Conn Join", string(ddata))
+                                                }
+                                            */
+                                            log.Println(string([]byte(src)))
+                                            name := json.Get([]byte(src), "data", "uname").ToString()
+                                            fmt.Printf("欢迎VIP %s 进入直播间", name)
+                                        case src := <-pool.UserGuard:
+                                            log.Println(string([]byte(src)))
+                                            name := json.Get([]byte(src), "data", "username").ToString()
+                                            fmt.Printf("欢迎房管 %s 进入直播间", name)
+                                        case src := <-pool.UserEntry:
+                                            log.Println(string([]byte(src)))
+                                            cw := json.Get([]byte(src), "data", "copy_writing").ToString()
+                                            fmt.Printf("%s", cw)
+                                        }
+                                        var err = conn.WriteMessage(1, val)
+                                        if(err != nil){
+                                            log.Println("错误，可能链接断开，我懒得处理了")
+                                            conn.Close()
+                                            return
+                                        }
+                                    }
+
+                                }(conn, broomID)
+                            }
                             break
                     }
                 }
@@ -231,22 +451,36 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main(){
-    log.Println("启动中，ACLiveChat，0.0.6")
+    //flag.BoolVar(&Hide, "hide", true, "隐藏礼物名字")
+    var config = parseConfig.New("config.json")
+    HideGift = config.Get("HideGift").(bool)
+    HideJoin = config.Get("HideGift").(bool)
+    NormalGift = config.Get("NormalGift").(string)
+    YAAAAAGift = config.Get("YAAAAAGift").(string)
+
+    var BanWords = config.Get("BanWords").([]interface{})
+    for _,v := range BanWords {
+        BanString = append(BanString, v.(string))
+    }
+    if(HideGift){
+        log.Println("隐藏礼物名字！")
+    }
+    log.Println("启动中，AC&BLiveChat，0.0.6")
     r := mux.NewRouter()
     r.HandleFunc("/chat", serveHome)
     r.HandleFunc("/room/{key}", func(w http.ResponseWriter, r *http.Request) {
-        http.ServeFile(w, r, "frontend/dist/index.html")
+        http.ServeFile(w, r, "dist/index.html")
     })
     r.HandleFunc("/stylegen", func(w http.ResponseWriter, r *http.Request) {
-        http.ServeFile(w, r, "frontend/dist/index.html")
+        http.ServeFile(w, r, "dist/index.html")
     })
     r.HandleFunc("/help", func(w http.ResponseWriter, r *http.Request) {
-        http.ServeFile(w, r, "frontend/dist/index.html")
+        http.ServeFile(w, r, "dist/index.html")
     })
     r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
-        w.Write([]byte(`{"version": "v0.0.4", "config": {"enableTranslate": false}}`))
+        w.Write([]byte(`{"version": "v0.0.6", "config": {"enableTranslate": false}}`))
     })
-    r.PathPrefix("/").Handler(http.FileServer(http.Dir("frontend/dist")))
+    r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
     http.Handle("/", r)
     err := http.ListenAndServe("0.0.0.0:12451", nil)
     if err != nil {

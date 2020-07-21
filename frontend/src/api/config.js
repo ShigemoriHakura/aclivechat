@@ -17,7 +17,8 @@ export const DEFAULT_CONFIG = {
   blockUsers: '',
   blockMedalLevel: 0,
 
-  autoTranslate: false
+  autoTranslate: false,
+  broomId: -1
 }
 
 export function setLocalConfig (config) {

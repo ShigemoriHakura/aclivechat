@@ -63,7 +63,7 @@ export default {
         }
       }
       cfg = mergeConfig(cfg, config.DEFAULT_CONFIG)
-
+      cfg.broomId = toInt(cfg.broomId)
       cfg.minGiftPrice = toInt(cfg.minGiftPrice, config.DEFAULT_CONFIG.minGiftPrice)
       cfg.showDanmaku = toBool(cfg.showDanmaku)
       cfg.showGift = toBool(cfg.showGift)
@@ -102,6 +102,7 @@ export default {
         cmd: COMMAND_JOIN_ROOM,
         data: {
           roomId: parseInt(this.$route.params.roomId),
+          broomId: parseInt(this.config.broomId),
           config: {
             autoTranslate: this.config.autoTranslate
           }

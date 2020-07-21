@@ -12,7 +12,8 @@ export default {
     roomIdInteger: 'Room ID must be positive integer',
 
     general: 'General',
-    roomId: 'Room ID',
+    roomId: 'AC Room ID',
+    broomId: 'B Room ID',
     showDanmaku: 'Show messages',
     showGift: 'Show Super Chats',
     showGiftName: 'Show gift name',
