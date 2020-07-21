@@ -254,18 +254,18 @@ func main(){
     r := mux.NewRouter()
     r.HandleFunc("/chat", serveHome)
     r.HandleFunc("/room/{key}", func(w http.ResponseWriter, r *http.Request) {
-        http.ServeFile(w, r, "frontend/dist/index.html")
+        http.ServeFile(w, r, "dist/index.html")
     })
     r.HandleFunc("/stylegen", func(w http.ResponseWriter, r *http.Request) {
-        http.ServeFile(w, r, "frontend/dist/index.html")
+        http.ServeFile(w, r, "dist/index.html")
     })
     r.HandleFunc("/help", func(w http.ResponseWriter, r *http.Request) {
-        http.ServeFile(w, r, "frontend/dist/index.html")
+        http.ServeFile(w, r, "dist/index.html")
     })
     r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte(`{"version": "v0.0.7", "config": {"enableTranslate": false}}`))
     })
-    r.PathPrefix("/").Handler(http.FileServer(http.Dir("frontend/dist")))
+    r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
     http.Handle("/", r)
     err := http.ListenAndServe("0.0.0.0:12451", nil)
     if err != nil {
