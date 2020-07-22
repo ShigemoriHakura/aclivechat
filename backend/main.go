@@ -64,6 +64,7 @@ var YAAAAAGift = "高端"
 var BanString []string
 
 var ConnMap = make(map[string]([]websocket.Conn))
+//var AWSMap = make(map[string]([]websocket.Conn))
 var ACPhotoMap = make(map[int64]string)
 var BPhotoMap = make(map[int64]string)
 
@@ -147,6 +148,7 @@ func checkComments(comment string)(bool){
     return false
 }
 
+//Todo: 加入弹幕连接池，避免重复连接相同直播间造成阻断
 func serveHome(w http.ResponseWriter, r *http.Request) {
     var conn, err = upgrader.Upgrade(w, r, nil)
     if(err != nil){
@@ -371,46 +373,58 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                                     //log.Println("Conn Comment", string(ddata))
                                                 }
                                             }
-                                            fmt.Printf("%d-%s | %d-%s: %s\n", m.MedalLevel, m.MedalName, m.Ulevel, m.Uname, m.Text)
+                                            log.Printf("%d-%s | %d-%s: %s\n", m.MedalLevel, m.MedalName, m.Ulevel, m.Uname, m.Text)
                                         case src := <-pool.UserGift:
                                             g := models.NewGift()
                                             g.GetGiftMsg([]byte(src))
-                                            if(g.GiftName != ""){
-                                                var data = new(dataGiftStruct)
-                                                data.Cmd = 3
-                                                data.Data.Id = int64(g.UID)
-                                                data.Data.AvatarUrl = g.Face
-                                                data.Data.Timestamp = time.Now().Unix()
-                                                data.Data.AuthorName = g.UUname
-                                                data.Data.GiftName = g.GiftName
-                                                data.Data.Num = int(g.Num)
-                                                var price = int(g.Price)
-                                                if(g.CoinType == "silver"){
-                                                    price = 0
-                                                }
-                                                if(HideGift){
-                                                    if(price <= 0){
-                                                        data.Data.GiftName = NormalGift
-                                                    }else {
-                                                        data.Data.GiftName = YAAAAAGift
-                                                    }
-                                                }
-                                                data.Data.TotalCoin = price
-                                                ddata, err := json.Marshal(data)
-                                                if(err == nil){
-                                                    val = ddata
-                                                    //log.Println("Conn Gift", string(ddata))
-                                                }
-                                                fmt.Printf("%s %s 价值 %d 的 %s\n", g.UUname, g.Action, g.Price, g.GiftName)
+                                            var data = new(dataGiftStruct)
+                                            data.Cmd = 3
+                                            data.Data.Id = int64(g.UID)
+                                            data.Data.AvatarUrl = g.Face
+                                            data.Data.Timestamp = time.Now().Unix()
+                                            data.Data.AuthorName = g.UUname
+                                            data.Data.GiftName = g.GiftName
+                                            data.Data.Num = int(g.Num)
+                                            var price = int(g.Price)
+                                            if(g.CoinType == "silver"){
+                                                price = 0
                                             }
+                                            if(HideGift){
+                                                if(price <= 0){
+                                                    data.Data.GiftName = NormalGift
+                                                }else {
+                                                    data.Data.GiftName = YAAAAAGift
+                                                }
+                                            }
+                                            data.Data.TotalCoin = price
+                                            ddata, err := json.Marshal(data)
+                                            if(err == nil){
+                                                val = ddata
+                                                //log.Println("Conn Gift", string(ddata))
+                                            }
+                                            log.Printf("%s %s 价值 %d 的 %s\n", g.UUname, g.Action, g.Price, g.GiftName)
                                         case src := <-pool.UserEnter:
-                                            /*
+                                            //log.Println(string([]byte(src)))
+                                            name := json.Get([]byte(src), "data", "uname").ToString()
+                                            uid := json.Get([]byte(src), "data", "uid").ToInt64()
+                                            if(!HideJoin){
+                                                if _, ok := BPhotoMap[uid]; !ok {
+                                                    avatar, err = getBUserPhoto(uid)
+                                                    if(err != nil){
+                                                        avatar = ""
+                                                    }
+                                                    if(avatar != ""){
+                                                        BPhotoMap[uid] = avatar
+                                                    }
+                                                }else{
+                                                    avatar = BPhotoMap[uid] 
+                                                }
                                                 var data = new(dataUserStruct)
                                                 data.Cmd = 1
-                                                data.Data.Id = d.UserID
+                                                data.Data.Id = uid
                                                 data.Data.AvatarUrl = avatar
                                                 data.Data.Timestamp = time.Now().Unix()
-                                                data.Data.AuthorName = d.Nickname
+                                                data.Data.AuthorName = name
                                                 data.Data.AuthorType = 0
                                                 data.Data.PrivilegeType = 0
                                                 data.Data.Content = "加入直播间"
@@ -419,18 +433,16 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
                                                     val = ddata
                                                     //log.Println("Conn Join", string(ddata))
                                                 }
-                                            */
-                                            log.Println(string([]byte(src)))
-                                            name := json.Get([]byte(src), "data", "uname").ToString()
-                                            fmt.Printf("欢迎VIP %s 进入直播间", name)
+                                            }
+                                            log.Printf("欢迎VIP %s 进入直播间", name)
                                         case src := <-pool.UserGuard:
                                             log.Println(string([]byte(src)))
                                             name := json.Get([]byte(src), "data", "username").ToString()
-                                            fmt.Printf("欢迎房管 %s 进入直播间", name)
+                                            log.Printf("欢迎房管 %s 进入直播间", name)
                                         case src := <-pool.UserEntry:
                                             log.Println(string([]byte(src)))
                                             cw := json.Get([]byte(src), "data", "copy_writing").ToString()
-                                            fmt.Printf("%s", cw)
+                                            log.Printf("%s", cw)
                                         }
                                         var err = conn.WriteMessage(1, val)
                                         if(err != nil){
@@ -454,7 +466,7 @@ func main(){
     //flag.BoolVar(&Hide, "hide", true, "隐藏礼物名字")
     var config = parseConfig.New("config.json")
     HideGift = config.Get("HideGift").(bool)
-    HideJoin = config.Get("HideGift").(bool)
+    HideJoin = config.Get("HideJoin").(bool)
     NormalGift = config.Get("NormalGift").(string)
     YAAAAAGift = config.Get("YAAAAAGift").(string)
 
@@ -465,7 +477,7 @@ func main(){
     if(HideGift){
         log.Println("隐藏礼物名字！")
     }
-    log.Println("启动中，AC&BLiveChat，0.0.6")
+    log.Println("启动中，AC&BLiveChat，0.0.7")
     r := mux.NewRouter()
     r.HandleFunc("/chat", serveHome)
     r.HandleFunc("/room/{key}", func(w http.ResponseWriter, r *http.Request) {
@@ -478,7 +490,7 @@ func main(){
         http.ServeFile(w, r, "dist/index.html")
     })
     r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
-        w.Write([]byte(`{"version": "v0.0.6", "config": {"enableTranslate": false}}`))
+        w.Write([]byte(`{"version": "v0.0.7", "config": {"enableTranslate": false}}`))
     })
     r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
     http.Handle("/", r)
