@@ -64,18 +64,18 @@ var YAAAAAGift = "高端"
 var BanString []string
 
 var ConnMap = make(map[string]([]websocket.Conn))
-//var AWSMap = make(map[string]([]websocket.Conn))
+var AWSMap = make(map[string]([]websocket.Conn))
 var ACPhotoMap = make(map[int64]string)
 var BPhotoMap = make(map[int64]string)
 
 func getACUserPhoto(id int64) (string, error){
-    client := &http.Client{}
+    client := &http.Client{Timeout: time.Second}
     var str =  strconv.Itoa(int(id))
     var url = "https://www.acfun.cn/u/" + str
     req, err := http.NewRequest("GET", url, nil)
 
     if err != nil {
-        log.Fatalln(err)
+        log.Println(err)
         return "", err
     }
 
@@ -83,7 +83,7 @@ func getACUserPhoto(id int64) (string, error){
 
     resp, err := client.Do(req)
     if err != nil {
-        log.Fatalln(err)
+        log.Println(err)
         return "", err
     }
     defer resp.Body.Close()
@@ -107,13 +107,13 @@ func getACUserPhoto(id int64) (string, error){
 }
 
 func getBUserPhoto(id int64) (string, error){
-    client := &http.Client{}
+    client := &http.Client{Timeout: time.Second}
     var str =  strconv.Itoa(int(id))
     var url = "https://api.bilibili.com/x/space/acc/info?mid=" + str
     req, err := http.NewRequest("GET", url, nil)
 
     if err != nil {
-        log.Fatalln(err)
+        log.Println(err)
         return "", err
     }
 
@@ -121,7 +121,7 @@ func getBUserPhoto(id int64) (string, error){
 
     resp, err := client.Do(req)
     if err != nil {
-        log.Fatalln(err)
+        log.Println(err)
         return "", err
     }
     defer resp.Body.Close()
