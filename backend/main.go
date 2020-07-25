@@ -61,7 +61,7 @@ var AConnMap = make(map[int](*Hub))
 var PhotoMap = make(map[int64]string)
 
 func getACUserPhoto(id int64) (string, error){
-    client := &http.Client{}
+    client := &http.Client{Timeout: 2 * time.Second}
     var str =  strconv.Itoa(int(id))
     //var url = "https://www.acfun.cn/u/" + str
     var url = "https://live.acfun.cn/rest/pc-direct/user/userInfo?userId=" + str
@@ -148,13 +148,13 @@ func startACWS(hub *Hub, roomID int){
     var hubTime = hub.timeStamp
     for {
         if hhub, ok := AConnMap[roomID]; !ok {
-            log.Println("无用户请求，关闭直播间监听", roomID)
+            log.Println(roomID, "无用户请求，关闭直播间监听")
             //cancel()
             break
             //return
         }else{
             if(hubTime != hhub.timeStamp){
-                log.Println("时间戳不匹配，关闭", roomID)
+                log.Println(roomID, "时间戳不匹配，关闭")
                 break
             }
         }
@@ -196,9 +196,9 @@ func startACWS(hub *Hub, roomID int){
                             //log.Println("Conn Comment", string(ddata))
                         }
                     }
-                    log.Printf("%s（%d）：%s\n", d.Nickname, d.UserID, d.Comment)
+                    log.Printf("%v, %s（%d）：%s\n", roomID, d.Nickname, d.UserID, d.Comment)
                 case acfundanmu.Like:
-                    log.Printf("%s（%d）点赞\n", d.Nickname, d.UserID)
+                    log.Printf("%v, %s（%d）点赞\n", roomID, d.Nickname, d.UserID)
                 case acfundanmu.EnterRoom:
                     var data = new(dataUserStruct)
                     data.Cmd = 1
@@ -214,11 +214,11 @@ func startACWS(hub *Hub, roomID int){
                         val = ddata
                         //log.Println("Conn Join", string(ddata))
                     }
-                    log.Printf("%s（%d）进入直播间\n", d.Nickname, d.UserID)
+                    log.Printf("%v, %s（%d）进入直播间\n", roomID, d.Nickname, d.UserID)
                 case acfundanmu.FollowAuthor:
-                    log.Printf("%s（%d）关注了主播\n", d.Nickname, d.UserID)
+                    log.Printf("%v, %s（%d）关注了主播\n", roomID, d.Nickname, d.UserID)
                 case acfundanmu.ThrowBanana:
-                    log.Printf("%s（%d）送出香蕉 * %d\n", d.Nickname, d.UserID, d.BananaCount)
+                    log.Printf("%v, %s（%d）送出香蕉 * %d\n", roomID, d.Nickname, d.UserID, d.BananaCount)
                 case acfundanmu.Gift:
                     var data = new(dataGiftStruct)
                     data.Cmd = 3
@@ -239,7 +239,7 @@ func startACWS(hub *Hub, roomID int){
                         //log.Println("Conn Gift", string(ddata))
                     }
                     //log.Println("Conn Gift", data)
-                    log.Printf("%s（%d）送出礼物 %s * %d，连击数：%d\n", d.Nickname, d.UserID, d.Gift.Name, d.Gift.Count, d.Gift.Combo)
+                    log.Printf("%v, %s（%d）送出礼物 %s * %d，连击数：%d\n", roomID, d.Nickname, d.UserID, d.Gift.Name, d.Gift.Count, d.Gift.Combo)
                 }
 
                 hub.broadcast <- val
@@ -314,14 +314,14 @@ func (h *Hub) run() {
 		select {
 		case client := <-h.register:
             h.clients[client] = true
-            log.Println("新用户")
+            log.Println(h.roomId, "新用户")
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
 				close(client.send)
-                log.Println("用户断开")
+                log.Println(h.roomId, "用户断开")
                 if(len(h.clients) <= 0){
-                    log.Println("用户为0，关闭直播间监听", h.roomId)
+                    log.Println(h.roomId, "用户为0，关闭直播间监听")
                     delete(AConnMap, h.roomId)
                 }
 			}
@@ -372,32 +372,4 @@ func main(){
     if err != nil {
         log.Fatal("ListenAndServe: ", err)
     }
-}
-
-func checkACConn(){
-    /*var newConn = make(map[string]([]websocket.Conn))
-    for k, v := range AConnMap {
-        var newConnWS = []websocket.Conn{}
-        log.Println("处理AC房间：" + k)
-        if(len(v) > 0){
-            for _, vv := range v{
-                //if(vv.stauts){
-                    newConnWS = append(newConnWS, vv)
-                //}
-            }
-            if(len(newConnWS) > 0){
-                newConn[k] = newConnWS
-            }
-        }
-    }
-    AConnMap = newConn*/
-}
-
-func indexOfString(element string, data []string) (int) {
-    for k, v := range data {
-        if element == v {
-            return k
-        }
-    }
-    return -1    //not found.
 }
