@@ -4,7 +4,7 @@ import(
     "log"
     "fmt"
     "time"
-    "regexp"
+    //"regexp"
     "strings"
     "strconv"
     "context"
@@ -63,7 +63,8 @@ var PhotoMap = make(map[int64]string)
 func getACUserPhoto(id int64) (string, error){
     client := &http.Client{}
     var str =  strconv.Itoa(int(id))
-    var url = "https://www.acfun.cn/u/" + str
+    //var url = "https://www.acfun.cn/u/" + str
+    var url = "https://live.acfun.cn/rest/pc-direct/user/userInfo?userId=" + str
     req, err := http.NewRequest("GET", url, nil)
 
     if err != nil {
@@ -79,21 +80,17 @@ func getACUserPhoto(id int64) (string, error){
         return "", err
     }
     defer resp.Body.Close()
+
     body, err := ioutil.ReadAll(resp.Body)
     if(err != nil){
         return "", err
     }
 
-    var cleanBody = strings.Replace(string(body), " ", "", -1)
-    cleanBody = strings.Replace(cleanBody, "\n", "", -1)
-    var hrefRegexp = regexp.MustCompile("(?m)ac-space-info.cover.user-photo{background:url\\(.*\\)0%0%/100%no-repeat;\\}")
-    match := hrefRegexp.FindStringSubmatch(cleanBody)
-    if(match != nil){
-        var matches = match[0]
-        matches = strings.Replace(matches, "ac-space-info.cover.user-photo{background:url(", "", -1)
-        matches = strings.Replace(matches, ")0%0%/100%no-repeat;}", "", -1)
-        log.Printf("UserId(%v) match: %v", str, matches)
-        return matches, nil
+    any := jsoniter.Get(body)
+    var avatar = any.Get("profile", "headUrl").ToString()
+    if(avatar != ""){
+        log.Printf("UserId(%v) match: %v", str, avatar)
+        return avatar, nil
     }
     return "", nil
 }
@@ -263,9 +260,6 @@ func (c *Client) readPump() {
 		c.hub.unregister <- c
 		c.conn.Close()
 	}()
-	//c.conn.SetReadLimit(512)
-	//c.conn.SetReadDeadline(time.Now().Add(60 * time.Second))
-	//c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(60 * time.Second)); return nil })
 	for {
 		_, _, err := c.conn.ReadMessage()
 		if err != nil {
@@ -274,8 +268,6 @@ func (c *Client) readPump() {
 			}
 			break
 		}
-		//message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		//c.hub.broadcast <- message
 	}
 }
 
