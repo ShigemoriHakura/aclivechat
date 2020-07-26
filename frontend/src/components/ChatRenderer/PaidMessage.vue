@@ -17,7 +17,7 @@
         <div id="header-content" class="style-scope yt-live-chat-paid-message-renderer">
           <div id="header-content-primary-column" class="style-scope yt-live-chat-paid-message-renderer">
             <div id="author-name" class="style-scope yt-live-chat-paid-message-renderer">{{authorName}}</div>
-            <div id="purchase-amount" class="style-scope yt-live-chat-paid-message-renderer">{{priceText}}</div>
+            <!--<div id="purchase-amount" class="style-scope yt-live-chat-paid-message-renderer">{{priceText}}</div>-->
           </div>
           <span id="timestamp" class="style-scope yt-live-chat-paid-message-renderer">{{timeText}}</span>
         </div>
