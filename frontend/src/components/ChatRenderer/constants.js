@@ -133,5 +133,5 @@ export function getGiftShowContent(message, showGiftName) {
   if (!showGiftName) {
     return ''
   }
-  return `Sent ${message.giftName}x${message.num}`
+  return `${message.giftName} x ${message.num}`
 }
