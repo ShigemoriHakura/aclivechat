@@ -179,6 +179,10 @@ func startACWS(hub *Hub, roomID int){
                     //avatar = PhotoMap[d.UserID] 
                     //log.Println("Data Photo", avatar)
                     // 根据Type处理弹幕
+                    var AuthorType = 0
+                    if(int64(roomID) == d.UserID){
+                        AuthorType = 3
+                    }
                     switch d.Type {
                     case acfundanmu.Comment:
                         if(!checkComments(d.Comment)){
@@ -188,7 +192,7 @@ func startACWS(hub *Hub, roomID int){
                             data.Data.AvatarUrl = avatar
                             data.Data.Timestamp = time.Now().Unix()
                             data.Data.AuthorName = d.Nickname
-                            data.Data.AuthorType = 0
+                            data.Data.AuthorType = AuthorType
                             data.Data.PrivilegeType = 0
                             data.Data.Content = d.Comment
                             ddata, err := json.Marshal(data)
@@ -207,7 +211,7 @@ func startACWS(hub *Hub, roomID int){
                         data.Data.AvatarUrl = avatar
                         data.Data.Timestamp = time.Now().Unix()
                         data.Data.AuthorName = d.Nickname
-                        data.Data.AuthorType = 0
+                        data.Data.AuthorType = AuthorType
                         data.Data.PrivilegeType = 0
                         data.Data.Content = "加入直播间"
                         ddata, err := json.Marshal(data)
@@ -351,8 +355,8 @@ func main(){
     for _,v := range BanWords {
         BanString = append(BanString, v.(string))
     }
-
-    log.Println("启动中，ACLiveChat，0.0.8")
+    
+    log.Println("启动中，ACLiveChat，0.0.9")
 
     r := mux.NewRouter()
     r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
@@ -368,7 +372,7 @@ func main(){
         http.ServeFile(w, r, "dist/index.html")
     })
     r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
-        w.Write([]byte(`{"version": "v0.0.8", "config": {"enableTranslate": false}}`))
+        w.Write([]byte(`{"version": "v0.0.9", "config": {"enableTranslate": false}}`))
     })
     r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
     http.Handle("/", r)
