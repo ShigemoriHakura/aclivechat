@@ -176,19 +176,17 @@ func serveWS(conn *websocket.Conn){
                     go client.readPump()
 
                     var broomID = any.Get("data", "broomId").ToUint32()
-                    if(broomID > 0){
-                        log.Println("Conn broomID: ", broomID)
-                        if _, ok := BConnMap[broomID]; !ok {
-                            BConnMap[broomID] = newHub()
-                            BConnMap[broomID].htype = 1
-                            BConnMap[broomID].roomId = int(broomID)
-                            go BConnMap[broomID].run()
-                            go startBWS(BConnMap[broomID], broomID)
-                        }
-                        bclient := &Client{hub: BConnMap[broomID], conn: conn, send: make(chan []byte, 8192)}
-                        bclient.hub.register <- bclient
-                        go bclient.readPump()
+                    log.Println("Conn broomID: ", broomID)
+                    if _, ok := BConnMap[broomID]; !ok {
+                        BConnMap[broomID] = newHub()
+                        BConnMap[broomID].htype = 1
+                        BConnMap[broomID].roomId = int(broomID)
+                        go BConnMap[broomID].run()
+                        go startBWS(BConnMap[broomID], broomID)
                     }
+                    bclient := &Client{hub: BConnMap[broomID], conn: conn, send: make(chan []byte, 8192)}
+                    bclient.hub.register <- bclient
+                    go bclient.readPump()
                     return
             }
         }
@@ -260,32 +258,55 @@ func startACWS(hub *Hub, roomID int){
                     case acfundanmu.Like:
                         log.Printf("%v, %s（%d）点赞\n", roomID, d.Nickname, d.UserID)
                     case acfundanmu.EnterRoom:
-                        var data = new(dataUserStruct)
-                        data.Cmd = 1
-                        data.Data.Id = d.UserID
-                        data.Data.AvatarUrl = avatar
-                        data.Data.Timestamp = time.Now().Unix()
-                        data.Data.AuthorName = d.Nickname
-                        data.Data.AuthorType = AuthorType
-                        data.Data.PrivilegeType = 0
-                        data.Data.Content = "加入直播间"
-                        ddata, err := json.Marshal(data)
-                        if(err == nil){
-                            val = ddata
-                            //log.Println("Conn Join", string(ddata))
+                        if(!HideJoin){
+                            var data = new(dataUserStruct)
+                            data.Cmd = 1
+                            data.Data.Id = d.UserID
+                            data.Data.AvatarUrl = avatar
+                            data.Data.Timestamp = time.Now().Unix()
+                            data.Data.AuthorName = d.Nickname
+                            data.Data.AuthorType = AuthorType
+                            data.Data.PrivilegeType = 0
+                            data.Data.Content = "加入直播间"
+                            ddata, err := json.Marshal(data)
+                            if(err == nil){
+                                val = ddata
+                                //log.Println("Conn Join", string(ddata))
+                            }
                         }
                         log.Printf("%v, %s（%d）进入直播间\n", roomID, d.Nickname, d.UserID)
                     case acfundanmu.FollowAuthor:
                         log.Printf("%v, %s（%d）关注了主播\n", roomID, d.Nickname, d.UserID)
                     case acfundanmu.ThrowBanana:
+                        var data = new(dataGiftStruct)
+                        data.Cmd = 3
+                        data.Data.Id = d.UserID
+                        //data.Data.AvatarUrl = "https://static.yximgs.com/bs2/giftCenter/giftCenter-20200316101317UbXssBoH.webp"
+                        data.Data.AvatarUrl = avatar
+                        data.Data.Timestamp = time.Now().Unix()
+                        data.Data.AuthorName = d.Nickname
+                        if(!HideGift){
+                            data.Data.GiftName = "香蕉"
+                        }else{
+                            data.Data.GiftName = NormalGift
+                        }
+                        data.Data.Num = d.BananaCount
+                        data.Data.TotalCoin = 0
+                        ddata, err := json.Marshal(data)
+                        if(err == nil){
+                            val = ddata
+                            //log.Println("Conn Gift", string(ddata))
+                        }
                         log.Printf("%v, %s（%d）送出香蕉 * %d\n", roomID, d.Nickname, d.UserID, d.BananaCount)
                     case acfundanmu.Gift:
                         var data = new(dataGiftStruct)
                         data.Cmd = 3
                         data.Data.Id = d.UserID
+                        //data.Data.AvatarUrl = d.Gift.WebpPic
                         data.Data.AvatarUrl = avatar
                         data.Data.Timestamp = time.Now().Unix()
                         data.Data.AuthorName = d.Nickname
+                        data.Data.GiftName = d.Gift.Name
                         data.Data.Num = d.Gift.Count
                         var price = d.Gift.Price * 100
                         if(d.Gift.Name == "香蕉"){
@@ -361,6 +382,8 @@ func startBWS(hub *Hub, roomid uint32){
             }
             var json = jsoniter.ConfigCompatibleWithStandardLibrary
             //for {
+                var val = []byte(`{}`)
+                var avatar = ""
                 select {
                 case uc := <-pool.MsgUncompressed:
                     // 目前只处理未压缩数据的关注数变化信息
@@ -371,21 +394,108 @@ func startBWS(hub *Hub, roomid uint32){
                 case src := <-pool.UserMsg:
                     m := models.NewDanmu()
                     m.GetDanmuMsg([]byte(src))
-                    fmt.Printf("%d-%s | %d-%s: %s\n", m.MedalLevel, m.MedalName, m.Ulevel, m.Uname, m.Text)
+                    if(!checkComments(m.Text)){
+                        if _, ok := BPhotoMap[int64(m.UID)]; !ok {
+                            avatar, err = getBUserPhoto(int64(m.UID))
+                            if(err != nil){
+                                avatar = ""
+                            }
+                            if(avatar != ""){
+                                BPhotoMap[int64(m.UID)] = avatar
+                            }
+                        }else{
+                            avatar = BPhotoMap[int64(m.UID)] 
+                        }
+
+                        //log.Println(string([]byte(src)))
+                        var data = new(dataUserStruct)
+                        data.Cmd = 1
+                        data.Data.Id = int64(m.UID)
+                        data.Data.AvatarUrl = avatar
+                        data.Data.Timestamp = time.Now().Unix()
+                        data.Data.AuthorName = m.Uname
+                        data.Data.AuthorType = 0
+                        data.Data.PrivilegeType = 0
+                        data.Data.Content = m.Text
+                        ddata, err := json.Marshal(data)
+                        if(err == nil){
+                            val = ddata
+                            //log.Println("Conn Comment", string(ddata))
+                        }
+                    }
+                    log.Printf("%d-%s | %d-%s: %s\n", m.MedalLevel, m.MedalName, m.Ulevel, m.Uname, m.Text)
                 case src := <-pool.UserGift:
                     g := models.NewGift()
                     g.GetGiftMsg([]byte(src))
-                    fmt.Printf("%s %s 价值 %d 的 %s\n", g.UUname, g.Action, g.Price, g.GiftName)
+                    var data = new(dataGiftStruct)
+                    data.Cmd = 3
+                    data.Data.Id = int64(g.UID)
+                    data.Data.AvatarUrl = g.Face
+                    data.Data.Timestamp = time.Now().Unix()
+                    data.Data.AuthorName = g.UUname
+                    data.Data.GiftName = g.GiftName
+                    data.Data.Num = int(g.Num)
+                    var price = int(g.Price)
+                    if(g.CoinType == "silver"){
+                        price = 0
+                    }
+                    if(HideGift){
+                        if(price <= 0){
+                            data.Data.GiftName = NormalGift
+                        }else {
+                            data.Data.GiftName = YAAAAAGift
+                        }
+                    }
+                    data.Data.TotalCoin = price
+                    ddata, err := json.Marshal(data)
+                    if(err == nil){
+                        val = ddata
+                        //log.Println("Conn Gift", string(ddata))
+                    }
+                    log.Printf("%s %s 价值 %d 的 %s\n", g.UUname, g.Action, g.Price, g.GiftName)
                 case src := <-pool.UserEnter:
+                    //log.Println(string([]byte(src)))
                     name := json.Get([]byte(src), "data", "uname").ToString()
-                    fmt.Printf("欢迎VIP %s 进入直播间", name)
+                    uid := json.Get([]byte(src), "data", "uid").ToInt64()
+                    if(!HideJoin){
+                        if _, ok := BPhotoMap[uid]; !ok {
+                            avatar, err = getBUserPhoto(uid)
+                            if(err != nil){
+                                avatar = ""
+                            }
+                            if(avatar != ""){
+                                BPhotoMap[uid] = avatar
+                            }
+                        }else{
+                            avatar = BPhotoMap[uid] 
+                        }
+                        var data = new(dataUserStruct)
+                        data.Cmd = 1
+                        data.Data.Id = uid
+                        data.Data.AvatarUrl = avatar
+                        data.Data.Timestamp = time.Now().Unix()
+                        data.Data.AuthorName = name
+                        data.Data.AuthorType = 0
+                        data.Data.PrivilegeType = 0
+                        data.Data.Content = "加入直播间"
+                        ddata, err := json.Marshal(data)
+                        if(err == nil){
+                            val = ddata
+                            //log.Println("Conn Join", string(ddata))
+                        }
+                    }
+                    log.Printf("欢迎VIP %s 进入直播间", name)
                 case src := <-pool.UserGuard:
+                    log.Println(string([]byte(src)))
                     name := json.Get([]byte(src), "data", "username").ToString()
-                    fmt.Printf("欢迎房管 %s 进入直播间", name)
+                    log.Printf("欢迎房管 %s 进入直播间", name)
                 case src := <-pool.UserEntry:
+                    log.Println(string([]byte(src)))
                     cw := json.Get([]byte(src), "data", "copy_writing").ToString()
-                    fmt.Printf("%s", cw)
+                    log.Printf("%s", cw)
+                
                 }
+                hub.broadcast <- val
             //}
         }
     }else{
