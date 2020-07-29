@@ -240,7 +240,7 @@ func startACWS(hub *Hub, roomID int){
                     case acfundanmu.Comment:
                         if(!checkComments(d.Comment)){
                             var data = new(dataUserStruct)
-                            data.Cmd = 1
+                            data.Cmd = 2
                             data.Data.Id = d.UserID
                             data.Data.AvatarUrl = avatar
                             data.Data.Timestamp = time.Now().Unix()
@@ -256,6 +256,20 @@ func startACWS(hub *Hub, roomID int){
                         }
                         log.Printf("%v, %s（%d）：%s\n", roomID, d.Nickname, d.UserID, d.Comment)
                     case acfundanmu.Like:
+                        var data = new(dataUserStruct)
+                        data.Cmd = 8
+                        data.Data.Id = d.UserID
+                        data.Data.AvatarUrl = avatar
+                        data.Data.Timestamp = time.Now().Unix()
+                        data.Data.AuthorName = d.Nickname
+                        data.Data.AuthorType = AuthorType
+                        data.Data.PrivilegeType = 0
+                        data.Data.Content = "点亮爱心"
+                        ddata, err := json.Marshal(data)
+                        if(err == nil){
+                            val = ddata
+                            //log.Println("Conn Comment", string(ddata))
+                        }
                         log.Printf("%v, %s（%d）点赞\n", roomID, d.Nickname, d.UserID)
                     case acfundanmu.EnterRoom:
                         if(!HideJoin){
@@ -392,6 +406,7 @@ func startBWS(hub *Hub, roomid uint32){
                         fmt.Println("当前房间关注数变动：", fans)
                     }
                 case src := <-pool.UserMsg:
+                    //log.Println(string([]byte(src)))
                     m := models.NewDanmu()
                     m.GetDanmuMsg([]byte(src))
                     if(!checkComments(m.Text)){
@@ -409,13 +424,13 @@ func startBWS(hub *Hub, roomid uint32){
 
                         //log.Println(string([]byte(src)))
                         var data = new(dataUserStruct)
-                        data.Cmd = 1
+                        data.Cmd = 2
                         data.Data.Id = int64(m.UID)
                         data.Data.AvatarUrl = avatar
                         data.Data.Timestamp = time.Now().Unix()
                         data.Data.AuthorName = m.Uname
                         data.Data.AuthorType = 0
-                        data.Data.PrivilegeType = 0
+                        data.Data.PrivilegeType = int(m.PrivilegeType)
                         data.Data.Content = m.Text
                         ddata, err := json.Marshal(data)
                         if(err == nil){
@@ -488,9 +503,57 @@ func startBWS(hub *Hub, roomid uint32){
                 case src := <-pool.UserGuard:
                     log.Println(string([]byte(src)))
                     name := json.Get([]byte(src), "data", "username").ToString()
+                    uid := json.Get([]byte(src), "data", "uid").ToInt64()
+                    if(!HideJoin){
+                        if _, ok := BPhotoMap[uid]; !ok {
+                            avatar, err = getBUserPhoto(uid)
+                            if(err != nil){
+                                avatar = ""
+                            }
+                            if(avatar != ""){
+                                BPhotoMap[uid] = avatar
+                            }
+                        }else{
+                            avatar = BPhotoMap[uid] 
+                        }
+                        var data = new(dataUserStruct)
+                        data.Cmd = 1
+                        data.Data.Id = uid
+                        data.Data.AvatarUrl = avatar
+                        data.Data.Timestamp = time.Now().Unix()
+                        data.Data.AuthorName = name
+                        data.Data.AuthorType = 2
+                        data.Data.PrivilegeType = 0
+                        data.Data.Content = "加入直播间"
+                        ddata, err := json.Marshal(data)
+                        if(err == nil){
+                            val = ddata
+                            //log.Println("Conn Join", string(ddata))
+                        }
+                    }
                     log.Printf("欢迎房管 %s 进入直播间", name)
                 case src := <-pool.UserEntry:
-                    log.Println(string([]byte(src)))
+                    //log.Println(string([]byte(src)))
+                    /*name := json.Get([]byte(src), "data", "username").ToString()
+                    uid := json.Get([]byte(src), "data", "uid").ToInt64()
+                    face := json.Get([]byte(src), "data", "face").ToString()
+                    privilege_type := json.Get([]byte(src), "data", "privilege_type").ToInt()
+                    if(!HideJoin){
+                        var data = new(dataUserStruct)
+                        data.Cmd = 1
+                        data.Data.Id = uid
+                        data.Data.AvatarUrl = face
+                        data.Data.Timestamp = time.Now().Unix()
+                        data.Data.AuthorName = name
+                        data.Data.AuthorType = 0
+                        data.Data.PrivilegeType = privilege_type
+                        data.Data.Content = "加入直播间"
+                        ddata, err := json.Marshal(data)
+                        if(err == nil){
+                            val = ddata
+                            //log.Println("Conn Join", string(ddata))
+                        }
+                    }*/
                     cw := json.Get([]byte(src), "data", "copy_writing").ToString()
                     log.Printf("%s", cw)
                 
