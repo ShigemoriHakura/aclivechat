@@ -1,7 +1,8 @@
 # aclivechat
 用于OBS的仿YouTube风格的ACFun直播评论栏
 
-![XSplit截图](https://github.com/ShigemoriHakura/aclivechat/blob/master/screenshots/xsplit.png)  
+![XSplit截图](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/xsplit.png)  
+![OBS截图](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/obs.png)  
 
 
 ## 感谢：
