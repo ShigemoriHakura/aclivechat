@@ -10,10 +10,10 @@ export const DEFAULT_CONFIG = {
   mergeGift: true,
   maxNumber: 60,
 
-  blockGiftDanmaku: true,
+  blockGiftDanmaku: false,
   blockLevel: 0,
-  blockNewbie: true,
-  blockNotMobileVerified: true,
+  blockNewbie: false,
+  blockNotMobileVerified: false,
   blockKeywords: '',
   blockUsers: '',
   blockMedalLevel: 0,
