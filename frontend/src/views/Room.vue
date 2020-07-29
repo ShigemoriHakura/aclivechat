@@ -16,6 +16,7 @@ const COMMAND_ADD_MEMBER = 4
 const COMMAND_ADD_SUPER_CHAT = 5
 const COMMAND_DEL_SUPER_CHAT = 6
 const COMMAND_UPDATE_TRANSLATION = 7
+const COMMAND_ADD_LOVE = 8
 
 export default {
   name: 'Room',
@@ -63,9 +64,9 @@ export default {
         }
       }
       cfg = mergeConfig(cfg, config.DEFAULT_CONFIG)
-
       cfg.minGiftPrice = toInt(cfg.minGiftPrice, config.DEFAULT_CONFIG.minGiftPrice)
       cfg.showDanmaku = toBool(cfg.showDanmaku)
+      cfg.showLove = toBool(cfg.showLove)
       cfg.showGift = toBool(cfg.showGift)
       cfg.showGiftName = toBool(cfg.showGiftName)
       cfg.mergeSimilarDanmaku = toBool(cfg.mergeSimilarDanmaku)
@@ -83,7 +84,7 @@ export default {
     wsConnect() {
       const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
       // 开发时使用localhost:12450
-      const host = process.env.NODE_ENV === 'development' ? 'localhost:12450' : window.location.host
+      const host = process.env.NODE_ENV === 'development' ? 'localhost:12451' : window.location.host
       const url = `${protocol}://${host}/chat`
       this.websocket = new WebSocket(url)
       this.websocket.onopen = this.onWsOpen
@@ -126,7 +127,7 @@ export default {
       case COMMAND_JOIN_ROOM:
         message = {
           id: data.id,
-          type: constants.MESSAGE_TYPE_TEXT,
+          type: constants.MESSAGE_TYPE_JOIN,
           avatarUrl: data.avatarUrl,
           time: new Date(data.timestamp * 1000),
           authorName: data.authorName,
@@ -172,6 +173,23 @@ export default {
           time: new Date(data.timestamp * 1000),
           authorName: data.authorName,
           price: price,
+          giftName: data.giftName,
+          num: data.num
+        }
+        break
+      }
+      case COMMAND_ADD_LOVE: {
+        if (!this.config.showLove) {
+          break
+        }
+        message = {
+          id: data.id,
+          type: constants.MESSAGE_TYPE_LOVE,
+          avatarUrl: data.avatarUrl,
+          time: new Date(data.timestamp * 1000),
+          authorName: data.authorName,
+          content: data.content,
+          price: 0,
           giftName: data.giftName,
           num: data.num
         }
@@ -227,6 +245,7 @@ export default {
       if (message) {
         this.$refs.renderer.addMessage(message)
       }
+    
     },
     filterTextMessage(data) {
       if (this.config.blockGiftDanmaku && data.isGiftDanmaku) {

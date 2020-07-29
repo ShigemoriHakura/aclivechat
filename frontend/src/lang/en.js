@@ -12,8 +12,9 @@ export default {
     roomIdInteger: 'Room ID must be positive integer',
 
     general: 'General',
-    roomId: 'Room ID',
+    roomId: 'AC Room ID',
     showDanmaku: 'Show messages',
+    showLove: 'Show Love',
     showGift: 'Show Super Chats',
     showGiftName: 'Show gift name',
     mergeSimilarDanmaku: 'Merge similar messages',
@@ -65,6 +66,8 @@ export default {
 
     messages: 'Messages',
     color: 'Color',
+    joinColor: 'Join Color',
+    loveColor: 'Love Color',
     onNewLine: 'On new line',
 
     time: 'Timestamps',

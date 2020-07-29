@@ -56,6 +56,10 @@ type dataUserStruct struct {
     Data       dataUser `json:"data"`
 }
 
+var HideGift bool
+var HideJoin bool
+var NormalGift = "一般"
+var YAAAAAGift = "高端"
 var BanString []string
 var AConnMap = make(map[int](*Hub))
 var PhotoMap = make(map[int64]string)
@@ -187,7 +191,7 @@ func startACWS(hub *Hub, roomID int){
                     case acfundanmu.Comment:
                         if(!checkComments(d.Comment)){
                             var data = new(dataUserStruct)
-                            data.Cmd = 1
+                            data.Cmd = 2
                             data.Data.Id = d.UserID
                             data.Data.AvatarUrl = avatar
                             data.Data.Timestamp = time.Now().Unix()
@@ -203,32 +207,68 @@ func startACWS(hub *Hub, roomID int){
                         }
                         log.Printf("%v, %s（%d）：%s\n", roomID, d.Nickname, d.UserID, d.Comment)
                     case acfundanmu.Like:
-                        log.Printf("%v, %s（%d）点赞\n", roomID, d.Nickname, d.UserID)
-                    case acfundanmu.EnterRoom:
                         var data = new(dataUserStruct)
-                        data.Cmd = 1
+                        data.Cmd = 8
                         data.Data.Id = d.UserID
                         data.Data.AvatarUrl = avatar
                         data.Data.Timestamp = time.Now().Unix()
                         data.Data.AuthorName = d.Nickname
                         data.Data.AuthorType = AuthorType
                         data.Data.PrivilegeType = 0
-                        data.Data.Content = "加入直播间"
+                        data.Data.Content = "点亮爱心"
                         ddata, err := json.Marshal(data)
                         if(err == nil){
                             val = ddata
-                            //log.Println("Conn Join", string(ddata))
+                            //log.Println("Conn Comment", string(ddata))
+                        }
+                        log.Printf("%v, %s（%d）点赞\n", roomID, d.Nickname, d.UserID)
+                    case acfundanmu.EnterRoom:
+                        if(!HideJoin){
+                            var data = new(dataUserStruct)
+                            data.Cmd = 1
+                            data.Data.Id = d.UserID
+                            data.Data.AvatarUrl = avatar
+                            data.Data.Timestamp = time.Now().Unix()
+                            data.Data.AuthorName = d.Nickname
+                            data.Data.AuthorType = AuthorType
+                            data.Data.PrivilegeType = 0
+                            data.Data.Content = "加入直播间"
+                            ddata, err := json.Marshal(data)
+                            if(err == nil){
+                                val = ddata
+                                //log.Println("Conn Join", string(ddata))
+                            }
                         }
                         log.Printf("%v, %s（%d）进入直播间\n", roomID, d.Nickname, d.UserID)
                     case acfundanmu.FollowAuthor:
                         log.Printf("%v, %s（%d）关注了主播\n", roomID, d.Nickname, d.UserID)
                     case acfundanmu.ThrowBanana:
+                        var data = new(dataGiftStruct)
+                        data.Cmd = 3
+                        data.Data.Id = d.UserID
+                        //data.Data.AvatarUrl = "https://static.yximgs.com/bs2/giftCenter/giftCenter-20200316101317UbXssBoH.webp"
+                        data.Data.AvatarUrl = avatar
+                        data.Data.Timestamp = time.Now().Unix()
+                        data.Data.AuthorName = d.Nickname
+                        if(!HideGift){
+                            data.Data.GiftName = "香蕉"
+                        }else{
+                            data.Data.GiftName = NormalGift
+                        }
+                        data.Data.Num = d.BananaCount
+                        data.Data.TotalCoin = 0
+                        ddata, err := json.Marshal(data)
+                        if(err == nil){
+                            val = ddata
+                            //log.Println("Conn Gift", string(ddata))
+                        }
                         log.Printf("%v, %s（%d）送出香蕉 * %d\n", roomID, d.Nickname, d.UserID, d.BananaCount)
                     case acfundanmu.Gift:
                         var data = new(dataGiftStruct)
                         data.Cmd = 3
                         data.Data.Id = d.UserID
-                        data.Data.AvatarUrl = d.Gift.WebpPic
+                        //data.Data.AvatarUrl = d.Gift.WebpPic
+                        data.Data.AvatarUrl = avatar
                         data.Data.Timestamp = time.Now().Unix()
                         data.Data.AuthorName = d.Nickname
                         data.Data.GiftName = d.Gift.Name
@@ -236,6 +276,13 @@ func startACWS(hub *Hub, roomID int){
                         var price = d.Gift.Price * 100
                         if(d.Gift.Name == "香蕉"){
                             price = 0
+                        }
+                        if(HideGift){
+                            if(price <= 0){
+                                data.Data.GiftName = NormalGift
+                            }else {
+                                data.Data.GiftName = YAAAAAGift
+                            }
                         }
                         data.Data.TotalCoin = price
                         ddata, err := json.Marshal(data)
@@ -356,7 +403,12 @@ func main(){
         BanString = append(BanString, v.(string))
     }
     
-    log.Println("启动中，ACLiveChat，0.0.9")
+    HideGift = config.Get("HideGift").(bool)
+    HideJoin = config.Get("HideJoin").(bool)
+    NormalGift = config.Get("NormalGift").(string)
+    YAAAAAGift = config.Get("YAAAAAGift").(string)
+
+    log.Println("启动中，ACLiveChat，0.0.10")
 
     r := mux.NewRouter()
     r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {

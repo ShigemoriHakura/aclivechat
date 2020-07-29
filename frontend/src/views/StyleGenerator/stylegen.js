@@ -23,6 +23,8 @@ export const DEFAULT_CONFIG = {
   messageFontSize: 18,
   messageLineHeight: 0,
   messageColor: '#ffffff',
+  messageJoinColor: '#EB90E7',
+  messageLoveColor: '#EB1F1F',
   messageOnNewLine: false,
 
   showTime: false,
@@ -198,6 +200,30 @@ yt-live-chat-text-message-renderer #author-name {
 ${getShowColonStyle(config)}
 
 /* Messages. */
+yt-live-chat-text-message-renderer #joinMessage,
+yt-live-chat-text-message-renderer #joinMessage * {
+  ${config.messageJoinColor ? `color: ${config.messageJoinColor} !important;` : ''}
+  font-family: "${config.messageFont}"${FALLBACK_FONTS};
+  font-size: ${config.messageFontSize}px !important;
+  line-height: ${config.messageLineHeight || config.messageFontSize}px !important;
+}
+
+${!config.messageOnNewLine ? '' : `yt-live-chat-text-message-renderer #joinMessage {
+  display: block !important;
+}`}
+
+yt-live-chat-text-message-renderer #loveMessage,
+yt-live-chat-text-message-renderer #loveMessage * {
+  ${config.messageLoveColor ? `color: ${config.messageLoveColor} !important;` : ''}
+  font-family: "${config.messageFont}"${FALLBACK_FONTS};
+  font-size: ${config.messageFontSize}px !important;
+  line-height: ${config.messageLineHeight || config.messageFontSize}px !important;
+}
+
+${!config.messageOnNewLine ? '' : `yt-live-chat-text-message-renderer #loveMessage {
+  display: block !important;
+}`}
+
 yt-live-chat-text-message-renderer #message,
 yt-live-chat-text-message-renderer #message * {
   ${config.messageColor ? `color: ${config.messageColor} !important;` : ''}

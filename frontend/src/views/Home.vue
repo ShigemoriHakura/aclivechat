@@ -19,6 +19,9 @@
         <el-form-item :label="$t('home.showGiftName')">
           <el-switch v-model="form.showGiftName"></el-switch>
         </el-form-item>
+        <el-form-item :label="$t('home.showLove')">
+          <el-switch v-model="form.showLove"></el-switch>
+        </el-form-item>
         <el-form-item :label="$t('home.mergeSimilarDanmaku')">
           <el-switch v-model="form.mergeSimilarDanmaku"></el-switch>
         </el-form-item>

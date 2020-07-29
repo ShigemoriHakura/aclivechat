@@ -12,10 +12,11 @@ export default {
     roomIdInteger: '房间ID必须为正整数',
 
     general: '常规',
-    roomId: '房间ID',
+    roomId: 'AC 房间ID',
     showDanmaku: '显示弹幕',
     showGift: '显示打赏和新舰长',
     showGiftName: '显示礼物名',
+    showLove: '显示点亮爱心',
     mergeSimilarDanmaku: '合并相似弹幕',
     mergeGift: '合并礼物',
     minGiftPrice: '最低显示打赏价格（元）',
@@ -65,6 +66,8 @@ export default {
 
     messages: '消息',
     color: '颜色',
+    joinColor: '加入直播间颜色',
+    loveColor: '点亮爱心颜色',
     onNewLine: '在新行显示',
 
     time: '时间',
@@ -111,7 +114,7 @@ export default {
   },
   help: {
     help: '帮助',
-    p1: '1. 从A站直播间网页复制房间ID',
+    p1: '1. 从直播间网页复制房间ID',
     p2: '2. 把房间ID输入到首页的房间ID，复制房间URL',
     p3: '3. 使用样式生成器生成样式，复制CSS',
     p4: '4. 在OBS中添加浏览器源',
