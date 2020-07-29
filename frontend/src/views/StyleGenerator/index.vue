@@ -63,6 +63,12 @@
         <el-form-item :label="$t('stylegen.color')">
           <el-color-picker v-model="form.messageColor"></el-color-picker>
         </el-form-item>
+        <el-form-item :label="$t('stylegen.joinColor')">
+          <el-color-picker v-model="form.messageJoinColor"></el-color-picker>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.loveColor')">
+          <el-color-picker v-model="form.messageLoveColor"></el-color-picker>
+        </el-form-item>
         <el-form-item :label="$t('stylegen.onNewLine')">
           <el-switch v-model="form.messageOnNewLine"></el-switch>
         </el-form-item>
@@ -219,6 +225,19 @@ let textMessageTemplate = {
   repeated: 1,
   translation: ''
 }
+let joinMessageTemplate = {
+  id: 0,
+  addTime: time,
+  type: constants.MESSAGE_TYPE_JOIN,
+  avatarUrl: 'https://static.hdslb.com/images/member/noface.gif',
+  time: time,
+  authorName: '',
+  authorType: constants.AUTHRO_TYPE_NORMAL,
+  content: '',
+  privilegeType: 0,
+  repeated: 1,
+  translation: ''
+}
 let legacyPaidMessageTemplate = {
   id: 0,
   addTime: time,
@@ -239,6 +258,16 @@ let paidMessageTemplate = {
   time: time,
   content: '',
   translation: ''
+}
+let loveMessageTemplate = {
+  id: 0,
+  addTime: time,
+  type: constants.MESSAGE_TYPE_LOVE,
+  avatarUrl: 'https://static.hdslb.com/images/member/noface.gif',
+  time: time,
+  authorName: '',
+  title: '点赞',
+  content: ''
 }
 let nextId = 0
 const EXAMPLE_MESSAGES = [
@@ -264,6 +293,20 @@ const EXAMPLE_MESSAGES = [
     authorName: 'admin房管',
     authorType: constants.AUTHRO_TYPE_ADMIN,
     content: 'kksk'
+  },
+  {
+    ...joinMessageTemplate,
+    id: (nextId++).toString(),
+    authorName: '蜜汁主播',
+    authorType: constants.AUTHRO_TYPE_OWNER,
+    content: '加入直播间'
+  },
+  {
+    ...loveMessageTemplate,
+    id: (nextId++).toString(),
+    authorName: '某只猫',
+    authorType: constants.AUTHRO_TYPE_MEMBER,
+    content: '点亮爱心'
   },
   {
     ...legacyPaidMessageTemplate,

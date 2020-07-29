@@ -33,6 +33,18 @@
                 :price="message.price" :avatarUrl="message.avatarUrl" :authorName="message.authorName"
                 :time="message.time" :content="getShowContent(message)"
               ></paid-message>
+              <join-message :key="message.id" v-if="message.type === MESSAGE_TYPE_JOIN"
+                class="style-scope yt-live-chat-item-list-renderer"
+                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
+                :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
+                :repeated="message.repeated"
+              ></join-message>
+              <love-message :key="message.id" v-if="message.type === MESSAGE_TYPE_LOVE"
+                class="style-scope yt-live-chat-item-list-renderer"
+                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
+                :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
+                :repeated="message.repeated"
+              ></love-message>
             </template>
           </div>
         </div>
@@ -45,6 +57,8 @@
 import * as config from '@/api/config'
 import Ticker from './Ticker.vue'
 import TextMessage from './TextMessage.vue'
+import JoinMessage from './JoinMessage.vue'
+import LoveMessage from './LoveMessage.vue'
 import LegacyPaidMessage from './LegacyPaidMessage.vue'
 import PaidMessage from './PaidMessage.vue'
 import * as constants from './constants'
@@ -58,7 +72,9 @@ export default {
     Ticker,
     TextMessage,
     LegacyPaidMessage,
-    PaidMessage
+    PaidMessage,
+    JoinMessage,
+    LoveMessage
   },
   props: {
     css: String,
@@ -79,6 +95,9 @@ export default {
       MESSAGE_TYPE_GIFT: constants.MESSAGE_TYPE_GIFT,
       MESSAGE_TYPE_MEMBER: constants.MESSAGE_TYPE_MEMBER,
       MESSAGE_TYPE_SUPER_CHAT: constants.MESSAGE_TYPE_SUPER_CHAT,
+      MESSAGE_TYPE_LOVE: constants.MESSAGE_TYPE_LOVE,
+      MESSAGE_TYPE_JOIN: constants.MESSAGE_TYPE_JOIN,
+      MESSAGE_TYPE_FOLLOW: constants.MESSAGE_TYPE_FOLLOW,
 
       styleElement,
       messages: [],                        // 显示的消息
@@ -331,6 +350,9 @@ export default {
           case constants.MESSAGE_TYPE_GIFT:
           case constants.MESSAGE_TYPE_MEMBER:
           case constants.MESSAGE_TYPE_SUPER_CHAT:
+          case constants.MESSAGE_TYPE_LOVE:
+          case constants.MESSAGE_TYPE_JOIN:
+          case constants.MESSAGE_TYPE_FOLLOW:
             this.handleAddMessage(message)
             break
           case constants.MESSAGE_TYPE_DEL:

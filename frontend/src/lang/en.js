@@ -15,6 +15,7 @@ export default {
     roomId: 'AC Room ID',
     broomId: 'B Room ID',
     showDanmaku: 'Show messages',
+    showLove: 'Show Love',
     showGift: 'Show Super Chats',
     showGiftName: 'Show gift name',
     mergeSimilarDanmaku: 'Merge similar messages',
@@ -66,6 +67,8 @@ export default {
 
     messages: 'Messages',
     color: 'Color',
+    joinColor: 'Join Color',
+    loveColor: 'Love Color',
     onNewLine: 'On new line',
 
     time: 'Timestamps',

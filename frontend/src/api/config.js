@@ -4,6 +4,7 @@ export const DEFAULT_CONFIG = {
   minGiftPrice: 7, // $1
   showDanmaku: true,
   showGift: true,
+  showLove: true,
   showGiftName: false,
   mergeSimilarDanmaku: true,
   mergeGift: true,

@@ -16,6 +16,7 @@ export default {
     broomId: 'B ルームID',
     showDanmaku: 'コメントを表示する',
     showGift: 'スーパーチャットと新メンバーを表示する',
+    showLove: 'Loveを表示する',
     showGiftName: 'ギフト名を表示する',
     mergeSimilarDanmaku: '同じコメントを合併する',
     mergeGift: 'ギフトを合併する',
@@ -66,6 +67,8 @@ export default {
 
     messages: 'コメント',
     color: '色',
+    joinColor: '加入の色',
+    loveColor: 'Loveの色',
     onNewLine: '新しい行に表示する',
 
     time: '時間',

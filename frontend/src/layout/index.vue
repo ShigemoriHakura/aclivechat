@@ -5,11 +5,11 @@
       <div class="logo-container">
         <router-link to="/">
           <img src="@/assets/img/logo.png" class="sidebar-logo">
-          <h1 class="sidebar-title">aclivechat</h1>
+          <h1 class="sidebar-title">ablivechat</h1>
         </router-link>
       </div>
       <div class="version">
-        v1.4.4
+        v0.0.8
       </div>
       <sidebar></sidebar>
     </el-aside>

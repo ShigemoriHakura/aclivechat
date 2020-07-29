@@ -23,6 +23,9 @@ export const MESSAGE_TYPE_MEMBER = 2
 export const MESSAGE_TYPE_SUPER_CHAT = 3
 export const MESSAGE_TYPE_DEL = 4
 export const MESSAGE_TYPE_UPDATE = 5
+export const MESSAGE_TYPE_LOVE = 6
+export const MESSAGE_TYPE_JOIN = 7
+export const MESSAGE_TYPE_FOLLOW = 8
 
 // 美元 -> 人民币 汇率
 const EXCHANGE_RATE = 7
