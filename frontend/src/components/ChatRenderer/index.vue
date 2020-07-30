@@ -21,7 +21,7 @@
               <paid-message :key="message.id" v-else-if="message.type === MESSAGE_TYPE_GIFT"
                 class="style-scope yt-live-chat-item-list-renderer"
                 :price="message.price" :avatarUrl="message.avatarUrl" :authorName="message.authorName"
-                :time="message.time" :content="getGiftShowContent(message)"
+                :time="message.time" :content="getGiftShowContent(message)" :showGiftPrice="showGiftPrice"
               ></paid-message>
               <legacy-paid-message :key="message.id" v-else-if="message.type === MESSAGE_TYPE_MEMBER"
                 class="style-scope yt-live-chat-item-list-renderer"
@@ -85,6 +85,10 @@ export default {
     showGiftName: {
       type: Boolean,
       default: config.DEFAULT_CONFIG.showGiftName
+    },
+    showGiftPrice: {
+      type: Boolean,
+      default: config.DEFAULT_CONFIG.showGiftPrice
     }
   },
   data() {

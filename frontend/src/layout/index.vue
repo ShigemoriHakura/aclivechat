@@ -4,12 +4,12 @@
     <el-aside width="230px" class="sidebar-container" :class="{'hide-sidebar': hideSidebar}">
       <div class="logo-container">
         <router-link to="/">
-          <img src="@/assets/img/logo.png" class="sidebar-logo">
-          <h1 class="sidebar-title">aclivechat</h1>
+          <img src="@/assets/img/logo.gif" class="sidebar-logo">
+          <h1 class="sidebar-title">livechat</h1>
         </router-link>
       </div>
       <div class="version">
-        v0.0.8
+        v0.0.9
       </div>
       <sidebar></sidebar>
     </el-aside>

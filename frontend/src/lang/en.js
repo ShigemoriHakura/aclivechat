@@ -17,6 +17,7 @@ export default {
     showLove: 'Show Love',
     showGift: 'Show Super Chats',
     showGiftName: 'Show gift name',
+    showGiftPrice: 'Show gift price',
     mergeSimilarDanmaku: 'Merge similar messages',
     mergeGift: 'Merge gifts',
     minGiftPrice: 'Min price of Super Chats to show (CNY)',
