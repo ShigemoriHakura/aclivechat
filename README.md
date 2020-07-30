@@ -4,6 +4,8 @@
 ![XSplit截图](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/xsplit.png)  
 ![OBS截图](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/obs.png)  
 
+## 注意：
+* ACFun的房间号就是你的uid！！！
 
 ## 感谢：
 * 前端来自： https://github.com/xfgryujk/blivechat
