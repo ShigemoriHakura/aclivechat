@@ -18,6 +18,7 @@ export default {
     showGift: 'スーパーチャットと新メンバーを表示する',
     showLove: 'Loveを表示する',
     showGiftName: 'ギフト名を表示する',
+    showGiftPrice: 'Priceを表示する',
     mergeSimilarDanmaku: '同じコメントを合併する',
     mergeGift: 'ギフトを合併する',
     minGiftPrice: '最低表示スーパーチャット価格（CNY）',

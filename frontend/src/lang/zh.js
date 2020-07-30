@@ -17,6 +17,7 @@ export default {
     showDanmaku: '显示弹幕',
     showGift: '显示打赏和新舰长',
     showGiftName: '显示礼物名',
+    showGiftPrice: '显示礼物价格',
     showLove: '显示点亮爱心',
     mergeSimilarDanmaku: '合并相似弹幕',
     mergeGift: '合并礼物',

@@ -17,7 +17,7 @@
         <div id="header-content" class="style-scope yt-live-chat-paid-message-renderer">
           <div id="header-content-primary-column" class="style-scope yt-live-chat-paid-message-renderer">
             <div id="author-name" class="style-scope yt-live-chat-paid-message-renderer">{{authorName}}</div>
-            <div id="purchase-amount" class="style-scope yt-live-chat-paid-message-renderer">{{priceText}}</div>
+            <div v-if="showGiftPrice" id="purchase-amount" class="style-scope yt-live-chat-paid-message-renderer">{{priceText}}</div>
           </div>
           <span id="timestamp" class="style-scope yt-live-chat-paid-message-renderer">{{timeText}}</span>
         </div>
@@ -46,7 +46,8 @@ export default {
     authorName: String,
     price: Number, // 价格，人民币
     time: Date,
-    content: String
+    content: String,
+    showGiftPrice: Boolean
   },
   computed: {
     color() {

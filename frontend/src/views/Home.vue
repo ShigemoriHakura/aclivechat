@@ -22,6 +22,9 @@
         <el-form-item :label="$t('home.showGiftName')">
           <el-switch v-model="form.showGiftName"></el-switch>
         </el-form-item>
+        <el-form-item :label="$t('home.showGiftPrice')">
+          <el-switch v-model="form.showGiftPrice"></el-switch>
+        </el-form-item>
         <el-form-item :label="$t('home.showLove')">
           <el-switch v-model="form.showLove"></el-switch>
         </el-form-item>
