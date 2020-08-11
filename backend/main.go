@@ -61,7 +61,7 @@ type dataUserStruct struct {
 
 var HideGift bool
 var HideJoin bool
-var enableInteresrUserNotif bool = false
+var enableInteresrUserNotif bool
 var NormalGift = "一般"
 var YAAAAAGift = "高端"
 var BanString []string
@@ -434,7 +434,7 @@ func main() {
 	HideJoin = config.Get("HideJoin").(bool)
 	NormalGift = config.Get("NormalGift").(string)
 	YAAAAAGift = config.Get("YAAAAAGift").(string)
-	enableInteresrUserNotif = config.Get("enableInteresrUserNotif").(string)
+	enableInteresrUserNotif = config.Get("enableInteresrUserNotif").(bool)
 
 	log.Println("启动中，AcLiveChat，0.0.10")
 
