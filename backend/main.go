@@ -46,6 +46,7 @@ type dataUser struct {
 	PrivilegeType int    `json:"privilegeType"`
 	Translation   string `json:"translation"`
 	Content       string `json:"content"`
+	interestUser  bool   `json:"interested"`
 }
 
 type dataGiftStruct struct {
@@ -60,16 +61,17 @@ type dataUserStruct struct {
 
 var HideGift bool
 var HideJoin bool
+var enableInteresrUserNotif bool = false
 var NormalGift = "一般"
 var YAAAAAGift = "高端"
 var BanString []string
+var interestUsers []string
 var AConnMap = make(map[int](*Hub))
 var PhotoMap = make(map[int64]string)
 
 func getACUserPhoto(id int64) (string, error) {
 	client := &http.Client{Timeout: 2 * time.Second}
 	var str = strconv.Itoa(int(id))
-	//var url = "https://www.acfun.cn/u/" + str
 	var url = "https://live.acfun.cn/rest/pc-direct/user/userInfo?userId=" + str
 	req, err := http.NewRequest("GET", url, nil)
 
@@ -168,7 +170,6 @@ func startACWS(hub *Hub, roomID int) {
 			json := jsoniter.ConfigCompatibleWithStandardLibrary
 			if danmu := dq.GetDanmu(); danmu != nil {
 				for _, d := range danmu {
-					log.Printf(d)
 					var val = []byte(`{}`)
 					avatar, ok := PhotoMap[d.UserID]
 					if !ok {
@@ -203,6 +204,16 @@ func startACWS(hub *Hub, roomID int) {
 							data.Data.PrivilegeType = 0
 							data.Data.Content = d.Comment
 							ddata, err := json.Marshal(data)
+							if enableInteresrUserNotif {
+								if ifInterestUser(data.Data.Id) {
+									data.Data.interestUser = true
+								} else {
+									data.Data.interestUser = false
+								}
+							} else {
+								data.Data.interestUser = false
+							}
+							log.Print(data)
 							if err == nil {
 								val = ddata
 								//log.Println("Conn Comment", string(ddata))
@@ -329,13 +340,19 @@ func (c *Client) readPump() {
 	}
 }
 
-func checkIfInterestUser(commont) bool {
-	return
-}
-
 func checkComments(comment string) bool {
 	for _, word := range BanString {
 		if strings.Contains(comment, word) {
+			return true
+		}
+	}
+	return false
+}
+
+func ifInterestUser(content int64) bool {
+	for _, uid := range interestUsers {
+		x, _ := strconv.ParseInt(uid, 10, 64)
+		if content == x {
 			return true
 		}
 	}
@@ -405,17 +422,21 @@ func (h *Hub) run() {
 func main() {
 	var config = parseConfig.New("config.json")
 	var BanWords = config.Get("BanWords").([]interface{})
-	var interestUsers = config.Get("interestUser").([]interface{})
+	var interestUser = config.Get("interestUser").([]interface{})
 	for _, v := range BanWords {
 		BanString = append(BanString, v.(string))
+	}
+	for _, v := range interestUser {
+		interestUsers = append(interestUsers, v.(string))
 	}
 
 	HideGift = config.Get("HideGift").(bool)
 	HideJoin = config.Get("HideJoin").(bool)
 	NormalGift = config.Get("NormalGift").(string)
 	YAAAAAGift = config.Get("YAAAAAGift").(string)
+	enableInteresrUserNotif = config.Get("enableInteresrUserNotif").(string)
 
-	log.Println("启动中，ACLiveChat，0.0.10")
+	log.Println("启动中，AcLiveChat，0.0.10")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
