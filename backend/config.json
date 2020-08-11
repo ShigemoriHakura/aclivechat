@@ -3,11 +3,14 @@
     "HideJoin" : false,
     "NormalGift" : "普通猫粮",
     "YAAAAAGift" : "高级猫粮",
+    "enableInteresrUserNotif" : true,
     "BanWords"   : [
         "b站",
         "bilibili",
-        "Bilibili",
-        "test"
+        "Bilibili"
+    ],
+    "interestUser" : [
+        "35119946"
     ]
 
 }
