@@ -76,7 +76,7 @@ func getACUserPhoto(id int64) (string, error) {
 	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 		return "", err
 	}
 
@@ -84,7 +84,7 @@ func getACUserPhoto(id int64) (string, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 		return "", err
 	}
 	defer resp.Body.Close()
@@ -436,7 +436,7 @@ func main() {
 	YAAAAAGift = config.Get("YAAAAAGift").(string)
 	enableInteresrUserNotif = config.Get("enableInteresrUserNotif").(bool)
 
-	log.Println("启动中，AcLiveChat，0.0.10")
+	log.Println("启动中，AcLiveChat，0.0.11")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
@@ -452,7 +452,7 @@ func main() {
 		http.ServeFile(w, r, "dist/index.html")
 	})
 	r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`{"version": "v0.0.9", "config": {"enableTranslate": false}}`))
+		w.Write([]byte(`{"version": "v0.0.11", "config": {"enableTranslate": false}}`))
 	})
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
 	http.Handle("/", r)
