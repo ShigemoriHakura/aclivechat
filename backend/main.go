@@ -213,7 +213,7 @@ func startACWS(hub *Hub, roomID int) {
 							} else {
 								data.Data.interestUser = false
 							}
-							log.Print(data)
+							//log.Print(data)
 							if err == nil {
 								val = ddata
 								//log.Println("Conn Comment", string(ddata))
