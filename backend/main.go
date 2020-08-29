@@ -224,7 +224,7 @@ func startACWS(hub *Hub, roomID int) {
 						}
 						//fmt.Printf("add: %v rem: %v old: %v new: %v \n", added, removed, processedList, processedNewList)
 					}
-					time.Sleep(1 * time.Second)
+					time.Sleep(5 * time.Second)
 				}
 			}
 		}()
