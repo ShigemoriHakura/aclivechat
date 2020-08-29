@@ -118,7 +118,7 @@ export default {
       MESSAGE_TYPE_LOVE: constants.MESSAGE_TYPE_LOVE,
       MESSAGE_TYPE_JOIN: constants.MESSAGE_TYPE_JOIN,
       MESSAGE_TYPE_FOLLOW: constants.MESSAGE_TYPE_FOLLOW,
-      MESSAGE_TYPE_Quit: constants.MESSAGE_TYPE_Quit,
+      MESSAGE_TYPE_QUIT: constants.MESSAGE_TYPE_QUIT,
 
       styleElement,
       messages: [],                        // 显示的消息
@@ -212,10 +212,10 @@ export default {
     mergeSimilarOther(authorName, content) {
       content = content.trim().toLowerCase()
       let res = false
-      this.forEachRecentMessage(5, message => {
+      this.forEachRecentMessage(10, message => {
         if (message.type !== constants.MESSAGE_TYPE_LOVE && 
          message.type !== constants.MESSAGE_TYPE_JOIN && 
-         message.type !== constants.MESSAGE_TYPE_Quit && 
+         message.type !== constants.MESSAGE_TYPE_QUIT && 
          message.type !== constants.MESSAGE_TYPE_FOLLOW
          ) {
           return true
