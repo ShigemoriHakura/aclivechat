@@ -70,6 +70,7 @@ var QuitText = "离开直播间"
 var BanString []string
 var interestUsers []string
 var AConnMap = make(map[int](*Hub))
+var ACWatchMap = make(map[int]*[]acfundanmu.WatchingUser)
 var PhotoMap = make(map[int64]string)
 
 func getACUserPhoto(id int64) (string, error) {
@@ -164,6 +165,69 @@ func startACWS(hub *Hub, roomID int) {
 	}
 	if hub != nil {
 		var hubTime = hub.timeStamp
+		go func() {
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				default:
+					// 循环获取watchingList并处理
+					watchingList := dq.GetWatchingList()
+					watchingListold, ok := ACWatchMap[roomID];
+					if !ok {
+						ACWatchMap[roomID] = watchingList
+						//return
+					} else {
+						ACWatchMap[roomID] = watchingList
+
+						//处理旧的
+						var processedList []string
+						processedList2 := make(map[string](acfundanmu.WatchingUser))
+						for _, value := range *watchingListold {
+							var stringUserID = strconv.FormatInt(value.UserInfo.UserID, 10)
+							processedList = append(processedList, stringUserID)
+							processedList2[stringUserID] = value
+						}
+
+						//处理新的
+						var processedNewList []string
+						for _, value := range *watchingList {
+							var stringUserID = strconv.FormatInt(value.UserInfo.UserID, 10)
+							//fmt.Printf("id %v \n", stringUserID)
+							processedNewList = append(processedNewList, stringUserID)
+						}
+						_, removed := Arrcmp(processedList, processedNewList)
+						for _, value := range removed {
+							var userInfo = processedList2[value]
+							if(!userInfo.AnonymousUser){
+								var d = userInfo.UserInfo
+								var val = []byte(`{}`)
+								var data = new(dataUserStruct)
+								data.Cmd = 9
+								data.Data.Id = d.UserID
+								data.Data.AvatarUrl = d.Avatar
+								data.Data.Timestamp = time.Now().Unix()
+								data.Data.AuthorName = d.Nickname
+								data.Data.AuthorType = 0
+								data.Data.PrivilegeType = 0
+								data.Data.Content = QuitText
+								json := jsoniter.ConfigCompatibleWithStandardLibrary
+								ddata, err := json.Marshal(data)
+								if err == nil {
+									val = ddata
+									//log.Println("Conn Join", string(ddata))
+								}
+								hub.broadcast <- val
+								log.Printf("%v, %s（%d）离开直播间\n", roomID, d.Nickname, d.UserID)
+								//fmt.Printf("id %v \n", value)
+							}
+						}
+						//fmt.Printf("add: %v rem: %v old: %v new: %v \n", added, removed, processedList, processedNewList)
+					}
+					time.Sleep(1 * time.Second)
+				}
+			}
+		}()
 		for {
 			if hhub, ok := AConnMap[roomID]; !ok {
 				log.Println(roomID, "无用户请求，关闭直播间监听")
@@ -344,6 +408,45 @@ func startACWS(hub *Hub, roomID int) {
 	}
 }
 
+func Arrcmp(src []string, dest []string) ([]string, []string) {
+	msrc := make(map[string]byte) //按源数组建索引
+	mall := make(map[string]byte) //源+目所有元素建索引
+
+	var set []string //交集
+
+	//1.源数组建立map
+	for _, v := range src {
+		msrc[v] = 0
+		mall[v] = 0
+	}
+	//2.目数组中，存不进去，即重复元素，所有存不进去的集合就是并集
+	for _, v := range dest {
+		l := len(mall)
+		mall[v] = 1
+		if l != len(mall) { //长度变化，即可以存
+			l = len(mall)
+		} else { //存不了，进并集
+			set = append(set, v)
+		}
+	}
+	//3.遍历交集，在并集中找，找到就从并集中删，删完后就是补集（即并-交=所有变化的元素）
+	for _, v := range set {
+		delete(mall, v)
+	}
+	//4.此时，mall是补集，所有元素去源中找，找到就是删除的，找不到的必定能在目数组中找到，即新加的
+	var added, deleted []string
+	for v, _ := range mall {
+		_, exist := msrc[v]
+		if exist {
+			deleted = append(deleted, v)
+		} else {
+			added = append(added, v)
+		}
+	}
+
+	return added, deleted
+}
+
 func (c *Client) readPump() {
 	defer func() {
 		log.Println("用户结束")
@@ -423,6 +526,7 @@ func (h *Hub) run() {
 				if len(h.clients) <= 0 {
 					log.Println(h.roomId, "用户为0，关闭直播间监听")
 					delete(AConnMap, h.roomId)
+					delete(ACWatchMap, h.roomId)
 				}
 			}
 		case message := <-h.broadcast:
@@ -460,7 +564,7 @@ func main() {
 	QuitText = config.Get("QuitText").(string)
 	enableInteresrUserNotif = config.Get("enableInteresrUserNotif").(bool)
 
-	log.Println("启动中，AcLiveChat，0.0.12")
+	log.Println("启动中，AcLiveChat，0.1.0")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
@@ -476,7 +580,7 @@ func main() {
 		http.ServeFile(w, r, "dist/index.html")
 	})
 	r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`{"version": "v0.0.12", "config": {"enableTranslate": false}}`))
+		w.Write([]byte(`{"version": "v0.1.0", "config": {"enableTranslate": false}}`))
 	})
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
 	http.Handle("/", r)

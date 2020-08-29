@@ -5,7 +5,7 @@ export const DEFAULT_CONFIG = {
   showDanmaku: true,
   showFollow: true,
   showJoin: true,
-  showQuit: true,
+  showQuit: false,
   showGift: true,
   showGiftPrice: true,
   showLove: true,
