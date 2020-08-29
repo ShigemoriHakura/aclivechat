@@ -1,5 +1,5 @@
 # aclivechat
-用于OBS仿YouTube风格的AcFun直播评论栏
+用于OBS/XSplit的仿YouTube风格的AcFun直播评论栏
 
 ![XSplit截图](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/xsplit.png)  
 ![OBS截图](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/obs.png)  
@@ -22,6 +22,10 @@
 * 请关闭快速编辑模式（右键标题，选择属性，取消勾选快速编辑模式，然后确定）
 ![pin1](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/pin1.png)  
 ![pin2](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/pin2.png)  
+
+
+### 直接下载
+1. [Releases](https://github.com/ShigemoriHakura/aclivechat/releases)
 
 ### 从源代码编译
 1. 编译前端（需要安装Node.js和npm【或者用cnpm更快】）：
