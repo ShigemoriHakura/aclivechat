@@ -8,3 +8,5 @@ backend/aclivechat.exe
 frontend/aclivechat.exe
 frontend/backend.exe
 backend/aclivechat-backend.exe
+frontend/aclivechat-backend.exe
+frontend/package-lock.json

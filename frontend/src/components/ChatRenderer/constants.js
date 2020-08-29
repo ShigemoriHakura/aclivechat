@@ -26,6 +26,7 @@ export const MESSAGE_TYPE_UPDATE = 5
 export const MESSAGE_TYPE_LOVE = 6
 export const MESSAGE_TYPE_JOIN = 7
 export const MESSAGE_TYPE_FOLLOW = 8
+export const MESSAGE_TYPE_Quit = 9
 
 // 美元 -> 人民币 汇率
 const EXCHANGE_RATE = 7

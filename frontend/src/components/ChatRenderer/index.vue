@@ -39,12 +39,24 @@
                 :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
                 :repeated="message.repeated"
               ></join-message>
+              <quit-message :key="message.id" v-if="message.type === MESSAGE_TYPE_QUIT"
+                class="style-scope yt-live-chat-item-list-renderer"
+                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
+                :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
+                :repeated="message.repeated"
+              ></quit-message>
               <love-message :key="message.id" v-if="message.type === MESSAGE_TYPE_LOVE"
                 class="style-scope yt-live-chat-item-list-renderer"
                 :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
                 :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
                 :repeated="message.repeated"
               ></love-message>
+              <follow-message :key="message.id" v-if="message.type === MESSAGE_TYPE_FOLLOW"
+                class="style-scope yt-live-chat-item-list-renderer"
+                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
+                :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
+                :repeated="message.repeated"
+              ></follow-message>
             </template>
           </div>
         </div>
@@ -58,9 +70,11 @@ import * as config from '@/api/config'
 import Ticker from './Ticker.vue'
 import TextMessage from './TextMessage.vue'
 import JoinMessage from './JoinMessage.vue'
+import QuitMessage from './QuitMessage.vue'
 import LoveMessage from './LoveMessage.vue'
 import LegacyPaidMessage from './LegacyPaidMessage.vue'
 import PaidMessage from './PaidMessage.vue'
+import FollowMessage from './FollowMessage.vue'
 import * as constants from './constants'
 
 const CHAT_SMOOTH_ANIMATION_TIME_MS = 84
@@ -74,7 +88,9 @@ export default {
     LegacyPaidMessage,
     PaidMessage,
     JoinMessage,
-    LoveMessage
+    QuitMessage,
+    LoveMessage,
+    FollowMessage
   },
   props: {
     css: String,
@@ -102,6 +118,7 @@ export default {
       MESSAGE_TYPE_LOVE: constants.MESSAGE_TYPE_LOVE,
       MESSAGE_TYPE_JOIN: constants.MESSAGE_TYPE_JOIN,
       MESSAGE_TYPE_FOLLOW: constants.MESSAGE_TYPE_FOLLOW,
+      MESSAGE_TYPE_Quit: constants.MESSAGE_TYPE_Quit,
 
       styleElement,
       messages: [],                        // 显示的消息
@@ -169,6 +186,41 @@ export default {
       let res = false
       this.forEachRecentMessage(5, message => {
         if (message.type !== constants.MESSAGE_TYPE_TEXT) {
+          return true
+        }
+        let messageContent = message.content.trim().toLowerCase()
+        let longer, shorter
+        if (messageContent.length > content.length) {
+          longer = messageContent
+          shorter = content
+        } else {
+          longer = content
+          shorter = messageContent
+        }
+        if (longer.indexOf(shorter) !== -1 // 长的包含短的
+            && longer.length - shorter.length < shorter.length // 长度差较小
+        ) {
+          // 其实有小概率导致弹幕卡住
+          message.repeated++
+          res = true
+          return false
+        }
+        return true
+      })
+      return res
+    },
+    mergeSimilarOther(authorName, content) {
+      content = content.trim().toLowerCase()
+      let res = false
+      this.forEachRecentMessage(5, message => {
+        if (message.type !== constants.MESSAGE_TYPE_LOVE && 
+         message.type !== constants.MESSAGE_TYPE_JOIN && 
+         message.type !== constants.MESSAGE_TYPE_Quit && 
+         message.type !== constants.MESSAGE_TYPE_FOLLOW
+         ) {
+          return true
+        }
+        if(message.authorName != authorName){
           return true
         }
         let messageContent = message.content.trim().toLowerCase()
@@ -356,6 +408,7 @@ export default {
           case constants.MESSAGE_TYPE_SUPER_CHAT:
           case constants.MESSAGE_TYPE_LOVE:
           case constants.MESSAGE_TYPE_JOIN:
+          case constants.MESSAGE_TYPE_QUIT:
           case constants.MESSAGE_TYPE_FOLLOW:
             this.handleAddMessage(message)
             break

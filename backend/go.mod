@@ -7,5 +7,5 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/gorilla/websocket v1.4.2
 	github.com/json-iterator/go v1.1.10
-	github.com/orzogc/acfundanmu v0.0.0-20200812194219-c6549318f32a
+	github.com/orzogc/acfundanmu v0.0.0-20200829124332-6052a1aebccd
 )

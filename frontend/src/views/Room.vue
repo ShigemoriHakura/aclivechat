@@ -17,6 +17,8 @@ const COMMAND_ADD_SUPER_CHAT = 5
 const COMMAND_DEL_SUPER_CHAT = 6
 const COMMAND_UPDATE_TRANSLATION = 7
 const COMMAND_ADD_LOVE = 8
+const COMMAND_QUIT_ROOM = 9
+const COMMAND_ADD_FOLLOW = 10
 
 export default {
   name: 'Room',
@@ -67,10 +69,14 @@ export default {
       cfg.minGiftPrice = toInt(cfg.minGiftPrice, config.DEFAULT_CONFIG.minGiftPrice)
       cfg.showDanmaku = toBool(cfg.showDanmaku)
       cfg.showLove = toBool(cfg.showLove)
+      cfg.showFollow = toBool(cfg.showFollow)
+      cfg.showJoin = toBool(cfg.showJoin)
+      cfg.showQuit = toBool(cfg.showQuit)
       cfg.showGift = toBool(cfg.showGift)
       cfg.showGiftName = toBool(cfg.showGiftName)
       cfg.showGiftPrice = toBool(cfg.showGiftPrice)
       cfg.mergeSimilarDanmaku = toBool(cfg.mergeSimilarDanmaku)
+      cfg.mergeSimilarOther = toBool(cfg.mergeSimilarOther)
       cfg.mergeGift = toBool(cfg.mergeGift)
       cfg.maxNumber = toInt(cfg.maxNumber, config.DEFAULT_CONFIG.maxNumber)
       cfg.blockGiftDanmaku = toBool(cfg.blockGiftDanmaku)
@@ -126,9 +132,29 @@ export default {
       let message = null
       switch (cmd) {
       case COMMAND_JOIN_ROOM:
+        if (!this.config.showJoin || this.mergeSimilarOther(data.authorName, data.content)) {
+          break
+        }
         message = {
           id: data.id,
           type: constants.MESSAGE_TYPE_JOIN,
+          avatarUrl: data.avatarUrl,
+          time: new Date(data.timestamp * 1000),
+          authorName: data.authorName,
+          authorType: data.authorType,
+          content: data.content,
+          privilegeType: data.privilegeType,
+          repeated: 1,
+          translation: data.translation
+        }
+        break
+      case COMMAND_QUIT_ROOM:
+        if (!this.config.showQuit || this.mergeSimilarOther(data.authorName, data.content)) {
+          break
+        }
+        message = {
+          id: data.id,
+          type: constants.MESSAGE_TYPE_QUIT,
           avatarUrl: data.avatarUrl,
           time: new Date(data.timestamp * 1000),
           authorName: data.authorName,
@@ -180,12 +206,31 @@ export default {
         break
       }
       case COMMAND_ADD_LOVE: {
-        if (!this.config.showLove) {
+        if (!this.config.showLove || this.mergeSimilarOther(data.authorName, data.content)) {
           break
         }
         message = {
           id: data.id,
           type: constants.MESSAGE_TYPE_LOVE,
+          avatarUrl: data.avatarUrl,
+          time: new Date(data.timestamp * 1000),
+          authorName: data.authorName,
+          authorType: data.authorType,
+          content: data.content,
+          price: 0,
+          repeated: 1,
+          giftName: data.giftName,
+          num: data.num
+        }
+        break
+      }
+      case COMMAND_ADD_FOLLOW: {
+        if (!this.config.showFollow) {
+          break
+        }
+        message = {
+          id: data.id,
+          type: constants.MESSAGE_TYPE_FOLLOW,
           avatarUrl: data.avatarUrl,
           time: new Date(data.timestamp * 1000),
           authorName: data.authorName,
@@ -283,6 +328,12 @@ export default {
         return false
       }
       return this.$refs.renderer.mergeSimilarText(content)
+    },
+    mergeSimilarOther(authorName, content) {
+      if (!this.config.mergeSimilarOther) {
+        return false
+      }
+      return this.$refs.renderer.mergeSimilarOther(authorName, content)
     },
     mergeSimilarGift(authorName, price, giftName, num) {
       if (!this.config.mergeGift) {

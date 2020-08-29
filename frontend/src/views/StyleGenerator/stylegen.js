@@ -24,6 +24,8 @@ export const DEFAULT_CONFIG = {
   messageLineHeight: 0,
   messageColor: '#ffffff',
   messageJoinColor: '#EB90E7',
+  messageQuitColor: '#1B4356',
+  messageFollowColor: '#3FE1BB',
   messageLoveColor: '#EB1F1F',
   messageOnNewLine: false,
 
@@ -209,6 +211,30 @@ yt-live-chat-text-message-renderer #joinMessage * {
 }
 
 ${!config.messageOnNewLine ? '' : `yt-live-chat-text-message-renderer #joinMessage {
+  display: block !important;
+}`}
+
+yt-live-chat-text-message-renderer #quitMessage,
+yt-live-chat-text-message-renderer #quitMessage * {
+  ${config.messageQuitColor ? `color: ${config.messageQuitColor} !important;` : ''}
+  font-family: "${config.messageFont}"${FALLBACK_FONTS};
+  font-size: ${config.messageFontSize}px !important;
+  line-height: ${config.messageLineHeight || config.messageFontSize}px !important;
+}
+
+${!config.messageOnNewLine ? '' : `yt-live-chat-text-message-renderer #quitMessage {
+  display: block !important;
+}`}
+
+yt-live-chat-text-message-renderer #followMessage,
+yt-live-chat-text-message-renderer #followMessage * {
+  ${config.messageFollowColor ? `color: ${config.messageFollowColor} !important;` : ''}
+  font-family: "${config.messageFont}"${FALLBACK_FONTS};
+  font-size: ${config.messageFontSize}px !important;
+  line-height: ${config.messageLineHeight || config.messageFontSize}px !important;
+}
+
+${!config.messageOnNewLine ? '' : `yt-live-chat-text-message-renderer #followMessage {
   display: block !important;
 }`}
 

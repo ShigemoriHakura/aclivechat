@@ -66,6 +66,12 @@
         <el-form-item :label="$t('stylegen.joinColor')">
           <el-color-picker v-model="form.messageJoinColor"></el-color-picker>
         </el-form-item>
+        <el-form-item :label="$t('stylegen.quitColor')">
+          <el-color-picker v-model="form.messageQuitColor"></el-color-picker>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.followColor')">
+          <el-color-picker v-model="form.messageFollowColor"></el-color-picker>
+        </el-form-item>
         <el-form-item :label="$t('stylegen.loveColor')">
           <el-color-picker v-model="form.messageLoveColor"></el-color-picker>
         </el-form-item>
@@ -216,7 +222,7 @@ let textMessageTemplate = {
   id: 0,
   addTime: time,
   type: constants.MESSAGE_TYPE_TEXT,
-  avatarUrl: 'https://static.hdslb.com/images/member/noface.gif',
+  avatarUrl: 'https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg',
   time: time,
   authorName: '',
   authorType: constants.AUTHRO_TYPE_NORMAL,
@@ -229,7 +235,33 @@ let joinMessageTemplate = {
   id: 0,
   addTime: time,
   type: constants.MESSAGE_TYPE_JOIN,
-  avatarUrl: 'https://static.hdslb.com/images/member/noface.gif',
+  avatarUrl: 'https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg',
+  time: time,
+  authorName: '',
+  authorType: constants.AUTHRO_TYPE_NORMAL,
+  content: '',
+  privilegeType: 0,
+  repeated: 1,
+  translation: ''
+}
+let quitMessageTemplate = {
+  id: 0,
+  addTime: time,
+  type: constants.MESSAGE_TYPE_QUIT,
+  avatarUrl: 'https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg',
+  time: time,
+  authorName: '',
+  authorType: constants.AUTHRO_TYPE_NORMAL,
+  content: '',
+  privilegeType: 0,
+  repeated: 1,
+  translation: ''
+}
+let followMessageTemplate = {
+  id: 0,
+  addTime: time,
+  type: constants.MESSAGE_TYPE_FOLLOW,
+  avatarUrl: 'https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg',
   time: time,
   authorName: '',
   authorType: constants.AUTHRO_TYPE_NORMAL,
@@ -242,7 +274,7 @@ let legacyPaidMessageTemplate = {
   id: 0,
   addTime: time,
   type: constants.MESSAGE_TYPE_MEMBER,
-  avatarUrl: 'https://static.hdslb.com/images/member/noface.gif',
+  avatarUrl: 'https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg',
   time: time,
   authorName: '',
   title: 'NEW MEMBER!',
@@ -252,7 +284,7 @@ let paidMessageTemplate = {
   id: 0,
   addTime: time,
   type: constants.MESSAGE_TYPE_SUPER_CHAT,
-  avatarUrl: 'https://static.hdslb.com/images/member/noface.gif',
+  avatarUrl: 'https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg',
   authorName: '',
   price: 0,
   time: time,
@@ -263,7 +295,7 @@ let loveMessageTemplate = {
   id: 0,
   addTime: time,
   type: constants.MESSAGE_TYPE_LOVE,
-  avatarUrl: 'https://static.hdslb.com/images/member/noface.gif',
+  avatarUrl: 'https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg',
   time: time,
   authorName: '',
   title: '点赞',
@@ -274,7 +306,7 @@ const EXAMPLE_MESSAGES = [
   {
     ...textMessageTemplate,
     id: (nextId++).toString(),
-    authorName: 'mob路人',
+    authorName: '白咲是狐不是猫',
     content: '8888888888',
     repeated: 12
   },
@@ -302,6 +334,20 @@ const EXAMPLE_MESSAGES = [
     content: '加入直播间'
   },
   {
+    ...quitMessageTemplate,
+    id: (nextId++).toString(),
+    authorName: '无常猴',
+    authorType: constants.AUTHRO_TYPE_MEMBER,
+    content: '离开直播间'
+  },
+  {
+    ...followMessageTemplate,
+    id: (nextId++).toString(),
+    authorName: 'AVI猴',
+    authorType: constants.AUTHRO_TYPE_MEMBER,
+    content: '关注直播间'
+  },
+  {
     ...loveMessageTemplate,
     id: (nextId++).toString(),
     authorName: '某只猫',
@@ -311,29 +357,29 @@ const EXAMPLE_MESSAGES = [
   {
     ...legacyPaidMessageTemplate,
     id: (nextId++).toString(),
-    authorName: '进击的冰糖',
-    content: 'Welcome 进击的冰糖!'
+    authorName: '日日老师',
+    content: 'Welcome 日日老师!'
   },
   {
     ...paidMessageTemplate,
     id: (nextId++).toString(),
-    authorName: '无火的残渣',
+    authorName: 'DD头子',
     price: 66600,
-    content: 'Sent 小电视飞船x100'
+    content: 'Sent 猴岛 x 100'
   },
   {
     ...textMessageTemplate,
     id: (nextId++).toString(),
-    authorName: 'streamer主播',
+    authorName: '主播',
     authorType: constants.AUTHRO_TYPE_OWNER,
     content: '老板大气，老板身体健康'
   },
   {
     ...paidMessageTemplate,
     id: (nextId++).toString(),
-    authorName: '夏色祭保護協会会長',
+    authorName: '指定单推人',
     price: 30,
-    content: '言いたいことがあるんだよ！'
+    content: '我单推业界！'
   }
 ]
 

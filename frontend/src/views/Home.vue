@@ -13,6 +13,15 @@
         <el-form-item :label="$t('home.showDanmaku')">
           <el-switch v-model="form.showDanmaku"></el-switch>
         </el-form-item>
+        <el-form-item :label="$t('home.showFollow')">
+          <el-switch v-model="form.showFollow"></el-switch>
+        </el-form-item>
+        <el-form-item :label="$t('home.showJoin')">
+          <el-switch v-model="form.showJoin"></el-switch>
+        </el-form-item>
+        <el-form-item :label="$t('home.showQuit')">
+          <el-switch v-model="form.showQuit"></el-switch>
+        </el-form-item>
         <el-form-item :label="$t('home.showGift')">
           <el-switch v-model="form.showGift"></el-switch>
         </el-form-item>
@@ -27,6 +36,9 @@
         </el-form-item>
         <el-form-item :label="$t('home.mergeSimilarDanmaku')">
           <el-switch v-model="form.mergeSimilarDanmaku"></el-switch>
+        </el-form-item>
+        <el-form-item :label="$t('home.mergeSimilarOther')">
+          <el-switch v-model="form.mergeSimilarOther"></el-switch>
         </el-form-item>
         <el-form-item :label="$t('home.mergeGift')">
           <el-switch v-model="form.mergeGift"></el-switch>

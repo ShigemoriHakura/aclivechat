@@ -17,7 +17,7 @@
           ></author-badge>
         </span>
       </yt-live-chat-author-chip>
-      <span id="joinMessage" class="style-scope yt-live-chat-text-message-renderer">{{
+      <span id="followMessage" class="style-scope yt-live-chat-text-message-renderer">{{
         content
         }}<el-badge :value="repeated" :max="99" v-show="repeated > 1" class="style-scope yt-live-chat-text-message-renderer"
           :style="{'--repeated-mark-color': repeatedMarkColor}"
@@ -38,7 +38,7 @@ const REPEATED_MARK_COLOR_START = [210, 100.0, 62.5]
 const REPEATED_MARK_COLOR_END = [360, 87.3, 69.2]
 
 export default {
-  name: 'JoinMessage',
+  name: 'FollowMessage',
   components: {
     ImgShadow,
     AuthorBadge
@@ -79,11 +79,11 @@ export default {
 </script>
 
 <style>
-yt-live-chat-text-message-renderer>#content>#joinMessage>.el-badge {
+yt-live-chat-text-message-renderer>#content>#quitMessage>.el-badge {
   margin-left: 10px;
 }
 
-yt-live-chat-text-message-renderer>#content>#joinMessage>.el-badge .el-badge__content {
+yt-live-chat-text-message-renderer>#content>#quitMessage>.el-badge .el-badge__content {
   font-size: 12px !important;
   line-height: 18px !important;
   text-shadow: none !important;

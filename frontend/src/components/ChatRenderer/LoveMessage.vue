@@ -79,11 +79,11 @@ export default {
 </script>
 
 <style>
-yt-live-chat-text-message-renderer>#content>#message>.el-badge {
+yt-live-chat-text-message-renderer>#content>#loveMessage>.el-badge {
   margin-left: 10px;
 }
 
-yt-live-chat-text-message-renderer>#content>#message>.el-badge .el-badge__content {
+yt-live-chat-text-message-renderer>#content>#loveMessage>.el-badge .el-badge__content {
   font-size: 12px !important;
   line-height: 18px !important;
   text-shadow: none !important;

@@ -60,10 +60,13 @@ type dataUserStruct struct {
 }
 
 var HideGift bool
-var HideJoin bool
 var enableInteresrUserNotif bool
 var NormalGift = "一般"
 var YAAAAAGift = "高端"
+var LoveText = "点亮爱心"
+var FollowText = "关注了主播"
+var JoinText = "加入直播间"
+var QuitText = "离开直播间"
 var BanString []string
 var interestUsers []string
 var AConnMap = make(map[int](*Hub))
@@ -77,7 +80,7 @@ func getACUserPhoto(id int64) (string, error) {
 
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg", err
 	}
 
 	req.Header.Set("User-Agent", "Chrome/83.0.4103.61")
@@ -85,13 +88,13 @@ func getACUserPhoto(id int64) (string, error) {
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg", err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg", err
 	}
 
 	any := jsoniter.Get(body)
@@ -152,7 +155,13 @@ func startACWS(hub *Hub, roomID int) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	// uid为主播的uid
-	dq := acfundanmu.Start(ctx, roomID)
+	dq, err := acfundanmu.Start(ctx, roomID)
+	if err != nil {
+		log.Panicln(err)
+		time.Sleep(5 * time.Second)
+		go startACWS(AConnMap[roomID], roomID)
+		return
+	}
 	if hub != nil {
 		var hubTime = hub.timeStamp
 		for {
@@ -229,7 +238,7 @@ func startACWS(hub *Hub, roomID int) {
 						data.Data.AuthorName = d.Nickname
 						data.Data.AuthorType = AuthorType
 						data.Data.PrivilegeType = 0
-						data.Data.Content = "点亮爱心"
+						data.Data.Content = LoveText
 						ddata, err := json.Marshal(data)
 						if err == nil {
 							val = ddata
@@ -237,24 +246,36 @@ func startACWS(hub *Hub, roomID int) {
 						}
 						log.Printf("%v, %s（%d）点赞\n", roomID, d.Nickname, d.UserID)
 					case acfundanmu.EnterRoom:
-						if !HideJoin {
-							var data = new(dataUserStruct)
-							data.Cmd = 1
-							data.Data.Id = d.UserID
-							data.Data.AvatarUrl = avatar
-							data.Data.Timestamp = time.Now().Unix()
-							data.Data.AuthorName = d.Nickname
-							data.Data.AuthorType = AuthorType
-							data.Data.PrivilegeType = 0
-							data.Data.Content = "加入直播间"
-							ddata, err := json.Marshal(data)
-							if err == nil {
-								val = ddata
-								//log.Println("Conn Join", string(ddata))
-							}
+						var data = new(dataUserStruct)
+						data.Cmd = 1
+						data.Data.Id = d.UserID
+						data.Data.AvatarUrl = avatar
+						data.Data.Timestamp = time.Now().Unix()
+						data.Data.AuthorName = d.Nickname
+						data.Data.AuthorType = AuthorType
+						data.Data.PrivilegeType = 0
+						data.Data.Content = JoinText
+						ddata, err := json.Marshal(data)
+						if err == nil {
+							val = ddata
+							//log.Println("Conn Join", string(ddata))
 						}
 						log.Printf("%v, %s（%d）进入直播间\n", roomID, d.Nickname, d.UserID)
 					case acfundanmu.FollowAuthor:
+						var data = new(dataUserStruct)
+						data.Cmd = 10
+						data.Data.Id = d.UserID
+						data.Data.AvatarUrl = avatar
+						data.Data.Timestamp = time.Now().Unix()
+						data.Data.AuthorName = d.Nickname
+						data.Data.AuthorType = AuthorType
+						data.Data.PrivilegeType = 0
+						data.Data.Content = FollowText
+						ddata, err := json.Marshal(data)
+						if err == nil {
+							val = ddata
+							//log.Println("Conn Join", string(ddata))
+						}
 						log.Printf("%v, %s（%d）关注了主播\n", roomID, d.Nickname, d.UserID)
 					case acfundanmu.ThrowBanana:
 						var data = new(dataGiftStruct)
@@ -431,12 +452,15 @@ func main() {
 	}
 
 	HideGift = config.Get("HideGift").(bool)
-	HideJoin = config.Get("HideJoin").(bool)
 	NormalGift = config.Get("NormalGift").(string)
 	YAAAAAGift = config.Get("YAAAAAGift").(string)
+	LoveText = config.Get("LoveText").(string)
+	FollowText = config.Get("FollowText").(string)
+	JoinText = config.Get("JoinText").(string)
+	QuitText = config.Get("QuitText").(string)
 	enableInteresrUserNotif = config.Get("enableInteresrUserNotif").(bool)
 
-	log.Println("启动中，AcLiveChat，0.0.11")
+	log.Println("启动中，AcLiveChat，0.0.12")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
@@ -452,7 +476,7 @@ func main() {
 		http.ServeFile(w, r, "dist/index.html")
 	})
 	r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`{"version": "v0.0.11", "config": {"enableTranslate": false}}`))
+		w.Write([]byte(`{"version": "v0.0.12", "config": {"enableTranslate": false}}`))
 	})
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
 	http.Handle("/", r)

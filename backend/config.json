@@ -1,16 +1,19 @@
 {
     "HideGift" : false,
-    "HideJoin" : false,
     "NormalGift" : "普通猫粮",
     "YAAAAAGift" : "高级猫粮",
+    "LoveText" : "点亮爱心",
+    "FollowText" : "关注了主播",
+    "JoinText" : "加入直播间",
+    "QuitText" : "离开直播间",
     "enableInteresrUserNotif" : true,
     "BanWords"   : [
         "b站",
         "bilibili",
-        "Bilibili"
+        "Bilibili",
+        "test"
     ],
     "interestUser" : [
         "35119946"
     ]
-
 }
