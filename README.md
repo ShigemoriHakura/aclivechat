@@ -14,9 +14,9 @@
 * 浏览器打开：[http://localhost:12451](http://localhost:12451)
 
 **注意事项：**
-* 每个版本更新后都需要重新复制一次链接至OBS/XSplit
-* 应该先启动livechat后启动OBS/XSplit，否则网页会加载失败，失败时应刷新OBS/XSplit的浏览器源，显示Loaded则加载成功
-* 本地使用时不要关闭aclivechat.exe，否则不能继续获取弹幕
+* 每个前端版本更新后都需要重新复制一次链接和CSS至OBS/XSplit（因为有可能改动前端生成部分代码的）
+* 应该先启动aclivechat后启动OBS/XSplit，否则网页会加载失败，失败时应刷新OBS/XSplit的浏览器源，显示Loaded则加载成功
+* 本地使用时不能关闭aclivechat.exe，否则不能继续获取弹幕
 * 样式生成器没有列出所有本地字体，可以手动输入本地字体
 * 房间号就是UID
 * 请关闭快速编辑模式（右键标题，选择属性，取消勾选快速编辑模式，然后确定）
