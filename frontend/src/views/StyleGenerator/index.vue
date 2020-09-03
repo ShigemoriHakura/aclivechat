@@ -363,9 +363,16 @@ const EXAMPLE_MESSAGES = [
   {
     ...paidMessageTemplate,
     id: (nextId++).toString(),
+    authorName: '大猫猫',
+    price: 1,
+    content: '快乐水 x 1'
+  },
+  {
+    ...paidMessageTemplate,
+    id: (nextId++).toString(),
     authorName: 'DD头子',
-    price: 66600,
-    content: 'Sent 猴岛 x 100'
+    price: 288800,
+    content: '猴岛 x 100'
   },
   {
     ...textMessageTemplate,

@@ -28,7 +28,9 @@ export function formatCurrency (price) {
 }
 
 export function getTimeTextMinSec (date) {
+  let hour = ('00' + date.getHours()).slice(-2)
   let min = ('00' + date.getMinutes()).slice(-2)
-  let sec = ('00' + date.getSeconds()).slice(-2)
-  return `${min}:${sec}`
+  //let sec = ('00' + date.getSeconds()).slice(-2)
+  //return `${hour}:${min}:${sec}`
+  return `${hour}:${min}`
 }
