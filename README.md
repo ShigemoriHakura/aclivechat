@@ -1,5 +1,5 @@
 # aclivechat
-用于OBS/XSplit的仿YouTube风格的AcFun直播评论栏
+用于OBS/XSplit的仿YouTube风格的AcFun直播评论栏/弹幕姬
 
 ![XSplit截图](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/xsplit.png)  
 ![OBS截图](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/obs.png)  
