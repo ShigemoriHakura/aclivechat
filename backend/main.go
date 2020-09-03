@@ -584,6 +584,8 @@ func main() {
 	})
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
 	http.Handle("/", r)
+	
+	log.Println("等待用户连接")
 	err := http.ListenAndServe("0.0.0.0:12451", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
