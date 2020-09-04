@@ -9,7 +9,7 @@
         </router-link>
       </div>
       <div class="version">
-        v0.1.3
+        v0.1.4
       </div>
       <sidebar></sidebar>
     </el-aside>

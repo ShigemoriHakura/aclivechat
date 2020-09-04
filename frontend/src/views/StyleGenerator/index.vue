@@ -306,7 +306,7 @@ const EXAMPLE_MESSAGES = [
   {
     ...textMessageTemplate,
     id: (nextId++).toString(),
-    authorName: '白咲是狐不是猫',
+    authorName: '白口关是狐不是猫',
     content: '8888888888',
     repeated: 12
   },
@@ -366,6 +366,41 @@ const EXAMPLE_MESSAGES = [
     authorName: '大猫猫',
     price: 1,
     content: '快乐水 x 1'
+  },
+  {
+    ...paidMessageTemplate,
+    id: (nextId++).toString(),
+    authorName: '大狐狸',
+    price: 2,
+    content: '快乐水 x 2'
+  },
+  {
+    ...paidMessageTemplate,
+    id: (nextId++).toString(),
+    authorName: '大猫狐',
+    price: 5,
+    content: '快乐水 x 5'
+  },
+  {
+    ...paidMessageTemplate,
+    id: (nextId++).toString(),
+    authorName: '大狸猫',
+    price: 10,
+    content: '快乐水 x 10'
+  },
+  {
+    ...paidMessageTemplate,
+    id: (nextId++).toString(),
+    authorName: '大猫头鹰',
+    price: 20,
+    content: '快乐水 x 20'
+  },
+  {
+    ...paidMessageTemplate,
+    id: (nextId++).toString(),
+    authorName: '小猫猫',
+    price: 50,
+    content: '快乐水 x 50'
   },
   {
     ...paidMessageTemplate,

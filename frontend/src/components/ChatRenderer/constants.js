@@ -28,8 +28,8 @@ export const MESSAGE_TYPE_JOIN = 7
 export const MESSAGE_TYPE_FOLLOW = 8
 export const MESSAGE_TYPE_QUIT = 9
 
-// 美元 -> 人民币 汇率
-const EXCHANGE_RATE = 7
+// 人民币 -> 人民币 汇率
+const EXCHANGE_RATE = 1
 export const PRICE_CONFIGS = [
   { // $100红
     price: 100 * EXCHANGE_RATE,
