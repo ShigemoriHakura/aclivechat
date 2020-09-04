@@ -158,7 +158,8 @@ func startACWS(hub *Hub, roomID int) {
 	// uid为主播的uid
 	dq, err := acfundanmu.Start(ctx, roomID)
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
+		log.Println(roomID, "5秒后重试")
 		time.Sleep(5 * time.Second)
 		go startACWS(AConnMap[roomID], roomID)
 		return
@@ -404,7 +405,7 @@ func startACWS(hub *Hub, roomID int) {
 			}
 		}
 	} else {
-		log.Println("无Hub，直接鲨")
+		log.Println(roomID, "无Hub，直接鲨")
 	}
 }
 
@@ -564,7 +565,7 @@ func main() {
 	QuitText = config.Get("QuitText").(string)
 	enableInteresrUserNotif = config.Get("enableInteresrUserNotif").(bool)
 
-	log.Println("启动中，AcLiveChat，0.1.0")
+	log.Println("启动中，AcLiveChat，0.1.1")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
@@ -580,7 +581,7 @@ func main() {
 		http.ServeFile(w, r, "dist/index.html")
 	})
 	r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`{"version": "v0.1.0", "config": {"enableTranslate": false}}`))
+		w.Write([]byte(`{"version": "v0.1.1", "config": {"enableTranslate": false}}`))
 	})
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
 	http.Handle("/", r)
