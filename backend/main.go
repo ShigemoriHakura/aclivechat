@@ -104,7 +104,7 @@ func getACUserPhoto(id int64) (string, error) {
 		log.Printf("UserId(%v) match: %v", str, avatar)
 		return avatar, nil
 	}
-	return "", nil
+	return "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg", nil
 }
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
@@ -153,15 +153,28 @@ func serveWS(conn *websocket.Conn) {
 }
 
 func startACWS(hub *Hub, roomID int) {
+	if(hub == nil){
+		log.Println(roomID, "这不合理")
+		return
+	}
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	defer func() {
+		log.Println(roomID, "结束")
+		cancel()
+	}()
+	log.Println(roomID, "WS启动中")
 	// uid为主播的uid
 	dq, err := acfundanmu.Start(ctx, roomID)
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
 		log.Println(roomID, "5秒后重试")
 		time.Sleep(5 * time.Second)
-		go startACWS(AConnMap[roomID], roomID)
+		log.Println(roomID, "重试启动")
+		if(AConnMap[roomID] != nil){
+			go startACWS(AConnMap[roomID], roomID)
+		}else{
+			log.Println(roomID, "没监听了，关！")
+		}
 		return
 	}
 	if hub != nil {
@@ -565,7 +578,7 @@ func main() {
 	QuitText = config.Get("QuitText").(string)
 	enableInteresrUserNotif = config.Get("enableInteresrUserNotif").(bool)
 
-	log.Println("启动中，AcLiveChat，0.1.1")
+	log.Println("启动中，AcLiveChat，0.1.2")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
@@ -581,7 +594,7 @@ func main() {
 		http.ServeFile(w, r, "dist/index.html")
 	})
 	r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`{"version": "v0.1.1", "config": {"enableTranslate": false}}`))
+		w.Write([]byte(`{"version": "v0.1.2", "config": {"enableTranslate": false}}`))
 	})
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
 	http.Handle("/", r)

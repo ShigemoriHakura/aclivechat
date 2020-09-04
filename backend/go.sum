@@ -79,6 +79,8 @@ github.com/orzogc/acfundanmu v0.0.0-20200827083700-841d130b4aaa h1:Gg6GQZJeLPSvl
 github.com/orzogc/acfundanmu v0.0.0-20200827083700-841d130b4aaa/go.mod h1:7N6TAr3vh1cp+qCObim0LvMzRESj6XWth27qYEXJfjA=
 github.com/orzogc/acfundanmu v0.0.0-20200829124332-6052a1aebccd h1:J7G8COoJpTtbduxH0H7xrSQqq50ac9tQeAR3ZDlV9Xg=
 github.com/orzogc/acfundanmu v0.0.0-20200829124332-6052a1aebccd/go.mod h1:7N6TAr3vh1cp+qCObim0LvMzRESj6XWth27qYEXJfjA=
+github.com/orzogc/acfundanmu v0.0.0-20200904081438-3f9c1114ab06 h1:oqagTHvQ6X1lWoBnGYOyHJlXZijWdJDPlAoUqeCxVoQ=
+github.com/orzogc/acfundanmu v0.0.0-20200904081438-3f9c1114ab06/go.mod h1:7N6TAr3vh1cp+qCObim0LvMzRESj6XWth27qYEXJfjA=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=
