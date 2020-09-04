@@ -386,7 +386,7 @@ func startACWS(hub *Hub, roomID int) {
 						data.Data.AuthorName = d.Nickname
 						data.Data.GiftName = d.Gift.Name
 						data.Data.Num = d.Gift.Count
-						var price = d.Gift.Price * 100
+						var price = d.Gift.Price * 1000
 						if d.Gift.Name == "香蕉" {
 							price = 0
 						}
@@ -578,7 +578,7 @@ func main() {
 	QuitText = config.Get("QuitText").(string)
 	enableInteresrUserNotif = config.Get("enableInteresrUserNotif").(bool)
 
-	log.Println("启动中，AcLiveChat，0.1.2")
+	log.Println("启动中，AcLiveChat，0.1.3")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
@@ -594,7 +594,7 @@ func main() {
 		http.ServeFile(w, r, "dist/index.html")
 	})
 	r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`{"version": "v0.1.2", "config": {"enableTranslate": false}}`))
+		w.Write([]byte(`{"version": "v0.1.3", "config": {"enableTranslate": false}}`))
 	})
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
 	http.Handle("/", r)
