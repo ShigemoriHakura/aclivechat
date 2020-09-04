@@ -386,7 +386,7 @@ func startACWS(hub *Hub, roomID int) {
 						data.Data.AuthorName = d.Nickname
 						data.Data.GiftName = d.Gift.Name
 						data.Data.Num = d.Gift.Count
-						var price = d.Gift.Price * 1000
+						var price = d.Gift.Value / 10
 						if d.Gift.Name == "香蕉" {
 							price = 0
 						}
