@@ -435,7 +435,12 @@ export default {
         addTime: new Date() // 添加一个本地时间给Ticker用，防止本地时间和服务器时间相差很大的情况
       }
       this.messagesBuffer.push(message)
-      if (message.type !== constants.MESSAGE_TYPE_TEXT) {
+      if (message.type !== constants.MESSAGE_TYPE_TEXT &&
+          message.type !== constants.MESSAGE_TYPE_LOVE &&
+          message.type !== constants.MESSAGE_TYPE_JOIN &&
+          message.type !== constants.MESSAGE_TYPE_QUIT &&
+          message.type !== constants.MESSAGE_TYPE_FOLLOW
+      ) {
         this.paidMessages.unshift(message)
       }
     },
