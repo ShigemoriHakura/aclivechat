@@ -47,11 +47,12 @@ export default {
     price: Number, // 价格，人民币
     time: Date,
     content: String,
-    showGiftPrice: Boolean
+    showGiftPrice: Boolean,
+    exchangeRate: Number // 换算倍率
   },
   computed: {
     color() {
-      return constants.getPriceConfig(this.price).colors
+      return constants.getPriceConfig(this.price/this.exchangeRate).colors
     },
     priceText() {
       return '¥' + utils.formatCurrency(this.price)
