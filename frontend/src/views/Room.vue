@@ -1,5 +1,5 @@
 <template>
-  <chat-renderer ref="renderer" :maxNumber="config.maxNumber" :showGiftName="config.showGiftName"  :showGiftPrice="config.showGiftPrice"></chat-renderer>
+  <chat-renderer ref="renderer" :maxNumber="config.maxNumber" :showGiftName="config.showGiftName"  :showGiftPrice="config.showGiftPrice" :exchangeRate="config.exchangeRate"></chat-renderer>
 </template>
 
 <script>
@@ -67,6 +67,7 @@ export default {
       }
       cfg = mergeConfig(cfg, config.DEFAULT_CONFIG)
       cfg.minGiftPrice = toInt(cfg.minGiftPrice, config.DEFAULT_CONFIG.minGiftPrice)
+      cfg.exchangeRate = toInt(cfg.exchangeRate, config.DEFAULT_CONFIG.exchangeRate)
       cfg.showDanmaku = toBool(cfg.showDanmaku)
       cfg.showLove = toBool(cfg.showLove)
       cfg.showFollow = toBool(cfg.showFollow)

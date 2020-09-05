@@ -21,6 +21,7 @@ export default {
     showGift: 'Show Super Chats',
     showGiftName: 'Show gift name',
     showGiftPrice: 'Show gift price',
+    exchangeRate: 'Exchange rate',
     mergeSimilarDanmaku: 'Merge similar messages',
     mergeSimilarOther: 'Merge similar other messages',
     mergeGift: 'Merge gifts',

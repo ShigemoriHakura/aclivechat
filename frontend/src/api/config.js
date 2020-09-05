@@ -2,6 +2,7 @@ import {mergeConfig} from '@/utils'
 
 export const DEFAULT_CONFIG = {
   minGiftPrice: 0, // ￥0
+  exchangeRate: 1, // 1 -> ￥1
   showDanmaku: true,
   showFollow: true,
   showJoin: true,

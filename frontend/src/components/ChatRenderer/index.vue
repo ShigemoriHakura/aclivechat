@@ -2,7 +2,7 @@
   <yt-live-chat-renderer class="style-scope yt-live-chat-app" style="--scrollbar-width:11px;" hide-timestamps
     @mousemove="refreshCantScrollStartTime"
   >
-    <ticker class="style-scope yt-live-chat-renderer" :messages="paidMessages" :showGiftName="showGiftName"
+    <ticker class="style-scope yt-live-chat-renderer" :messages="paidMessages" :showGiftName="showGiftName" :exchangeRate="exchangeRate"
       :hidden="paidMessages.length === 0"
     ></ticker>
     <yt-live-chat-item-list-renderer class="style-scope yt-live-chat-renderer" allow-scroll>
@@ -105,6 +105,10 @@ export default {
     showGiftPrice: {
       type: Boolean,
       default: config.DEFAULT_CONFIG.showGiftPrice
+    },
+    exchangeRate: {
+      type: Number,
+      default: config.DEFAULT_CONFIG.exchangeRate
     }
   },
   data() {

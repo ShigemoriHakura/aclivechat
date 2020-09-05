@@ -54,7 +54,7 @@ export default {
       return constants.getPriceConfig(this.price).colors
     },
     priceText() {
-      return 'CN¥' + utils.formatCurrency(this.price)
+      return '¥' + utils.formatCurrency(this.price)
     },
     timeText() {
       return utils.getTimeTextMinSec(this.time)

@@ -46,6 +46,9 @@
         <el-form-item :label="$t('home.minGiftPrice')">
           <el-input v-model.number="form.minGiftPrice" type="number" min="0"></el-input>
         </el-form-item>
+        <el-form-item :label="$t('home.exchangeRate')">
+          <el-input v-model.number="form.exchangeRate" type="number" min="0"></el-input>
+        </el-form-item>
         <el-form-item :label="$t('home.maxNumber')">
           <el-input v-model.number="form.maxNumber" type="number" min="1"></el-input>
         </el-form-item>

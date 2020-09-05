@@ -60,7 +60,8 @@ export default {
     showGiftName: {
       type: Boolean,
       default: config.DEFAULT_CONFIG.showGiftName
-    }
+    },
+    exchangeRate: Number // 换算倍率
   },
   data() {
     return {
@@ -92,7 +93,7 @@ export default {
       if (message.type === constants.MESSAGE_TYPE_MEMBER) {
         pinTime = 2
       } else {
-        let config = constants.getPriceConfig(message.price)
+        let config = constants.getPriceConfig(message.price/this.exchangeRate)
         pinTime = config.pinTime
       }
       return (new Date() - message.addTime) / (60 * 1000) < pinTime
@@ -104,7 +105,7 @@ export default {
         color2 = 'rgba(11,128,67,1)'
         pinTime = 2
       } else {
-        let config = constants.getPriceConfig(message.type === constants.MESSAGE_TYPE_MEMBER ? 28 : message.price)
+        let config = constants.getPriceConfig(message.type === constants.MESSAGE_TYPE_MEMBER ? 28 : message.price/this.exchangeRate)
         color1 = config.colors.contentBg
         color2 = config.colors.headerBg
         pinTime = config.pinTime
@@ -121,13 +122,13 @@ export default {
       if (message.type === constants.MESSAGE_TYPE_MEMBER) {
         return 'rgb(255,255,255)'
       }
-      return constants.getPriceConfig(message.price).colors.header
+      return constants.getPriceConfig(message.price/this.exchangeRate).colors.header
     },
     getText(message) {
       if (message.type === constants.MESSAGE_TYPE_MEMBER) {
         return 'Member'
       }
-      return 'CN¥' + formatCurrency(message.price)
+      return '¥' + formatCurrency(message.price)
     },
     updateProgress() {
       this.curTime = new Date()
@@ -136,7 +137,7 @@ export default {
         if (this.messages[i].type === constants.MESSAGE_TYPE_MEMBER) {
           pinTime = 2
         } else {
-          let config = constants.getPriceConfig(this.messages[i].price)
+          let config = constants.getPriceConfig(this.messages[i].price/this.exchangeRate)
           pinTime = config.pinTime
         }
         if ((this.curTime - this.messages[i].addTime) / (60 * 1000) >= pinTime) {
