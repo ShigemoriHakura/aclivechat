@@ -48,13 +48,20 @@ export default {
     time: Date,
     content: String,
     showGiftPrice: Boolean,
+    showACCoinInstead: Boolean,
     exchangeRate: Number // 换算倍率
   },
   computed: {
     color() {
+      if(this.exchangeRate == undefined){
+        return constants.getPriceConfig(this.price).colors
+      }
       return constants.getPriceConfig(this.price/this.exchangeRate).colors
     },
     priceText() {
+      if(this.showACCoinInstead){
+        return (this.price * 10) + "AC币"
+      }
       return '¥' + utils.formatCurrency(this.price)
     },
     timeText() {

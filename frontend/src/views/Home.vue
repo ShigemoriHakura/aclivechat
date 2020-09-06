@@ -31,6 +31,9 @@
         <el-form-item :label="$t('home.showGiftPrice')">
           <el-switch v-model="form.showGiftPrice"></el-switch>
         </el-form-item>
+        <el-form-item :label="$t('home.showACCoinInstead')">
+          <el-switch v-model="form.showACCoinInstead"></el-switch>
+        </el-form-item>
         <el-form-item :label="$t('home.showLove')">
           <el-switch v-model="form.showLove"></el-switch>
         </el-form-item>

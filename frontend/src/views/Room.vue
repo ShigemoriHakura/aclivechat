@@ -1,5 +1,5 @@
 <template>
-  <chat-renderer ref="renderer" :maxNumber="config.maxNumber" :showGiftName="config.showGiftName"  :showGiftPrice="config.showGiftPrice" :exchangeRate="config.exchangeRate"></chat-renderer>
+  <chat-renderer ref="renderer" :maxNumber="config.maxNumber" :showGiftName="config.showGiftName"  :showGiftPrice="config.showGiftPrice" :exchangeRate="config.exchangeRate" :showACCoinInstead="config.showACCoinInstead" ></chat-renderer>
 </template>
 
 <script>
@@ -76,6 +76,7 @@ export default {
       cfg.showGift = toBool(cfg.showGift)
       cfg.showGiftName = toBool(cfg.showGiftName)
       cfg.showGiftPrice = toBool(cfg.showGiftPrice)
+      cfg.showACCoinInstead = toBool(cfg.showACCoinInstead)
       cfg.mergeSimilarDanmaku = toBool(cfg.mergeSimilarDanmaku)
       cfg.mergeSimilarOther = toBool(cfg.mergeSimilarOther)
       cfg.mergeGift = toBool(cfg.mergeGift)

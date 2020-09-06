@@ -21,6 +21,7 @@ export default {
     showLove: '愛を表示する',
     showGiftName: 'ギフト名を表示する',
     showGiftPrice: '価格を表示する',
+    showACCoinInstead: '価格の代わりにACドルを使います',
     exchangeRate: '為替レート',
     mergeSimilarDanmaku: '同じコメントを合併する',
     mergeSimilarOther: '同じその他を合併する',

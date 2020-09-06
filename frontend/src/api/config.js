@@ -9,6 +9,7 @@ export const DEFAULT_CONFIG = {
   showQuit: false,
   showGift: true,
   showGiftPrice: true,
+  showACCoinInstead: false,
   showLove: true,
   showGiftName: false,
   mergeSimilarDanmaku: true,

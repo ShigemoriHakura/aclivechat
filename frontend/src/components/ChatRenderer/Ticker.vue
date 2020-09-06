@@ -61,6 +61,8 @@ export default {
       type: Boolean,
       default: config.DEFAULT_CONFIG.showGiftName
     },
+    showGiftPrice: Boolean,
+    showACCoinInstead: Boolean,
     exchangeRate: Number // 换算倍率
   },
   data() {
@@ -127,6 +129,12 @@ export default {
     getText(message) {
       if (message.type === constants.MESSAGE_TYPE_MEMBER) {
         return 'Member'
+      }
+      if(!this.showGiftPrice){
+        return ''
+      }
+      if(this.showACCoinInstead){
+        return (message.price * 10) + 'AC币'
       }
       return '¥' + formatCurrency(message.price)
     },

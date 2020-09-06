@@ -2,8 +2,8 @@
   <yt-live-chat-renderer class="style-scope yt-live-chat-app" style="--scrollbar-width:11px;" hide-timestamps
     @mousemove="refreshCantScrollStartTime"
   >
-    <ticker class="style-scope yt-live-chat-renderer" :messages="paidMessages" :showGiftName="showGiftName" :exchangeRate="exchangeRate"
-      :hidden="paidMessages.length === 0"
+    <ticker class="style-scope yt-live-chat-renderer" :messages="paidMessages" :showGiftName="showGiftName" :exchangeRate="exchangeRate" :showGiftPrice="showGiftPrice" :showACCoinInstead="showACCoinInstead"
+      :hidden="paidMessages.length === 0" 
     ></ticker>
     <yt-live-chat-item-list-renderer class="style-scope yt-live-chat-renderer" allow-scroll>
       <div ref="scroller" id="item-scroller" class="style-scope yt-live-chat-item-list-renderer animated" @scroll="onScroll">
@@ -21,7 +21,7 @@
               <paid-message :key="message.id" v-else-if="message.type === MESSAGE_TYPE_GIFT"
                 class="style-scope yt-live-chat-item-list-renderer"
                 :price="message.price" :avatarUrl="message.avatarUrl" :authorName="message.authorName"
-                :time="message.time" :content="getGiftShowContent(message)" :showGiftPrice="showGiftPrice" :exchangeRate="exchangeRate"
+                :time="message.time" :content="getGiftShowContent(message)" :showGiftPrice="showGiftPrice" :exchangeRate="exchangeRate" :showACCoinInstead="showACCoinInstead"
               ></paid-message>
               <legacy-paid-message :key="message.id" v-else-if="message.type === MESSAGE_TYPE_MEMBER"
                 class="style-scope yt-live-chat-item-list-renderer"
@@ -105,6 +105,10 @@ export default {
     showGiftPrice: {
       type: Boolean,
       default: config.DEFAULT_CONFIG.showGiftPrice
+    },
+    showACCoinInstead: {
+      type: Boolean,
+      default: config.DEFAULT_CONFIG.showACCoinInstead
     },
     exchangeRate: {
       type: Number,
