@@ -48,7 +48,7 @@ export default {
   props: {
     avatarUrl: String,
     time: Date,
-    authorID: Number,
+    roomID: Number,
     authorName: String,
     authorType: Number,
     content: String,
@@ -62,7 +62,7 @@ export default {
     getShowMedal(){
       if(this.medal.ClubName != ""){
         if(this.showEqualMedal){
-          if(this.medal.UperID == this.authorID){
+          if(this.medal.UperID == this.roomID){
             return true;
           }
         }else{

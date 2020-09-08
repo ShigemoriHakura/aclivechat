@@ -6,6 +6,7 @@
     :exchangeRate="config.exchangeRate" 
     :showACCoinInstead="config.showACCoinInstead" 
     :showEqualMedal="config.showEqualMedal"
+    :roomID="this.$route.params.roomId"
   ></chat-renderer>
 </template>
 

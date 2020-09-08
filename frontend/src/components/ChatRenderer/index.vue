@@ -14,9 +14,9 @@
             <template v-for="message in messages">
               <text-message :key="message.id" v-if="message.type === MESSAGE_TYPE_TEXT"
                 class="style-scope yt-live-chat-item-list-renderer"
-                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName" :authorID="message.id"
+                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
                 :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
-                :repeated="message.repeated" :userMark="message.userMark" :medal="message.medal" :showEqualMedal="showEqualMedal"
+                :repeated="message.repeated" :userMark="message.userMark" :medal="message.medal" :showEqualMedal="showEqualMedal" :roomID="roomID"
               ></text-message>
               <paid-message :key="message.id" v-else-if="message.type === MESSAGE_TYPE_GIFT"
                 class="style-scope yt-live-chat-item-list-renderer"
@@ -94,6 +94,10 @@ export default {
   },
   props: {
     css: String,
+    roomID: {
+      type: Number,
+      default: 1
+    },
     maxNumber: {
       type: Number,
       default: config.DEFAULT_CONFIG.maxNumber
