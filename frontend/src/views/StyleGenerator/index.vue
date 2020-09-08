@@ -452,6 +452,7 @@ const EXAMPLE_MESSAGES = [
     id: (nextId++).toString(),
     authorName: '主播',
     authorType: constants.AUTHRO_TYPE_OWNER,
+    userMark: '标记一下',
     content: '老板大气，老板身体健康'
   },
   {
