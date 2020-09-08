@@ -60,7 +60,7 @@ export default {
     },
     priceText() {
       if(this.showACCoinInstead){
-        return (this.price * 10) + "AC币"
+        return parseInt(this.price * 10) + "AC币"
       }
       return '¥' + utils.formatCurrency(this.price)
     },

@@ -24,7 +24,7 @@ export default {
     general: '常规',
     roomId: 'AC 房间ID',
     showDanmaku: '显示弹幕',
-    showEqualMedal: '只显示房间对应粉丝牌',
+    showEqualMedal: '只显示本主播对应粉丝牌',
     showFollow: '显示用户关注主播',
     showJoin: '显示用户进入直播间',
     showQuit: '显示用户离开直播间',

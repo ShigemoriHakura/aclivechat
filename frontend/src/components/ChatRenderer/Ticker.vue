@@ -134,7 +134,7 @@ export default {
         return ''
       }
       if(this.showACCoinInstead){
-        return (message.price * 10) + 'AC币'
+        return parseInt(message.price * 10) + 'AC币'
       }
       return '¥' + formatCurrency(message.price)
     },
