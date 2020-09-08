@@ -6,6 +6,18 @@ export const DEFAULT_CONFIG = {
   outlineSize: 2,
   outlineColor: '#000000',
 
+  showMedal: false,
+  medalFont: 'Changa One',
+  medalFontSize: 20,
+  medalLineHeight: 0,
+  medalColor: '#BEBA9E',
+
+  showUserMark: false,
+  userMarkFont: 'Changa One',
+  userMarkFontSize: 20,
+  userMarkLineHeight: 0,
+  userMarkColor: '#5F445D',
+
   showAvatars: true,
   avatarSize: 24,
 
@@ -173,6 +185,24 @@ yt-live-chat-text-message-renderer #timestamp {
   font-family: "${config.timeFont}"${FALLBACK_FONTS};
   font-size: ${config.timeFontSize}px !important;
   line-height: ${config.timeLineHeight || config.timeFontSize}px !important;
+}
+
+/* Usermarks. */
+yt-live-chat-text-message-renderer #usermark {
+  display: ${config.showUserMark ? 'inline' : 'none'} !important;
+  ${config.userMarkColor ? `color: ${config.userMarkColor} !important;` : ''}
+  font-family: "${config.userMarkFont}"${FALLBACK_FONTS};
+  font-size: ${config.userMarkFontSize}px !important;
+  line-height: ${config.userMarkLineHeight || config.userMarkFontSize}px !important;
+}
+
+/* Medals. */
+yt-live-chat-text-message-renderer #medal {
+  display: ${config.showMedal ? 'inline' : 'none'} !important;
+  ${config.medalColor ? `color: ${config.medalColor} !important;` : ''}
+  font-family: "${config.medalFont}"${FALLBACK_FONTS};
+  font-size: ${config.medalFontSize}px !important;
+  line-height: ${config.medalLineHeight || config.medalFontSize}px !important;
 }
 
 /* Badges. */

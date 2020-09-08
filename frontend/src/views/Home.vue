@@ -13,6 +13,9 @@
         <el-form-item :label="$t('home.showDanmaku')">
           <el-switch v-model="form.showDanmaku"></el-switch>
         </el-form-item>
+        <el-form-item :label="$t('home.showEqualMedal')">
+          <el-switch v-model="form.showEqualMedal"></el-switch>
+        </el-form-item>
         <el-form-item :label="$t('home.showFollow')">
           <el-switch v-model="form.showFollow"></el-switch>
         </el-form-item>

@@ -6,14 +6,14 @@
     "FollowText" : "关注了主播",
     "JoinText" : "加入直播间",
     "QuitText" : "离开直播间",
-    "enableInteresrUserNotif" : true,
+    "AvatarRefreshRate" : 86400,
     "BanWords"   : [
         "b站",
         "bilibili",
-        "Bilibili",
-        "test"
+        "Bilibili"
     ],
-    "interestUser" : [
-        "35119946"
-    ]
+    "UserMarks" : {
+        "35119946" : "开发者",
+        "147109" : "DD头子"
+    }
 }

@@ -14,6 +14,7 @@ export default {
     general: '常規',
     roomId: 'ルームID',
     showDanmaku: 'コメントを表示する',
+    showEqualMedal: 'ファンカードのみ表示します',
     showGift: 'スーパーチャットと新メンバーを表示する',
     showFollow: '生放送に関心を持つユーザを表示する',
     showJoin: 'ユーザが生放送に入ると表示する',
@@ -59,6 +60,12 @@ export default {
     avatars: 'アイコン',
     showAvatars: 'アイコンを表示する',
     avatarSize: 'アイコンのサイズ',
+
+    medal: 'ファンカード',
+    showMedal: 'ファンカードを表示する',
+
+    userMark: 'ユーザータグ',
+    showUserMark: 'ユーザータグを表示する',
 
     userNames: 'ユーザー名',
     font: 'フォント',

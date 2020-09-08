@@ -46,7 +46,8 @@ type dataUser struct {
 	PrivilegeType int    `json:"privilegeType"`
 	Translation   string `json:"translation"`
 	Content       string `json:"content"`
-	interestUser  bool   `json:"interested"`
+	UserMark      string `json:"userMark"`
+	Medal         acfundanmu.MedalInfo `json:"medalInfo"` // 粉丝牌
 }
 
 type dataGiftStruct struct {
@@ -59,19 +60,24 @@ type dataUserStruct struct {
 	Data dataUser `json:"data"`
 }
 
+type PhotoStruct struct {
+	Url       string      `json:"url"`
+	Timestamp int64       `json:"timestamp"`
+}
+
 var HideGift bool
-var enableInteresrUserNotif bool
 var NormalGift = "一般"
 var YAAAAAGift = "高端"
 var LoveText = "点亮爱心"
 var FollowText = "关注了主播"
 var JoinText = "加入直播间"
 var QuitText = "离开直播间"
+var AvatarRefreshRate = 86400
 var BanString []string
-var interestUsers []string
+var UserMarks = make(map[string]string)
 var AConnMap = make(map[int](*Hub))
 var ACWatchMap = make(map[int]*[]acfundanmu.WatchingUser)
-var PhotoMap = make(map[int64]string)
+var ACPhotoMap = make(map[int64]*PhotoStruct)
 
 func getACUserPhoto(id int64) (string, error) {
 	client := &http.Client{Timeout: 2 * time.Second}
@@ -81,7 +87,7 @@ func getACUserPhoto(id int64) (string, error) {
 
 	if err != nil {
 		log.Println(err)
-		return "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg", err
+		return "", err
 	}
 
 	req.Header.Set("User-Agent", "Chrome/83.0.4103.61")
@@ -89,30 +95,31 @@ func getACUserPhoto(id int64) (string, error) {
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Println(err)
-		return "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg", err
+		return "", err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg", err
+		return "", err
 	}
 
 	any := jsoniter.Get(body)
 	var avatar = any.Get("profile", "headUrl").ToString()
 	if avatar != "" {
-		log.Printf("UserId(%v) match: %v", str, avatar)
+		log.Printf("[Avatar] 用户(%v) 头像匹配: %v", str, avatar)
 		return avatar, nil
 	}
-	return "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg", nil
+	log.Printf("[Avatar] 用户(%v) 头像获取失败", str)
+	return "", nil
 }
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	var conn, err = upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println("Serve: ", err)
+		log.Println("[WS Home]", "发生处理错误: ", err)
 	} else {
-		log.Println("New Conn: ", fmt.Sprintf("%s", conn.RemoteAddr().String()))
+		log.Println("[WS Home]", "新的前端WS连接：", fmt.Sprintf("%s", conn.RemoteAddr().String()))
 		go serveWS(conn)
 	}
 }
@@ -121,7 +128,7 @@ func serveWS(conn *websocket.Conn) {
 	for {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
-			log.Println("Conn Err: ", err)
+			log.Println("[WS Server]", "发生连接错误: ", err)
 			conn.Close()
 			break
 		} else {
@@ -135,7 +142,7 @@ func serveWS(conn *websocket.Conn) {
 				break
 			case "1":
 				var roomID = any.Get("data", "roomId").ToInt()
-				log.Println("Conn roomID: ", roomID)
+				log.Println("[WS Server]", "请求房间ID：", roomID)
 				if _, ok := AConnMap[roomID]; !ok {
 					AConnMap[roomID] = newHub()
 					AConnMap[roomID].htype = 1
@@ -154,26 +161,26 @@ func serveWS(conn *websocket.Conn) {
 
 func startACWS(hub *Hub, roomID int) {
 	if(hub == nil){
-		log.Println(roomID, "这不合理")
+		log.Println("[Danmaku]", roomID, "这不合理")
 		return
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer func() {
-		log.Println(roomID, "结束")
+		log.Println("[Danmaku]", roomID, "结束")
 		cancel()
 	}()
-	log.Println(roomID, "WS启动中")
+	log.Println("[Danmaku]", roomID, "WS监听服务启动中")
 	// uid为主播的uid
-	dq, err := acfundanmu.Start(ctx, roomID)
+	dq, err := acfundanmu.Start(ctx, roomID, nil)
 	if err != nil {
 		//log.Println(err)
-		log.Println(roomID, "5秒后重试")
+		log.Println("[Danmaku]", roomID, "5秒后重试")
 		time.Sleep(5 * time.Second)
-		log.Println(roomID, "重试启动")
+		log.Println("[Danmaku]", roomID, "重试启动")
 		if(AConnMap[roomID] != nil){
 			go startACWS(AConnMap[roomID], roomID)
 		}else{
-			log.Println(roomID, "没监听了，关！")
+			log.Println("[Danmaku]", roomID, "没监听了，关！")
 		}
 		return
 	}
@@ -232,7 +239,7 @@ func startACWS(hub *Hub, roomID int) {
 									//log.Println("Conn Join", string(ddata))
 								}
 								hub.broadcast <- val
-								log.Printf("%v, %s（%d）离开直播间\n", roomID, d.Nickname, d.UserID)
+								log.Printf("[Danmaku] %v, %s（%d）离开直播间\n", roomID, d.Nickname, d.UserID)
 								//fmt.Printf("id %v \n", value)
 							}
 						}
@@ -244,13 +251,13 @@ func startACWS(hub *Hub, roomID int) {
 		}()
 		for {
 			if hhub, ok := AConnMap[roomID]; !ok {
-				log.Println(roomID, "无用户请求，关闭直播间监听")
+				log.Println("[Danmaku]", roomID, "无用户请求，关闭直播间监听")
 				//cancel()
 				break
 				//return
 			} else {
 				if hubTime != hhub.timeStamp {
-					log.Println(roomID, "时间戳不匹配，关闭")
+					log.Println("[Danmaku]", roomID, "时间戳不匹配，关闭")
 					break
 				}
 			}
@@ -258,20 +265,31 @@ func startACWS(hub *Hub, roomID int) {
 			if danmu := dq.GetDanmu(); danmu != nil {
 				for _, d := range danmu {
 					var val = []byte(`{}`)
-					avatar, ok := PhotoMap[d.UserID]
-					if !ok {
-						aavatar, err := getACUserPhoto(d.UserID)
-						if err != nil {
-							avatar = ""
+					avatar := "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg"
+					avatarStruct, ok := ACPhotoMap[d.UserID]
+					getNewAvater := false
+					//处理用户头像结构体
+					if(!ok){
+						getNewAvater = true
+					}else{
+						//判断缓存
+						if(int(time.Now().Unix() - avatarStruct.Timestamp) > AvatarRefreshRate){
+							getNewAvater = true
+						}else{
+							avatar = avatarStruct.Url
 						}
-						if aavatar != "" {
-							PhotoMap[d.UserID] = aavatar
-						}
-						avatar = aavatar
-					} else {
-						avatar = PhotoMap[d.UserID]
 					}
-					//avatar = PhotoMap[d.UserID]
+					if(getNewAvater){
+						newavatar, err := getACUserPhoto(d.UserID)
+						if err == nil && newavatar != "" {
+							newAvatarStruct := new(PhotoStruct)
+							newAvatarStruct.Url = newavatar
+							newAvatarStruct.Timestamp = time.Now().Unix()
+							ACPhotoMap[d.UserID] = newAvatarStruct
+							avatar = newavatar
+							//更新头像数组和头像
+						}
+					}
 					//log.Println("Data Photo", avatar)
 					// 根据Type处理弹幕
 					var AuthorType = 0
@@ -290,23 +308,15 @@ func startACWS(hub *Hub, roomID int) {
 							data.Data.AuthorType = AuthorType
 							data.Data.PrivilegeType = 0
 							data.Data.Content = d.Comment
+							data.Data.UserMark = getUserMark(d.UserID)
+							data.Data.Medal = d.Medal
 							ddata, err := json.Marshal(data)
-							if enableInteresrUserNotif {
-								if ifInterestUser(data.Data.Id) {
-									data.Data.interestUser = true
-								} else {
-									data.Data.interestUser = false
-								}
-							} else {
-								data.Data.interestUser = false
-							}
-							//log.Print(data)
 							if err == nil {
 								val = ddata
 								//log.Println("Conn Comment", string(ddata))
 							}
 						}
-						log.Printf("%v, %s（%d）：%s\n", roomID, d.Nickname, d.UserID, d.Comment)
+						log.Printf("[Danmaku] %v, %s（%d）：%s\n", roomID, d.Nickname, d.UserID, d.Comment)
 					case acfundanmu.Like:
 						var data = new(dataUserStruct)
 						data.Cmd = 8
@@ -322,7 +332,7 @@ func startACWS(hub *Hub, roomID int) {
 							val = ddata
 							//log.Println("Conn Comment", string(ddata))
 						}
-						log.Printf("%v, %s（%d）点赞\n", roomID, d.Nickname, d.UserID)
+						log.Printf("[Danmaku] %v, %s（%d）点赞\n", roomID, d.Nickname, d.UserID)
 					case acfundanmu.EnterRoom:
 						var data = new(dataUserStruct)
 						data.Cmd = 1
@@ -338,7 +348,7 @@ func startACWS(hub *Hub, roomID int) {
 							val = ddata
 							//log.Println("Conn Join", string(ddata))
 						}
-						log.Printf("%v, %s（%d）进入直播间\n", roomID, d.Nickname, d.UserID)
+						log.Printf("[Danmaku] %v, %s（%d）进入直播间\n", roomID, d.Nickname, d.UserID)
 					case acfundanmu.FollowAuthor:
 						var data = new(dataUserStruct)
 						data.Cmd = 10
@@ -354,7 +364,7 @@ func startACWS(hub *Hub, roomID int) {
 							val = ddata
 							//log.Println("Conn Join", string(ddata))
 						}
-						log.Printf("%v, %s（%d）关注了主播\n", roomID, d.Nickname, d.UserID)
+						log.Printf("[Danmaku] %v, %s（%d）关注了主播\n", roomID, d.Nickname, d.UserID)
 					case acfundanmu.ThrowBanana:
 						var data = new(dataGiftStruct)
 						data.Cmd = 3
@@ -375,7 +385,7 @@ func startACWS(hub *Hub, roomID int) {
 							val = ddata
 							//log.Println("Conn Gift", string(ddata))
 						}
-						log.Printf("%v, %s（%d）送出香蕉 * %d\n", roomID, d.Nickname, d.UserID, d.BananaCount)
+						log.Printf("[Danmaku] %v, %s（%d）送出香蕉 * %d\n", roomID, d.Nickname, d.UserID, d.BananaCount)
 					case acfundanmu.Gift:
 						var data = new(dataGiftStruct)
 						data.Cmd = 3
@@ -404,13 +414,13 @@ func startACWS(hub *Hub, roomID int) {
 							//log.Println("Conn Gift", string(ddata))
 						}
 						//log.Println("Conn Gift", data)
-						log.Printf("%v, %s（%d）送出礼物 %s * %d，连击数：%d\n", roomID, d.Nickname, d.UserID, d.Gift.Name, d.Gift.Count, d.Gift.Combo)
+						log.Printf("[Danmaku] %v, %s（%d）送出礼物 %s * %d，连击数：%d\n", roomID, d.Nickname, d.UserID, d.Gift.Name, d.Gift.Count, d.Gift.Combo)
 					}
 
 					hub.broadcast <- val
 				}
 			} else {
-				log.Println("直播结束")
+				log.Println("[Danmaku]", roomID, " 直播结束")
 				time.Sleep(5 * time.Second)
 				go startACWS(AConnMap[roomID], roomID)
 				break
@@ -418,7 +428,7 @@ func startACWS(hub *Hub, roomID int) {
 			}
 		}
 	} else {
-		log.Println(roomID, "无Hub，直接鲨")
+		log.Println("[Danmaku]", roomID, "无Hub，直接鲨")
 	}
 }
 
@@ -463,7 +473,7 @@ func Arrcmp(src []string, dest []string) ([]string, []string) {
 
 func (c *Client) readPump() {
 	defer func() {
-		log.Println("用户结束")
+		log.Println("[WS Hub] WS用户结束")
 		c.hub.unregister <- c
 		c.conn.Close()
 	}()
@@ -471,7 +481,7 @@ func (c *Client) readPump() {
 		_, _, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("error: %v", err)
+				log.Printf("[WS Hub] WS连接发生未知错误: %v", err)
 			}
 			break
 		}
@@ -487,14 +497,13 @@ func checkComments(comment string) bool {
 	return false
 }
 
-func ifInterestUser(content int64) bool {
-	for _, uid := range interestUsers {
-		x, _ := strconv.ParseInt(uid, 10, 64)
-		if content == x {
-			return true
-		}
+func getUserMark(uid int64) string {
+	uidString := strconv.FormatInt(uid, 10)
+	userMark, ok := UserMarks[uidString]
+	if ok {
+		return userMark
 	}
-	return false
+	return ""
 }
 
 type Hub struct {
@@ -531,14 +540,14 @@ func (h *Hub) run() {
 		select {
 		case client := <-h.register:
 			h.clients[client] = true
-			log.Println(h.roomId, "新用户")
+			log.Println("[Danmaku Hub]", h.roomId, "新用户")
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
 				close(client.send)
-				log.Println(h.roomId, "用户断开")
+				log.Println("[Danmaku Hub]", h.roomId, "用户断开")
 				if len(h.clients) <= 0 {
-					log.Println(h.roomId, "用户为0，关闭直播间监听")
+					log.Println("[Danmaku Hub]", h.roomId, "用户为0，关闭直播间监听")
 					delete(AConnMap, h.roomId)
 					delete(ACWatchMap, h.roomId)
 				}
@@ -561,12 +570,12 @@ func (h *Hub) run() {
 func main() {
 	var config = parseConfig.New("config.json")
 	var BanWords = config.Get("BanWords").([]interface{})
-	var interestUser = config.Get("interestUser").([]interface{})
+	var UserMark = config.Get("UserMarks").(map[string]interface{})
 	for _, v := range BanWords {
 		BanString = append(BanString, v.(string))
 	}
-	for _, v := range interestUser {
-		interestUsers = append(interestUsers, v.(string))
+	for k, v := range UserMark {
+		UserMarks[k] = v.(string)
 	}
 
 	HideGift = config.Get("HideGift").(bool)
@@ -576,9 +585,10 @@ func main() {
 	FollowText = config.Get("FollowText").(string)
 	JoinText = config.Get("JoinText").(string)
 	QuitText = config.Get("QuitText").(string)
-	enableInteresrUserNotif = config.Get("enableInteresrUserNotif").(bool)
-
-	log.Println("启动中，AcLiveChat，0.1.3")
+	AvatarRefreshRate = int(config.Get("AvatarRefreshRate").(float64))
+	
+	log.Println("[Main]", "启动中，AcLiveChat，0.1.4")
+	log.Println("[Main]", "头像缓存时间：", AvatarRefreshRate)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
@@ -594,14 +604,14 @@ func main() {
 		http.ServeFile(w, r, "dist/index.html")
 	})
 	r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`{"version": "v0.1.3", "config": {"enableTranslate": false}}`))
+		w.Write([]byte(`{"version": "v0.1.4", "config": {"enableTranslate": false}}`))
 	})
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
 	http.Handle("/", r)
 	
-	log.Println("等待用户连接")
+	log.Println("[Main]", "等待用户连接")
 	err := http.ListenAndServe("0.0.0.0:12451", nil)
 	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
+		log.Fatal("[Main]", "发生主端口监听错误: ", err)
 	}
 }

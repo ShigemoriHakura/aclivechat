@@ -14,6 +14,7 @@ export default {
     general: '常规',
     roomId: 'AC 房间ID',
     showDanmaku: '显示弹幕',
+    showEqualMedal: '只显示房间对应粉丝牌',
     showFollow: '显示用户关注主播',
     showJoin: '显示用户进入直播间',
     showQuit: '显示用户离开直播间',
@@ -59,6 +60,12 @@ export default {
     avatars: '头像',
     showAvatars: '显示头像',
     avatarSize: '头像尺寸',
+
+    medal: '粉丝牌',
+    showMedal: '显示用户佩戴粉丝牌',
+
+    userMark: '用户标记',
+    showUserMark: '显示用户标记',
 
     userNames: '用户名',
     font: '字体',

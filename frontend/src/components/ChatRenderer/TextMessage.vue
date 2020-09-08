@@ -5,6 +5,8 @@
     ></img-shadow>
     <div id="content" class="style-scope yt-live-chat-text-message-renderer">
       <span id="timestamp" class="style-scope yt-live-chat-text-message-renderer">{{timeText}}</span>
+      <span v-if="getShowMedal" id="medal" class="style-scope yt-live-chat-text-message-renderer">{{medal.ClubName}}({{medal.Level}})</span>
+      <span v-if="userMark !== ''" id="usermark" class="style-scope yt-live-chat-text-message-renderer">{{userMark}}</span>
       <yt-live-chat-author-chip class="style-scope yt-live-chat-text-message-renderer">
         <span id="author-name" dir="auto" class="style-scope yt-live-chat-author-chip" :type="authorTypeText">{{
           authorName
@@ -46,13 +48,29 @@ export default {
   props: {
     avatarUrl: String,
     time: Date,
+    authorID: Number,
     authorName: String,
     authorType: Number,
     content: String,
     privilegeType: Number,
-    repeated: Number
+    repeated: Number,
+    userMark: String,
+    medal: Array,
+    showEqualMedal: Boolean,
   },
   computed: {
+    getShowMedal(){
+      if(this.medal.ClubName != ""){
+        if(this.showEqualMedal){
+          if(this.medal.UperID == this.authorID){
+            return true;
+          }
+        }else{
+          return true;
+        }
+      }
+      return false;
+    },
     timeText() {
       return utils.getTimeTextMinSec(this.time)
     },
@@ -110,6 +128,20 @@ canvas.yt-live-chat-text-message-renderer, caption.yt-live-chat-text-message-ren
 #timestamp.yt-live-chat-text-message-renderer {
   display: var(--yt-live-chat-item-timestamp-display, inline);
   margin: var(--yt-live-chat-item-timestamp-margin, 0 8px 0 0);
+  color: var(--yt-live-chat-tertiary-text-color);
+  font-size: 11px;
+}
+
+#usermark.yt-live-chat-text-message-renderer {
+  display: var(--yt-live-chat-item-usermark-display, inline);
+  margin: var(--yt-live-chat-item-usermark-margin, 0 8px 0 0);
+  color: var(--yt-live-chat-tertiary-text-color);
+  font-size: 11px;
+}
+
+#medal.yt-live-chat-text-message-renderer {
+  display: var(--yt-live-chat-item-medal-display, inline);
+  margin: var(--yt-live-chat-item-medal-margin, 0 8px 0 0);
   color: var(--yt-live-chat-tertiary-text-color);
   font-size: 11px;
 }

@@ -1,5 +1,12 @@
 <template>
-  <chat-renderer ref="renderer" :maxNumber="config.maxNumber" :showGiftName="config.showGiftName"  :showGiftPrice="config.showGiftPrice" :exchangeRate="config.exchangeRate" :showACCoinInstead="config.showACCoinInstead" ></chat-renderer>
+  <chat-renderer ref="renderer" 
+    :maxNumber="config.maxNumber" 
+    :showGiftName="config.showGiftName" 
+    :showGiftPrice="config.showGiftPrice" 
+    :exchangeRate="config.exchangeRate" 
+    :showACCoinInstead="config.showACCoinInstead" 
+    :showEqualMedal="config.showEqualMedal"
+  ></chat-renderer>
 </template>
 
 <script>
@@ -69,6 +76,7 @@ export default {
       cfg.minGiftPrice = toInt(cfg.minGiftPrice, config.DEFAULT_CONFIG.minGiftPrice)
       cfg.exchangeRate = toInt(cfg.exchangeRate, config.DEFAULT_CONFIG.exchangeRate)
       cfg.showDanmaku = toBool(cfg.showDanmaku)
+      cfg.showEqualMedal = toBool(cfg.showEqualMedal)
       cfg.showLove = toBool(cfg.showLove)
       cfg.showFollow = toBool(cfg.showFollow)
       cfg.showJoin = toBool(cfg.showJoin)
@@ -179,6 +187,8 @@ export default {
           authorName: data.authorName,
           authorType: data.authorType,
           content: data.content,
+          userMark: data.userMark,
+          medal: data.medalInfo,
           privilegeType: data.privilegeType,
           repeated: 1,
           translation: data.translation

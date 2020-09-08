@@ -4,6 +4,7 @@ export const DEFAULT_CONFIG = {
   minGiftPrice: 0, // ￥0
   exchangeRate: 1, // 1 -> ￥1
   showDanmaku: true,
+  showEqualMedal: false,
   showFollow: true,
   showJoin: true,
   showQuit: false,

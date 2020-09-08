@@ -21,6 +21,41 @@
           <el-input v-model.number="form.avatarSize" type="number" min="0"></el-input>
         </el-form-item>
 
+        <h3>{{$t('stylegen.userMark')}}</h3>
+        <el-form-item :label="$t('stylegen.showUserMark')">
+          <el-switch v-model="form.showUserMark"></el-switch>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.font')">
+          <el-autocomplete v-model="form.userMarkFont" :fetch-suggestions="getFontSuggestions"></el-autocomplete>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.fontSize')">
+          <el-input v-model.number="form.userMarkFontSize" type="number" min="0"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.lineHeight')">
+          <el-input v-model.number="form.userMarkLineHeight" type="number" min="0"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.normalColor')">
+          <el-color-picker v-model="form.userMarkColor"></el-color-picker>
+        </el-form-item>
+        
+        <h3>{{$t('stylegen.medal')}}</h3>
+        <el-form-item :label="$t('stylegen.showMedal')">
+          <el-switch v-model="form.showMedal"></el-switch>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.font')">
+          <el-autocomplete v-model="form.medalFont" :fetch-suggestions="getFontSuggestions"></el-autocomplete>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.fontSize')">
+          <el-input v-model.number="form.medalFontSize" type="number" min="0"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.lineHeight')">
+          <el-input v-model.number="form.medalLineHeight" type="number" min="0"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.normalColor')">
+          <el-color-picker v-model="form.medalColor"></el-color-picker>
+        </el-form-item>
+
+
         <h3>{{$t('stylegen.userNames')}}</h3>
         <el-form-item :label="$t('stylegen.font')">
           <el-autocomplete v-model="form.userNameFont" :fetch-suggestions="getFontSuggestions"></el-autocomplete>
@@ -227,6 +262,8 @@ let textMessageTemplate = {
   authorName: '',
   authorType: constants.AUTHRO_TYPE_NORMAL,
   content: '',
+  userMark: '',
+  medal: {UperID: "35119946", ClubName: "炖猫人", Level: "99"},
   privilegeType: 0,
   repeated: 1,
   translation: ''
@@ -324,7 +361,8 @@ const EXAMPLE_MESSAGES = [
     id: (nextId++).toString(),
     authorName: 'admin房管',
     authorType: constants.AUTHRO_TYPE_ADMIN,
-    content: 'kksk'
+    userMark: '权限狗',
+    content: '哈哈哈哈哈'
   },
   {
     ...joinMessageTemplate,
@@ -360,7 +398,7 @@ const EXAMPLE_MESSAGES = [
     authorName: '日日老师',
     content: 'Welcome 日日老师!'
   },
-  {
+  /*{
     ...paidMessageTemplate,
     id: (nextId++).toString(),
     authorName: '大猫猫',
@@ -401,7 +439,7 @@ const EXAMPLE_MESSAGES = [
     authorName: '小猫猫',
     price: 50,
     content: '快乐水 x 50'
-  },
+  },*/
   {
     ...paidMessageTemplate,
     id: (nextId++).toString(),

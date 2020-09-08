@@ -1,5 +1,5 @@
 <template>
-  <yt-live-chat-renderer class="style-scope yt-live-chat-app" style="--scrollbar-width:11px;" hide-timestamps
+  <yt-live-chat-renderer class="style-scope yt-live-chat-app" style="--scrollbar-width:11px;" hide-timestamps hide-usermark hide-medal
     @mousemove="refreshCantScrollStartTime"
   >
     <ticker class="style-scope yt-live-chat-renderer" :messages="paidMessages" :showGiftName="showGiftName" :exchangeRate="exchangeRate" :showGiftPrice="showGiftPrice" :showACCoinInstead="showACCoinInstead"
@@ -14,9 +14,9 @@
             <template v-for="message in messages">
               <text-message :key="message.id" v-if="message.type === MESSAGE_TYPE_TEXT"
                 class="style-scope yt-live-chat-item-list-renderer"
-                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
+                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName" :authorID="message.id"
                 :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
-                :repeated="message.repeated"
+                :repeated="message.repeated" :userMark="message.userMark" :medal="message.medal" :showEqualMedal="showEqualMedal"
               ></text-message>
               <paid-message :key="message.id" v-else-if="message.type === MESSAGE_TYPE_GIFT"
                 class="style-scope yt-live-chat-item-list-renderer"
@@ -101,6 +101,10 @@ export default {
     showGiftName: {
       type: Boolean,
       default: config.DEFAULT_CONFIG.showGiftName
+    },
+    showEqualMedal: {
+      type: Boolean,
+      default: config.DEFAULT_CONFIG.showEqualMedal
     },
     showGiftPrice: {
       type: Boolean,
@@ -810,6 +814,14 @@ yt-live-chat-renderer {
 
 yt-live-chat-renderer[hide-timestamps] {
   --yt-live-chat-item-timestamp-display: none;
+}
+
+yt-live-chat-renderer[hide-usermark] {
+  --yt-live-chat-item-usermark-display: none;
+}
+
+yt-live-chat-renderer[hide-medal] {
+  --yt-live-chat-item-medal-display: none;
 }
 
 #separator.yt-live-chat-renderer {
