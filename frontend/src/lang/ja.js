@@ -10,6 +10,16 @@ export default {
   home: {
     roomIdEmpty: 'ルームのIDを空白にすることはできません',
     roomIdInteger: 'ルームは正の整数でなければなりません',
+    textEmpty: '',
+
+    followText: '生放送のヒントに注目してください。',
+    followTextDefault: '注目しました',
+    joinText: '生放送に入る',
+    joinTextDefault: '生放送に入る',
+    quitText: '生放送から離れるヒント',
+    quitTextDefault: '生放送の間を離れる',
+    loveText: '生放送のヒントが好きです。',
+    loveTextDefault: '愛を灯して',
 
     general: '常規',
     roomId: 'ルームID',

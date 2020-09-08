@@ -10,6 +10,16 @@ export default {
   home: {
     roomIdEmpty: "Room ID can't be empty",
     roomIdInteger: 'Room ID must be positive integer',
+    textEmpty: '',
+
+    followText: 'Follow room text',
+    followTextDefault: 'follow',
+    joinText: 'Join room text',
+    joinTextDefault: 'join',
+    quitText: 'Quit room text',
+    quitTextDefault: 'left',
+    loveText: 'Love text',
+    loveTextDefault: 'love',
 
     general: 'General',
     roomId: 'AC Room ID',

@@ -143,7 +143,7 @@ export default {
       let message = null
       switch (cmd) {
       case COMMAND_JOIN_ROOM:
-        if (!this.config.showJoin || this.mergeSimilarOther(data.authorName, data.content)) {
+        if (!this.config.showJoin || this.mergeSimilarOther(data.authorName, this.config.joinText)) {
           break
         }
         message = {
@@ -153,14 +153,14 @@ export default {
           time: new Date(data.timestamp * 1000),
           authorName: data.authorName,
           authorType: data.authorType,
-          content: data.content,
+          content: this.config.joinText,
           privilegeType: data.privilegeType,
           repeated: 1,
           translation: data.translation
         }
         break
       case COMMAND_QUIT_ROOM:
-        if (!this.config.showQuit || this.mergeSimilarOther(data.authorName, data.content)) {
+        if (!this.config.showQuit || this.mergeSimilarOther(data.authorName, this.config.quitText)) {
           break
         }
         message = {
@@ -170,7 +170,7 @@ export default {
           time: new Date(data.timestamp * 1000),
           authorName: data.authorName,
           authorType: data.authorType,
-          content: data.content,
+          content: this.config.quitText,
           privilegeType: data.privilegeType,
           repeated: 1,
           translation: data.translation
@@ -219,7 +219,7 @@ export default {
         break
       }
       case COMMAND_ADD_LOVE: {
-        if (!this.config.showLove || this.mergeSimilarOther(data.authorName, data.content)) {
+        if (!this.config.showLove || this.mergeSimilarOther(data.authorName, this.config.loveText)) {
           break
         }
         message = {
@@ -229,7 +229,7 @@ export default {
           time: new Date(data.timestamp * 1000),
           authorName: data.authorName,
           authorType: data.authorType,
-          content: data.content,
+          content: this.config.loveText,
           price: 0,
           repeated: 1,
           giftName: data.giftName,
@@ -238,7 +238,7 @@ export default {
         break
       }
       case COMMAND_ADD_FOLLOW: {
-        if (!this.config.showFollow) {
+        if (!this.config.showFollow || this.mergeSimilarOther(data.authorName, this.config.followText)) {
           break
         }
         message = {
@@ -247,7 +247,7 @@ export default {
           avatarUrl: data.avatarUrl,
           time: new Date(data.timestamp * 1000),
           authorName: data.authorName,
-          content: data.content,
+          content: this.config.followText,
           price: 0,
           giftName: data.giftName,
           num: data.num

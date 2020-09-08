@@ -3,6 +3,18 @@
     roomId: [
       {required: true, message: $t('home.roomIdEmpty'), trigger: 'blur'},
       {type: 'integer', min: 1, message: $t('home.roomIdInteger'), trigger: 'blur'}
+    ],
+    followText: [
+      {required: true, message: $t('home.textEmpty'), trigger: 'blur, change'}
+    ],
+    joinText: [
+      {required: true, message: $t('home.textEmpty'), trigger: 'blur, change'}
+    ],
+    quitText: [
+      {required: true, message: $t('home.textEmpty'), trigger: 'blur, change'}
+    ],
+    loveText: [
+      {required: true, message: $t('home.textEmpty'), trigger: 'blur, change'}
     ]
   }">
     <el-tabs>
@@ -19,11 +31,26 @@
         <el-form-item :label="$t('home.showFollow')">
           <el-switch v-model="form.showFollow"></el-switch>
         </el-form-item>
+        <el-form-item :label="$t('home.followText')" required prop="followText">
+          <el-input v-model="form.followText" type="textarea" :rows="1" :placeholder="$t('home.followTextDefault')"></el-input>
+        </el-form-item>
         <el-form-item :label="$t('home.showJoin')">
           <el-switch v-model="form.showJoin"></el-switch>
         </el-form-item>
+        <el-form-item :label="$t('home.joinText')" required prop="joinText">
+          <el-input v-model="form.joinText" type="textarea" :rows="1" :placeholder="$t('home.joinTextDefault')"></el-input>
+        </el-form-item>
         <el-form-item :label="$t('home.showQuit')">
           <el-switch v-model="form.showQuit"></el-switch>
+        </el-form-item>
+        <el-form-item :label="$t('home.quitText')" required prop="quitText">
+          <el-input v-model="form.quitText" type="textarea" :rows="1" :placeholder="$t('home.quitTextDefault')"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('home.showLove')">
+          <el-switch v-model="form.showLove"></el-switch>
+        </el-form-item>
+        <el-form-item :label="$t('home.loveText')" required prop="loveText">
+          <el-input v-model="form.loveText" type="textarea" :rows="1" :placeholder="$t('home.loveTextDefault')"></el-input>
         </el-form-item>
         <el-form-item :label="$t('home.showGift')">
           <el-switch v-model="form.showGift"></el-switch>
@@ -36,9 +63,6 @@
         </el-form-item>
         <el-form-item :label="$t('home.showACCoinInstead')">
           <el-switch v-model="form.showACCoinInstead"></el-switch>
-        </el-form-item>
-        <el-form-item :label="$t('home.showLove')">
-          <el-switch v-model="form.showLove"></el-switch>
         </el-form-item>
         <el-form-item :label="$t('home.mergeSimilarDanmaku')">
           <el-switch v-model="form.mergeSimilarDanmaku"></el-switch>
@@ -127,7 +151,12 @@ export default {
   },
   computed: {
     roomUrl() {
-      if (this.form.roomId === '') {
+      if (this.form.roomId === ''
+      || this.form.followText === ''
+      || this.form.joinText === ''
+      || this.form.quitText === ''
+      || this.form.loveText === ''
+      ) {
         return ''
       }
       let query = {...this.form}
@@ -162,7 +191,7 @@ export default {
     },
     exportConfig() {
       let cfg = mergeConfig(this.form, config.DEFAULT_CONFIG)
-      download(JSON.stringify(cfg, null, 2), 'blivechat.json', 'application/json')
+      download(JSON.stringify(cfg, null, 2), 'aclivechat.json', 'application/json')
     },
     importConfig() {
       let input = document.createElement('input')
