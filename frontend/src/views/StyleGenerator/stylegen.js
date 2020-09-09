@@ -123,7 +123,7 @@ yt-live-chat-author-chip #author-name {
 /* Outlines */
 yt-live-chat-renderer * {
   ${getShowOutlinesStyle(config)}
-  font-family: "${config.messageFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.messageFont)}"${FALLBACK_FONTS};
   font-size: ${config.messageFontSize}px !important;
   line-height: ${config.messageLineHeight}px !important;
 }
@@ -182,7 +182,7 @@ yt-live-chat-text-message-renderer #chat-badges {
 yt-live-chat-text-message-renderer #timestamp {
   display: ${config.showTime ? 'inline' : 'none'} !important;
   ${config.timeColor ? `color: ${config.timeColor} !important;` : ''}
-  font-family: "${config.timeFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.timeFont)}"${FALLBACK_FONTS};
   font-size: ${config.timeFontSize}px !important;
   line-height: ${config.timeLineHeight || config.timeFontSize}px !important;
 }
@@ -191,7 +191,7 @@ yt-live-chat-text-message-renderer #timestamp {
 yt-live-chat-text-message-renderer #usermark {
   display: ${config.showUserMark ? 'inline' : 'none'} !important;
   ${config.userMarkColor ? `color: ${config.userMarkColor} !important;` : ''}
-  font-family: "${config.userMarkFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.userMarkFont)}"${FALLBACK_FONTS};
   font-size: ${config.userMarkFontSize}px !important;
   line-height: ${config.userMarkLineHeight || config.userMarkFontSize}px !important;
 }
@@ -200,7 +200,7 @@ yt-live-chat-text-message-renderer #usermark {
 yt-live-chat-text-message-renderer #medal {
   display: ${config.showMedal ? 'inline' : 'none'} !important;
   ${config.medalColor ? `color: ${config.medalColor} !important;` : ''}
-  font-family: "${config.medalFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.medalFont)}"${FALLBACK_FONTS};
   font-size: ${config.medalFontSize}px !important;
   line-height: ${config.medalLineHeight || config.medalFontSize}px !important;
 }
@@ -224,7 +224,7 @@ yt-live-chat-text-message-renderer yt-live-chat-author-badge-renderer[type="memb
 /* Channel names. */
 yt-live-chat-text-message-renderer #author-name {
   ${config.userNameColor ? `color: ${config.userNameColor} !important;` : ''}
-  font-family: "${config.userNameFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.userNameFont)}"${FALLBACK_FONTS};
   font-size: ${config.userNameFontSize}px !important;
   line-height: ${config.userNameLineHeight || config.userNameFontSize}px !important;
 }
@@ -235,7 +235,7 @@ ${getShowColonStyle(config)}
 yt-live-chat-text-message-renderer #joinMessage,
 yt-live-chat-text-message-renderer #joinMessage * {
   ${config.messageJoinColor ? `color: ${config.messageJoinColor} !important;` : ''}
-  font-family: "${config.messageFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.messageFont)}"${FALLBACK_FONTS};
   font-size: ${config.messageFontSize}px !important;
   line-height: ${config.messageLineHeight || config.messageFontSize}px !important;
 }
@@ -247,7 +247,7 @@ ${!config.messageOnNewLine ? '' : `yt-live-chat-text-message-renderer #joinMessa
 yt-live-chat-text-message-renderer #quitMessage,
 yt-live-chat-text-message-renderer #quitMessage * {
   ${config.messageQuitColor ? `color: ${config.messageQuitColor} !important;` : ''}
-  font-family: "${config.messageFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.messageFont)}"${FALLBACK_FONTS};
   font-size: ${config.messageFontSize}px !important;
   line-height: ${config.messageLineHeight || config.messageFontSize}px !important;
 }
@@ -259,7 +259,7 @@ ${!config.messageOnNewLine ? '' : `yt-live-chat-text-message-renderer #quitMessa
 yt-live-chat-text-message-renderer #followMessage,
 yt-live-chat-text-message-renderer #followMessage * {
   ${config.messageFollowColor ? `color: ${config.messageFollowColor} !important;` : ''}
-  font-family: "${config.messageFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.messageFont)}"${FALLBACK_FONTS};
   font-size: ${config.messageFontSize}px !important;
   line-height: ${config.messageLineHeight || config.messageFontSize}px !important;
 }
@@ -271,7 +271,7 @@ ${!config.messageOnNewLine ? '' : `yt-live-chat-text-message-renderer #followMes
 yt-live-chat-text-message-renderer #loveMessage,
 yt-live-chat-text-message-renderer #loveMessage * {
   ${config.messageLoveColor ? `color: ${config.messageLoveColor} !important;` : ''}
-  font-family: "${config.messageFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.messageFont)}"${FALLBACK_FONTS};
   font-size: ${config.messageFontSize}px !important;
   line-height: ${config.messageLineHeight || config.messageFontSize}px !important;
 }
@@ -283,7 +283,7 @@ ${!config.messageOnNewLine ? '' : `yt-live-chat-text-message-renderer #loveMessa
 yt-live-chat-text-message-renderer #message,
 yt-live-chat-text-message-renderer #message * {
   ${config.messageColor ? `color: ${config.messageColor} !important;` : ''}
-  font-family: "${config.messageFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.messageFont)}"${FALLBACK_FONTS};
   font-size: ${config.messageFontSize}px !important;
   line-height: ${config.messageLineHeight || config.messageFontSize}px !important;
 }
@@ -298,7 +298,7 @@ yt-live-chat-paid-message-renderer #author-name *,
 yt-live-chat-legacy-paid-message-renderer #event-text,
 yt-live-chat-legacy-paid-message-renderer #event-text * {
   ${config.firstLineColor ? `color: ${config.firstLineColor} !important;` : ''}
-  font-family: "${config.firstLineFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.firstLineFont)}"${FALLBACK_FONTS};
   font-size: ${config.firstLineFontSize}px !important;
   line-height: ${config.firstLineLineHeight || config.firstLineFontSize}px !important;
 }
@@ -308,7 +308,7 @@ yt-live-chat-paid-message-renderer #purchase-amount *,
 yt-live-chat-legacy-paid-message-renderer #detail-text,
 yt-live-chat-legacy-paid-message-renderer #detail-text * {
   ${config.secondLineColor ? `color: ${config.secondLineColor} !important;` : ''}
-  font-family: "${config.secondLineFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.secondLineFont)}"${FALLBACK_FONTS};
   font-size: ${config.secondLineFontSize}px !important;
   line-height: ${config.secondLineLineHeight || config.secondLineFontSize}px !important;
 }
@@ -316,7 +316,7 @@ yt-live-chat-legacy-paid-message-renderer #detail-text * {
 yt-live-chat-paid-message-renderer #content,
 yt-live-chat-paid-message-renderer #content * {
   ${config.scContentColor ? `color: ${config.scContentColor} !important;` : ''}
-  font-family: "${config.scContentFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.scContentFont)}"${FALLBACK_FONTS};
   font-size: ${config.scContentFontSize}px !important;
   line-height: ${config.scContentLineHeight || config.scContentFontSize}px !important;
 }
@@ -357,7 +357,7 @@ yt-live-chat-ticker-paid-message-item-renderer *,
 yt-live-chat-ticker-sponsor-item-renderer,
 yt-live-chat-ticker-sponsor-item-renderer * {
   ${config.secondLineColor ? `color: ${config.secondLineColor} !important;` : ''}
-  font-family: "${config.secondLineFont}"${FALLBACK_FONTS};
+  font-family: "${cssEscapeStr(config.secondLineFont)}"${FALLBACK_FONTS};
 }
 
 yt-live-chat-mode-change-message-renderer, 
@@ -419,6 +419,31 @@ function getShowOutlinesStyle (config) {
     }
   }
   return `text-shadow: ${shadow.join(', ')};`
+}
+
+function cssEscapeStr (str) {
+  let res = []
+  for (let char of str) {
+    res.push(cssEscapeChar(char))
+  }
+  return res.join('')
+}
+
+function cssEscapeChar (char) {
+  if (!needEscapeChar(char)) {
+    return char
+  }
+  let hexCode = char.codePointAt(0).toString(16)
+  // https://drafts.csswg.org/cssom/#escape-a-character-as-code-point
+  return `\\${hexCode} `
+}
+
+function needEscapeChar (char) {
+  let code = char.codePointAt(0)
+  if (0x20 <= code && code <= 0x7E) {
+    return char === '"'
+  }
+  return true
 }
 
 function getPaddingStyle (config) {
