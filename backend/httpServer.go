@@ -127,57 +127,61 @@ func startACWS(hub *Hub, roomID int) {
 					return
 				default:
 					// 循环获取watchingList并处理
-					watchingList := dq.GetWatchingList(ACCookies)
-					watchingListold, ok := ACWatchMap[roomID];
-					if !ok {
-						ACWatchMap[roomID] = watchingList
-						//return
-					} else {
-						ACWatchMap[roomID] = watchingList
+					watchingList, err := dq.GetWatchingList(ACCookies)
+					if(err != nil){
+						log.Println("[Danmaku]", roomID, "获取在线用户失败：", err)
+					}else{
+						watchingListold, ok := ACWatchMap[roomID];
+						if !ok {
+							ACWatchMap[roomID] = watchingList
+							//return
+						} else {
+							ACWatchMap[roomID] = watchingList
 
-						//处理旧的
-						var processedList []string
-						processedList2 := make(map[string](acfundanmu.WatchingUser))
-						for _, value := range *watchingListold {
-							var stringUserID = strconv.FormatInt(value.UserInfo.UserID, 10)
-							processedList = append(processedList, stringUserID)
-							processedList2[stringUserID] = value
-						}
-
-						//处理新的
-						var processedNewList []string
-						for _, value := range *watchingList {
-							var stringUserID = strconv.FormatInt(value.UserInfo.UserID, 10)
-							//fmt.Printf("id %v \n", stringUserID)
-							processedNewList = append(processedNewList, stringUserID)
-						}
-						_, removed := Arrcmp(processedList, processedNewList)
-						for _, value := range removed {
-							var userInfo = processedList2[value]
-							if(!userInfo.AnonymousUser){
-								var d = userInfo.UserInfo
-								var val = []byte(`{}`)
-								var data = new(dataUserStruct)
-								data.Cmd = 9
-								data.Data.Id = d.UserID
-								data.Data.AvatarUrl = d.Avatar
-								data.Data.Timestamp = time.Now().Unix()
-								data.Data.AuthorName = d.Nickname
-								data.Data.AuthorType = 0
-								data.Data.PrivilegeType = 0
-								data.Data.Content = QuitText
-								json := jsoniter.ConfigCompatibleWithStandardLibrary
-								ddata, err := json.Marshal(data)
-								if err == nil {
-									val = ddata
-									//log.Println("Conn Join", string(ddata))
-								}
-								hub.broadcast <- val
-								log.Printf("[Danmaku] %v, %s（%d）离开直播间\n", roomID, d.Nickname, d.UserID)
-								//fmt.Printf("id %v \n", value)
+							//处理旧的
+							var processedList []string
+							processedList2 := make(map[string](acfundanmu.WatchingUser))
+							for _, value := range *watchingListold {
+								var stringUserID = strconv.FormatInt(value.UserInfo.UserID, 10)
+								processedList = append(processedList, stringUserID)
+								processedList2[stringUserID] = value
 							}
+
+							//处理新的
+							var processedNewList []string
+							for _, value := range *watchingList {
+								var stringUserID = strconv.FormatInt(value.UserInfo.UserID, 10)
+								//fmt.Printf("id %v \n", stringUserID)
+								processedNewList = append(processedNewList, stringUserID)
+							}
+							_, removed := Arrcmp(processedList, processedNewList)
+							for _, value := range removed {
+								var userInfo = processedList2[value]
+								if(!userInfo.AnonymousUser){
+									var d = userInfo.UserInfo
+									var val = []byte(`{}`)
+									var data = new(dataUserStruct)
+									data.Cmd = 9
+									data.Data.Id = d.UserID
+									data.Data.AvatarUrl = d.Avatar
+									data.Data.Timestamp = time.Now().Unix()
+									data.Data.AuthorName = d.Nickname
+									data.Data.AuthorType = 0
+									data.Data.PrivilegeType = 0
+									data.Data.Content = QuitText
+									json := jsoniter.ConfigCompatibleWithStandardLibrary
+									ddata, err := json.Marshal(data)
+									if err == nil {
+										val = ddata
+										//log.Println("Conn Join", string(ddata))
+									}
+									hub.broadcast <- val
+									log.Printf("[Danmaku] %v, %s（%d）离开直播间\n", roomID, d.Nickname, d.UserID)
+									//fmt.Printf("id %v \n", value)
+								}
+							}
+							//fmt.Printf("add: %v rem: %v old: %v new: %v \n", added, removed, processedList, processedNewList)
 						}
-						//fmt.Printf("add: %v rem: %v old: %v new: %v \n", added, removed, processedList, processedNewList)
 					}
 					time.Sleep(5 * time.Second)
 				}
