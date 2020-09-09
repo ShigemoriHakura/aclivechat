@@ -3,6 +3,7 @@
 
 ![XSplit截图](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/xsplit.png)  
 ![OBS截图](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/obs.png)  
+![OBS截图2](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/obs2.jpg)  
 
 ## 感谢：
 * 前端来自： https://github.com/xfgryujk/blivechat
