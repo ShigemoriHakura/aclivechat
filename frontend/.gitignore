@@ -1,6 +1,10 @@
 .DS_Store
 node_modules
 /dist
+config.json
+aclivechat.exe
+backend.exe
+package-lock.json
 
 # local env files
 .env.local
