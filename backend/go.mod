@@ -1,4 +1,4 @@
-module aclivechat-backend
+module aclivechat
 
 go 1.14
 
