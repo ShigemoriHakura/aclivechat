@@ -5,7 +5,7 @@
       <div class="logo-container">
         <router-link to="/">
           <img src="@/assets/img/logo.gif" class="sidebar-logo">
-          <h1 class="sidebar-title">livechat</h1>
+          <h1 class="sidebar-title">aclivechat</h1>
         </router-link>
       </div>
       <div class="version">

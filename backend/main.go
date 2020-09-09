@@ -3,7 +3,9 @@ package main
 import (
 	"os"
 	"log"
+	"flag"
 	"bufio"
+	"github.com/orzogc/acfundanmu"
 	"github.com/akkuman/parseConfig"
 )
 
@@ -17,6 +19,8 @@ func main(){
 		}
 	}()
 
+	flag.Parse()
+	loginToACFun()
 	log.Println("[Main]", "读取配置文件中")
 	importConfig()
 	log.Println("[Main]", "启动中，AcLiveChat，", Version)
@@ -50,4 +54,17 @@ func importConfig(){
 	JoinText = config.Get("JoinText").(string)
 	QuitText = config.Get("QuitText").(string)
 	AvatarRefreshRate = int(config.Get("AvatarRefreshRate").(float64))
+}
+
+func loginToACFun(){
+	if(*ACUsername != "" && *ACPassword != ""){
+		log.Println("[Main]", "尝试登录ACFun账号中")
+		cookie, err := acfundanmu.Login(*ACUsername, *ACPassword)
+		if(err != nil){
+			log.Println("[Main]", "登录出错：", err)
+		}else{
+			log.Println("[Main]", "登录成功")
+			ACCookies = cookie
+		}
+	}
 }

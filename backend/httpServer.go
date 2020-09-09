@@ -105,7 +105,7 @@ func startACWS(hub *Hub, roomID int) {
 	}()
 	log.Println("[Danmaku]", roomID, "WS监听服务启动中")
 	// uid为主播的uid
-	dq, err := acfundanmu.Start(ctx, roomID, nil)
+	dq, err := acfundanmu.Start(ctx, roomID, ACCookies)
 	if err != nil {
 		//log.Println(err)
 		log.Println("[Danmaku]", roomID, "5秒后重试")
@@ -127,7 +127,7 @@ func startACWS(hub *Hub, roomID int) {
 					return
 				default:
 					// 循环获取watchingList并处理
-					watchingList := dq.GetWatchingList()
+					watchingList := dq.GetWatchingList(ACCookies)
 					watchingListold, ok := ACWatchMap[roomID];
 					if !ok {
 						ACWatchMap[roomID] = watchingList

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"net/http"
 	"github.com/orzogc/acfundanmu"
 )
 
@@ -19,3 +21,7 @@ var UserMarks = make(map[string]string)
 var ACConnMap = make(map[int](*Hub))
 var ACWatchMap = make(map[int]*[]acfundanmu.WatchingUser)
 var ACPhotoMap = make(map[int64]*PhotoStruct)
+
+var ACUsername = flag.String("username", "", "ACFun login phone/email")
+var ACPassword = flag.String("password", "", "ACFun login password")
+var ACCookies []*http.Cookie
