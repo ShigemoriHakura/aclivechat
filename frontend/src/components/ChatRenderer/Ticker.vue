@@ -61,9 +61,18 @@ export default {
       type: Boolean,
       default: config.DEFAULT_CONFIG.showGiftName
     },
-    showGiftPrice: Boolean,
-    showACCoinInstead: Boolean,
-    exchangeRate: Number // 换算倍率
+    showGiftPrice: {
+      type: Boolean,
+      default: config.DEFAULT_CONFIG.showGiftPrice
+    },
+    showACCoinInstead: {
+      type: Boolean,
+      default: config.DEFAULT_CONFIG.showACCoinInstead
+    },
+    exchangeRate: {// 换算倍率
+      type: Number,
+      default: config.DEFAULT_CONFIG.exchangeRate
+    }
   },
   data() {
     return {

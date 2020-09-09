@@ -24,7 +24,7 @@ export default {
     general: 'General',
     roomId: 'AC Room ID',
     showDanmaku: 'Show messages',
-    showEqualMedal: 'Show medal matching RoomID',
+    showEqualMedal: 'Only show medal matching RoomID',
     showFollow: 'Show Follow',
     showLove: 'Show Love',
     showJoin: 'Show user join',

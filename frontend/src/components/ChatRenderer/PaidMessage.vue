@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import * as config from '@/api/config'
 import ImgShadow from './ImgShadow.vue'
 import * as constants from './constants'
 import * as utils from '@/utils'
@@ -47,15 +48,21 @@ export default {
     price: Number, // 价格，人民币
     time: Date,
     content: String,
-    showGiftPrice: Boolean,
-    showACCoinInstead: Boolean,
-    exchangeRate: Number // 换算倍率
+    showGiftPrice: {
+      type: Boolean,
+      default: config.DEFAULT_CONFIG.showGiftPrice
+    },
+    showACCoinInstead: {
+      type: Boolean,
+      default: config.DEFAULT_CONFIG.showACCoinInstead
+    },
+    exchangeRate: {// 换算倍率
+      type: Number,
+      default: config.DEFAULT_CONFIG.exchangeRate
+    }
   },
   computed: {
     color() {
-      if(this.exchangeRate == undefined){
-        return constants.getPriceConfig(this.price).colors
-      }
       return constants.getPriceConfig(this.price/this.exchangeRate).colors
     },
     priceText() {

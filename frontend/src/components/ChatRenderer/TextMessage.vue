@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import * as config from '@/api/config'
 import ImgShadow from './ImgShadow.vue'
 import AuthorBadge from './AuthorBadge.vue'
 import * as constants from './constants'
@@ -56,7 +57,10 @@ export default {
     repeated: Number,
     userMark: String,
     medal: Array,
-    showEqualMedal: Boolean,
+    showEqualMedal: {
+      type: Boolean,
+      default: config.DEFAULT_CONFIG.showEqualMedal
+    },
   },
   computed: {
     getShowMedal(){
