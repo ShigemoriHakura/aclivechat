@@ -230,6 +230,9 @@ func startACWS(hub *Hub, roomID int) {
 					if int64(roomID) == d.UserID {
 						AuthorType = 3
 					}
+					if d.ManagerType == 1 {
+						AuthorType = 2
+					}
 					switch d.Type {
 					case acfundanmu.Comment:
 						if !checkComments(d.Comment) {
