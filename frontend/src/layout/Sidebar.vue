@@ -27,7 +27,6 @@
         </template>
         <el-menu-item v-for="{locale, name} in [
             {locale: 'zh', name: '中文'},
-            {locale: 'ja', name: '日本語'},
             {locale: 'en', name: 'English'}
           ]" :key="locale"
           @click="onSelectLanguage(locale)"

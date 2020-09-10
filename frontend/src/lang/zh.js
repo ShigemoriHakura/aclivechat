@@ -3,9 +3,7 @@ export default {
     home: '首页',
     stylegen: '样式生成器',
     help: '帮助',
-    projectAddress: '项目地址',
-    giftRecordOfficial: '官方打赏记录',
-    giftRecord: '打赏记录'
+    projectAddress: '项目地址'
   },
   home: {
     roomIdEmpty: '房间ID不能为空',
@@ -72,7 +70,8 @@ export default {
     avatarSize: '头像尺寸',
 
     medal: '粉丝牌',
-    showMedal: '显示用户佩戴粉丝牌',
+    showMedalName: '显示粉丝牌',
+    showMedalLevel: '显示粉丝牌等级',
 
     userMark: '用户标记',
     showUserMark: '显示用户标记',
@@ -122,6 +121,7 @@ export default {
     scContentLineColor: 'Super Chat内容颜色',
     showNewMemberBg: '显示新舰长背景',
     showScTicker: '显示Super Chat固定栏',
+    showScContent: '显示Super Chat内容',
     showOtherThings: '显示Super Chat固定栏之外的内容',
 
     animation: '动画',

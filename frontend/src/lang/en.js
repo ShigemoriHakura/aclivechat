@@ -3,9 +3,7 @@ export default {
     home: 'Home',
     stylegen: 'Style generator',
     help: 'Help',
-    projectAddress: 'Project address',
-    giftRecordOfficial: 'Official Super Chat record',
-    giftRecord: 'Super Chat record'
+    projectAddress: 'Project address'
   },
   home: {
     roomIdEmpty: "Room ID can't be empty",
@@ -122,6 +120,7 @@ export default {
     scContentLineColor: 'Super Chat content color',
     showNewMemberBg: 'Show new member background',
     showScTicker: 'Show Super Chat ticker',
+    showScContent: 'Show Super Chat content',
     showOtherThings: 'Show everything other than Super Chat ticker',
 
     animation: 'Animation',

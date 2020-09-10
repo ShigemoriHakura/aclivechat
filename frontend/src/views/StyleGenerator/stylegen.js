@@ -6,11 +6,16 @@ export const DEFAULT_CONFIG = {
   outlineSize: 2,
   outlineColor: '#000000',
 
-  showMedal: false,
-  medalFont: 'Changa One',
-  medalFontSize: 20,
-  medalLineHeight: 0,
-  medalColor: '#BEBA9E',
+  showMedalName: false,
+  showMedalLevel: false,
+  medalNameFont: 'Changa One',
+  medalNameFontSize: 20,
+  medalNameLineHeight: 0,
+  medalNameColor: '#BEBA9E',
+  medalLevelFont: 'Changa One',
+  medalLevelFontSize: 20,
+  medalLevelLineHeight: 0,
+  medalLevelColor: '#BEBA9E',
 
   showUserMark: false,
   userMarkFont: 'Changa One',
@@ -68,6 +73,7 @@ export const DEFAULT_CONFIG = {
   scContentColor: '#ffffff',
   showNewMemberBg: true,
   showScTicker: false,
+  showScContent: true,
   showOtherThings: true,
 
   animateIn: false,
@@ -197,12 +203,21 @@ yt-live-chat-text-message-renderer #usermark {
 }
 
 /* Medals. */
-yt-live-chat-text-message-renderer #medal {
-  display: ${config.showMedal ? 'inline' : 'none'} !important;
-  ${config.medalColor ? `color: ${config.medalColor} !important;` : ''}
-  font-family: "${cssEscapeStr(config.medalFont)}"${FALLBACK_FONTS};
-  font-size: ${config.medalFontSize}px !important;
-  line-height: ${config.medalLineHeight || config.medalFontSize}px !important;
+yt-live-chat-text-message-renderer #medalName {
+  ${config.showMedalLevel ? 'margin-right:0px!important;' : ''}
+  display: ${config.showMedalName ? 'inline' : 'none'} !important;
+  ${config.medalNameColor ? `color: ${config.medalNameColor} !important;` : ''}
+  font-family: "${cssEscapeStr(config.medalNameFont)}"${FALLBACK_FONTS};
+  font-size: ${config.medalNameFontSize}px !important;
+  line-height: ${config.medalNameLineHeight || config.medalNameFontSize}px !important;
+}
+
+yt-live-chat-text-message-renderer #medalLevel {
+  display: ${config.showMedalLevel ? 'inline' : 'none'} !important;
+  ${config.medalLevelColor ? `color: ${config.medalLevelColor} !important;` : ''}
+  font-family: "${cssEscapeStr(config.medalLevelFont)}"${FALLBACK_FONTS};
+  font-size: ${config.medalLevelFontSize}px !important;
+  line-height: ${config.medalLevelLineHeight || config.medalLevelFontSize}px !important;
 }
 
 /* Badges. */
@@ -347,6 +362,15 @@ yt-live-chat-ticker-renderer {
 ${config.showScTicker ? '' : `yt-live-chat-ticker-renderer {
   display: none !important;
 }`}
+
+${config.showScContent ? '' : `yt-live-chat-paid-message-renderer #content {
+  display: none !important;
+}
+yt-live-chat-paid-message-renderer #header {
+  border-radius: 4px;
+}`}
+
+
 
 ${config.showOtherThings ? '' : `yt-live-chat-item-list-renderer {
   display: none !important;

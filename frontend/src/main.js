@@ -16,12 +16,11 @@ import Room from './views/Room.vue'
 import NotFound from './views/NotFound.vue'
 
 import zh from './lang/zh'
-import ja from './lang/ja'
 import en from './lang/en'
 
 if (process.env.NODE_ENV === 'development') {
-  // 开发时使用localhost:12450
-  axios.defaults.baseURL = 'http://localhost:12450'
+  // 开发时使用localhost:12451
+  axios.defaults.baseURL = 'http://localhost:12451'
 }
 
 Vue.use(VueRouter)
@@ -78,8 +77,6 @@ if (!locale) {
   let lang = navigator.language
   if (lang.startsWith('zh')) {
     locale = 'zh'
-  } else if (lang.startsWith('ja')) {
-    locale = 'ja'
   } else {
     locale = 'en'
   }
@@ -88,7 +85,7 @@ const i18n = new VueI18n({
   locale,
   fallbackLocale: 'en',
   messages: {
-    zh, ja, en
+    zh, en
   }
 })
 

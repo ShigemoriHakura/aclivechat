@@ -39,22 +39,36 @@
         </el-form-item>
         
         <h3>{{$t('stylegen.medal')}}</h3>
-        <el-form-item :label="$t('stylegen.showMedal')">
-          <el-switch v-model="form.showMedal"></el-switch>
+        <el-form-item :label="$t('stylegen.showMedalName')">
+          <el-switch v-model="form.showMedalName"></el-switch>
         </el-form-item>
         <el-form-item :label="$t('stylegen.font')">
-          <el-autocomplete v-model="form.medalFont" :fetch-suggestions="getFontSuggestions"></el-autocomplete>
+          <el-autocomplete v-model="form.medalNameFont" :fetch-suggestions="getFontSuggestions"></el-autocomplete>
         </el-form-item>
         <el-form-item :label="$t('stylegen.fontSize')">
-          <el-input v-model.number="form.medalFontSize" type="number" min="0"></el-input>
+          <el-input v-model.number="form.medalNameFontSize" type="number" min="0"></el-input>
         </el-form-item>
         <el-form-item :label="$t('stylegen.lineHeight')">
-          <el-input v-model.number="form.medalLineHeight" type="number" min="0"></el-input>
+          <el-input v-model.number="form.medalNameLineHeight" type="number" min="0"></el-input>
         </el-form-item>
         <el-form-item :label="$t('stylegen.normalColor')">
-          <el-color-picker v-model="form.medalColor"></el-color-picker>
+          <el-color-picker v-model="form.medalNameColor"></el-color-picker>
         </el-form-item>
-
+        <el-form-item :label="$t('stylegen.showMedalLevel')">
+          <el-switch v-model="form.showMedalLevel"></el-switch>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.font')">
+          <el-autocomplete v-model="form.medalLevelFont" :fetch-suggestions="getFontSuggestions"></el-autocomplete>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.fontSize')">
+          <el-input v-model.number="form.medalLevelFontSize" type="number" min="0"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.lineHeight')">
+          <el-input v-model.number="form.medalLevelLineHeight" type="number" min="0"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.normalColor')">
+          <el-color-picker v-model="form.medalLevelColor"></el-color-picker>
+        </el-form-item>
 
         <h3>{{$t('stylegen.userNames')}}</h3>
         <el-form-item :label="$t('stylegen.font')">
@@ -193,6 +207,9 @@
         </el-form-item>
         <el-form-item :label="$t('stylegen.showScTicker')">
           <el-switch v-model="form.showScTicker"></el-switch>
+        </el-form-item>
+        <el-form-item :label="$t('stylegen.showScContent')">
+          <el-switch v-model="form.showScContent"></el-switch>
         </el-form-item>
         <el-form-item :label="$t('stylegen.showOtherThings')">
           <el-switch v-model="form.showOtherThings"></el-switch>
@@ -344,6 +361,7 @@ const EXAMPLE_MESSAGES = [
     ...textMessageTemplate,
     id: (nextId++).toString(),
     authorName: '白口关是狐不是猫',
+    userMark: '开发者',
     content: '8888888888',
     repeated: 12
   },
@@ -452,7 +470,7 @@ const EXAMPLE_MESSAGES = [
     id: (nextId++).toString(),
     authorName: '主播',
     authorType: constants.AUTHRO_TYPE_OWNER,
-    userMark: '标记一下',
+    userMark: '超级厉害',
     content: '老板大气，老板身体健康'
   },
   {
