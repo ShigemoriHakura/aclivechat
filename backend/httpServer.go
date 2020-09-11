@@ -1,16 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
-	"time"
-	"context"
-	"strconv"
 	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
-	"github.com/orzogc/acfundanmu"
 	jsoniter "github.com/json-iterator/go"
+	"github.com/orzogc/acfundanmu"
 )
 
 var upgrader = websocket.Upgrader{
@@ -21,7 +22,7 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func startHttpServer(){
+func startHttpServer() {
 	r := mux.NewRouter()
 	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
 		serveHome(w, r)
@@ -40,7 +41,7 @@ func startHttpServer(){
 	})
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
 	http.Handle("/", r)
-	
+
 	log.Println("[Main]", "等待用户连接")
 	err := http.ListenAndServe("0.0.0.0:12451", nil)
 	if err != nil {
@@ -94,7 +95,7 @@ func serveWS(conn *websocket.Conn) {
 }
 
 func startACWS(hub *Hub, roomID int) {
-	if(hub == nil){
+	if hub == nil {
 		log.Println("[Danmaku]", roomID, "这不合理")
 		return
 	}
@@ -111,9 +112,9 @@ func startACWS(hub *Hub, roomID int) {
 		log.Println("[Danmaku]", roomID, "5秒后重试")
 		time.Sleep(5 * time.Second)
 		log.Println("[Danmaku]", roomID, "重试启动")
-		if(ACConnMap[roomID] != nil){
+		if ACConnMap[roomID] != nil {
 			go startACWS(ACConnMap[roomID], roomID)
-		}else{
+		} else {
 			log.Println("[Danmaku]", roomID, "没监听了，关！")
 		}
 		return
@@ -128,10 +129,10 @@ func startACWS(hub *Hub, roomID int) {
 				default:
 					// 循环获取watchingList并处理
 					watchingList, err := dq.GetWatchingList(ACCookies)
-					if(err != nil){
+					if err != nil {
 						log.Println("[Danmaku]", roomID, "获取在线用户失败：", err)
-					}else{
-						watchingListold, ok := ACWatchMap[roomID];
+					} else {
+						watchingListold, ok := ACWatchMap[roomID]
 						if !ok {
 							ACWatchMap[roomID] = watchingList
 							//return
@@ -142,7 +143,7 @@ func startACWS(hub *Hub, roomID int) {
 							var processedList []string
 							processedList2 := make(map[string](acfundanmu.WatchingUser))
 							for _, value := range *watchingListold {
-								var stringUserID = strconv.FormatInt(value.UserInfo.UserID, 10)
+								var stringUserID = strconv.FormatInt(value.UserID, 10)
 								processedList = append(processedList, stringUserID)
 								processedList2[stringUserID] = value
 							}
@@ -150,14 +151,14 @@ func startACWS(hub *Hub, roomID int) {
 							//处理新的
 							var processedNewList []string
 							for _, value := range *watchingList {
-								var stringUserID = strconv.FormatInt(value.UserInfo.UserID, 10)
+								var stringUserID = strconv.FormatInt(value.UserID, 10)
 								//fmt.Printf("id %v \n", stringUserID)
 								processedNewList = append(processedNewList, stringUserID)
 							}
 							_, removed := Arrcmp(processedList, processedNewList)
 							for _, value := range removed {
 								var userInfo = processedList2[value]
-								if(!userInfo.AnonymousUser){
+								if !userInfo.AnonymousUser {
 									var d = userInfo.UserInfo
 									var val = []byte(`{}`)
 									var data = new(dataUserStruct)
@@ -204,9 +205,9 @@ func startACWS(hub *Hub, roomID int) {
 				for _, d := range danmu {
 					var val = []byte(`{}`)
 					// 根据Type处理弹幕
-					var avatar, AuthorType = getAvatarAndAuthorType(d, roomID)
 					switch d := d.(type) {
 					case *acfundanmu.Comment:
+						avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 						if !checkComments(d.Content) {
 							var data = new(dataUserStruct)
 							data.Cmd = 2
@@ -227,6 +228,7 @@ func startACWS(hub *Hub, roomID int) {
 						}
 						log.Printf("[Danmaku] %v, %s（%d）：%s\n", roomID, d.Nickname, d.UserID, d.Content)
 					case *acfundanmu.Like:
+						avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 						var data = new(dataUserStruct)
 						data.Cmd = 8
 						data.Data.Id = d.UserID
@@ -236,6 +238,8 @@ func startACWS(hub *Hub, roomID int) {
 						data.Data.AuthorType = AuthorType
 						data.Data.PrivilegeType = 0
 						data.Data.Content = LoveText
+						data.Data.UserMark = getUserMark(d.UserID)
+						data.Data.Medal = d.Medal
 						ddata, err := json.Marshal(data)
 						if err == nil {
 							val = ddata
@@ -243,6 +247,7 @@ func startACWS(hub *Hub, roomID int) {
 						}
 						log.Printf("[Danmaku] %v, %s（%d）点赞\n", roomID, d.Nickname, d.UserID)
 					case *acfundanmu.EnterRoom:
+						avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 						var data = new(dataUserStruct)
 						data.Cmd = 1
 						data.Data.Id = d.UserID
@@ -252,6 +257,8 @@ func startACWS(hub *Hub, roomID int) {
 						data.Data.AuthorType = AuthorType
 						data.Data.PrivilegeType = 0
 						data.Data.Content = JoinText
+						data.Data.UserMark = getUserMark(d.UserID)
+						data.Data.Medal = d.Medal
 						ddata, err := json.Marshal(data)
 						if err == nil {
 							val = ddata
@@ -259,6 +266,7 @@ func startACWS(hub *Hub, roomID int) {
 						}
 						log.Printf("[Danmaku] %v, %s（%d）进入直播间\n", roomID, d.Nickname, d.UserID)
 					case *acfundanmu.FollowAuthor:
+						avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 						var data = new(dataUserStruct)
 						data.Cmd = 10
 						data.Data.Id = d.UserID
@@ -268,6 +276,8 @@ func startACWS(hub *Hub, roomID int) {
 						data.Data.AuthorType = AuthorType
 						data.Data.PrivilegeType = 0
 						data.Data.Content = FollowText
+						data.Data.UserMark = getUserMark(d.UserID)
+						data.Data.Medal = d.Medal
 						ddata, err := json.Marshal(data)
 						if err == nil {
 							val = ddata
@@ -275,6 +285,7 @@ func startACWS(hub *Hub, roomID int) {
 						}
 						log.Printf("[Danmaku] %v, %s（%d）关注了主播\n", roomID, d.Nickname, d.UserID)
 					case *acfundanmu.ThrowBanana:
+						avatar, _ := getAvatarAndAuthorType(d.UserInfo, roomID)
 						var data = new(dataGiftStruct)
 						data.Cmd = 3
 						data.Data.Id = d.UserID
@@ -282,6 +293,8 @@ func startACWS(hub *Hub, roomID int) {
 						data.Data.AvatarUrl = avatar
 						data.Data.Timestamp = time.Now().Unix()
 						data.Data.AuthorName = d.Nickname
+						data.Data.UserMark = getUserMark(d.UserID)
+						data.Data.Medal = d.Medal
 						data.Data.GiftName = "香蕉"
 						data.Data.Num = d.BananaCount
 						data.Data.TotalCoin = 0
@@ -292,16 +305,20 @@ func startACWS(hub *Hub, roomID int) {
 						}
 						log.Printf("[Danmaku] %v, %s（%d）送出香蕉 * %d\n", roomID, d.Nickname, d.UserID, d.BananaCount)
 					case *acfundanmu.Gift:
+						avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 						var data = new(dataGiftStruct)
 						data.Cmd = 3
 						data.Data.Id = d.UserID
 						data.Data.AvatarUrl = avatar
 						data.Data.Timestamp = time.Now().Unix()
 						data.Data.AuthorName = d.Nickname
-						data.Data.GiftName = d.GiftInfo.Giftdetail.GiftName
-						data.Data.Num = int(d.GiftInfo.Count)
-						var price = d.GiftInfo.Value / 10
-						if d.GiftInfo.Giftdetail.GiftName == "香蕉" {
+						data.Data.AuthorType = AuthorType
+						data.Data.UserMark = getUserMark(d.UserID)
+						data.Data.Medal = d.Medal
+						data.Data.GiftName = d.GiftName
+						data.Data.Num = int(d.Count)
+						var price = d.Value / 10
+						if d.GiftName == "香蕉" {
 							price = 0
 						}
 						data.Data.TotalCoin = int(price)

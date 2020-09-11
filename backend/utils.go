@@ -1,14 +1,15 @@
 package main
 
 import (
-	"log"
-	"time"
-	"strings"
-	"strconv"
-	"net/http"
 	"io/ioutil"
-	"github.com/orzogc/acfundanmu"
+	"log"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
+
 	jsoniter "github.com/json-iterator/go"
+	"github.com/orzogc/acfundanmu"
 )
 
 func getACUserPhoto(id int64) (string, error) {
@@ -103,45 +104,25 @@ func getUserMark(uid int64) string {
 	return ""
 }
 
-func getAvatarAndAuthorType(d acfundanmu.DanmuMessage, roomID int)(string, int){
-	var UserID int64
-	var ManagerType acfundanmu.ManagerType
-	switch d := d.(type) {
-		case *acfundanmu.Comment:
-			UserID = d.UserID
-			ManagerType = d.ManagerType
-		case *acfundanmu.Like:
-			UserID = d.UserID
-			ManagerType = d.ManagerType
-		case *acfundanmu.EnterRoom:
-			UserID = d.UserID
-			ManagerType = d.ManagerType
-		case *acfundanmu.FollowAuthor:
-			UserID = d.UserID
-			ManagerType = d.ManagerType
-		case *acfundanmu.ThrowBanana:
-			UserID = d.UserID
-			ManagerType = d.ManagerType
-		case *acfundanmu.Gift:
-			UserID = d.UserID
-			ManagerType = d.ManagerType
-	}
+func getAvatarAndAuthorType(userInfo acfundanmu.UserInfo, roomID int) (string, int) {
+	UserID := userInfo.UserID
+	ManagerType := userInfo.ManagerType
 	var AuthorType = 0
 	avatar := "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg"
 	avatarStruct, ok := ACPhotoMap[UserID]
 	getNewAvater := false
 	//处理用户头像结构体
-	if(!ok){
+	if !ok {
 		getNewAvater = true
-	}else{
+	} else {
 		//判断缓存
-		if(int(time.Now().Unix() - avatarStruct.Timestamp) > AvatarRefreshRate){
+		if int(time.Now().Unix()-avatarStruct.Timestamp) > AvatarRefreshRate {
 			getNewAvater = true
-		}else{
+		} else {
 			avatar = avatarStruct.Url
 		}
 	}
-	if(getNewAvater){
+	if getNewAvater {
 		newavatar, err := getACUserPhoto(UserID)
 		if err == nil && newavatar != "" {
 			newAvatarStruct := new(PhotoStruct)
@@ -156,7 +137,7 @@ func getAvatarAndAuthorType(d acfundanmu.DanmuMessage, roomID int)(string, int){
 	if int64(roomID) == UserID {
 		AuthorType = 3
 	}
-	if ManagerType == 1 {
+	if ManagerType == acfundanmu.NormalManager {
 		AuthorType = 2
 	}
 	return avatar, AuthorType
