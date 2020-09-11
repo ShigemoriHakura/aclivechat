@@ -207,8 +207,8 @@ func startACWS(hub *Hub, roomID int) {
 					// 根据Type处理弹幕
 					switch d := d.(type) {
 					case *acfundanmu.Comment:
-						avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 						if !checkComments(d.Content) {
+							avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 							var data = new(dataUserStruct)
 							data.Cmd = 2
 							data.Data.Id = d.UserID
@@ -289,7 +289,6 @@ func startACWS(hub *Hub, roomID int) {
 						var data = new(dataGiftStruct)
 						data.Cmd = 3
 						data.Data.Id = d.UserID
-						//data.Data.AvatarUrl = "https://static.yximgs.com/bs2/giftCenter/giftCenter-20200316101317UbXssBoH.webp"
 						data.Data.AvatarUrl = avatar
 						data.Data.Timestamp = time.Now().Unix()
 						data.Data.AuthorName = d.Nickname
