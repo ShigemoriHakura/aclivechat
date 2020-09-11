@@ -1,17 +1,18 @@
 package main
 
 import (
-	"os"
-	"log"
-	"flag"
 	"bufio"
-	"github.com/orzogc/acfundanmu"
+	"flag"
+	"log"
+	"os"
+
 	"github.com/akkuman/parseConfig"
+	"github.com/orzogc/acfundanmu"
 )
 
-func main(){
+func main() {
 	defer func() {
-        log.Println("[Main]", "请按回车关闭。。。")
+		log.Println("[Main]", "请按回车关闭。。。")
 		for {
 			consoleReader := bufio.NewReaderSize(os.Stdin, 1)
 			_, _ = consoleReader.ReadByte()
@@ -28,14 +29,14 @@ func main(){
 	startHttpServer()
 }
 
-func importConfig(){
+func importConfig() {
 	defer func() {
-        if r := recover(); r != nil {
-            log.Println("[Main]", "发生配置文件错误：", r)
-            log.Println("[Main]", "跳过配置文件使用默认值")
-        }
+		if r := recover(); r != nil {
+			log.Println("[Main]", "发生配置文件错误：", r)
+			log.Println("[Main]", "跳过配置文件使用默认值")
+		}
 	}()
-	
+
 	var config = parseConfig.New("config.json")
 	var BanWords = config.Get("BanWords").([]interface{})
 	var UserMark = config.Get("UserMarks").(map[string]interface{})
@@ -45,7 +46,7 @@ func importConfig(){
 	for k, v := range UserMark {
 		UserMarks[k] = v.(string)
 	}
-	
+
 	LoveText = config.Get("LoveText").(string)
 	FollowText = config.Get("FollowText").(string)
 	JoinText = config.Get("JoinText").(string)
@@ -53,13 +54,13 @@ func importConfig(){
 	AvatarRefreshRate = int(config.Get("AvatarRefreshRate").(float64))
 }
 
-func loginToACFun(){
-	if(*ACUsername != "" && *ACPassword != ""){
+func loginToACFun() {
+	if *ACUsername != "" && *ACPassword != "" {
 		log.Println("[Main]", "尝试登录ACFun账号中")
 		cookie, err := acfundanmu.Login(*ACUsername, *ACPassword)
-		if(err != nil){
+		if err != nil {
 			log.Println("[Main]", "登录出错：", err)
-		}else{
+		} else {
 			log.Println("[Main]", "登录成功")
 			ACCookies = cookie
 		}

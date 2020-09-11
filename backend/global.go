@@ -3,8 +3,11 @@ package main
 import (
 	"flag"
 	"net/http"
+
 	"github.com/orzogc/acfundanmu"
 )
+
+const defaultAvatar = "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg"
 
 var Version = "0.1.8"
 var EnableTranslate = false
