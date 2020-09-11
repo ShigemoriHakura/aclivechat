@@ -12,7 +12,7 @@ import (
 	"github.com/orzogc/acfundanmu"
 )
 
-func getACUserPhoto(id int64) (string, error) {
+func getACUserPhoto(id int64) string {
 	client := &http.Client{Timeout: 2 * time.Second}
 	var str = strconv.Itoa(int(id))
 	var url = "https://live.acfun.cn/rest/pc-direct/user/userInfo?userId=" + str
@@ -20,7 +20,7 @@ func getACUserPhoto(id int64) (string, error) {
 
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return defaultAvatar
 	}
 
 	req.Header.Set("User-Agent", "Chrome/83.0.4103.61")
@@ -28,23 +28,23 @@ func getACUserPhoto(id int64) (string, error) {
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return defaultAvatar
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return defaultAvatar
 	}
 
 	any := jsoniter.Get(body)
 	var avatar = any.Get("profile", "headUrl").ToString()
 	if avatar != "" {
 		log.Printf("[Avatar] 用户(%v) 头像匹配: %v", str, avatar)
-		return avatar, nil
+		return avatar
 	}
 	log.Printf("[Avatar] 用户(%v) 头像获取失败", str)
-	return "", nil
+	return defaultAvatar
 }
 
 func Arrcmp(src []string, dest []string) ([]string, []string) {
@@ -74,7 +74,7 @@ func Arrcmp(src []string, dest []string) ([]string, []string) {
 	}
 	//4.此时，mall是补集，所有元素去源中找，找到就是删除的，找不到的必定能在目数组中找到，即新加的
 	var added, deleted []string
-	for v, _ := range mall {
+	for v := range mall {
 		_, exist := msrc[v]
 		if exist {
 			deleted = append(deleted, v)
@@ -108,30 +108,36 @@ func getAvatarAndAuthorType(userInfo acfundanmu.UserInfo, roomID int) (string, i
 	UserID := userInfo.UserID
 	ManagerType := userInfo.ManagerType
 	var AuthorType = 0
-	avatar := "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg"
+	avatar := defaultAvatar
 	avatarStruct, ok := ACPhotoMap[UserID]
+	saveCache := false
 	getNewAvater := false
-	//处理用户头像结构体
-	if !ok {
-		getNewAvater = true
+	if userInfo.Avatar != "" {
+		avatar = userInfo.Avatar
+		if !ok || userInfo.Avatar != avatarStruct.Url {
+			saveCache = true
+		}
 	} else {
-		//判断缓存
-		if int(time.Now().Unix()-avatarStruct.Timestamp) > AvatarRefreshRate {
-			getNewAvater = true
+		if ok {
+			//判断缓存
+			if int(time.Now().Unix()-avatarStruct.Timestamp) > AvatarRefreshRate {
+				getNewAvater = true
+			} else {
+				avatar = avatarStruct.Url
+			}
 		} else {
-			avatar = avatarStruct.Url
+			getNewAvater = true
 		}
 	}
 	if getNewAvater {
-		newavatar, err := getACUserPhoto(UserID)
-		if err == nil && newavatar != "" {
-			newAvatarStruct := new(PhotoStruct)
-			newAvatarStruct.Url = newavatar
-			newAvatarStruct.Timestamp = time.Now().Unix()
-			ACPhotoMap[UserID] = newAvatarStruct
-			avatar = newavatar
-			//更新头像数组和头像
-		}
+		avatar = getACUserPhoto(UserID)
+		saveCache = true
+	}
+	if saveCache {
+		newAvatarStruct := new(PhotoStruct)
+		newAvatarStruct.Url = avatar
+		newAvatarStruct.Timestamp = time.Now().Unix()
+		ACPhotoMap[UserID] = newAvatarStruct
 	}
 	//log.Println("Data Photo", avatar)
 	if int64(roomID) == UserID {

@@ -7,6 +7,8 @@ import (
 	"github.com/orzogc/acfundanmu"
 )
 
+const defaultAvatar = "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg"
+
 var Version = "0.1.8"
 var EnableTranslate = false
 var LoveText = "点亮爱心"
