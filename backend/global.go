@@ -6,11 +6,8 @@ import (
 	"github.com/orzogc/acfundanmu"
 )
 
-var Version = "0.1.7"
-var HideGift = false
+var Version = "0.1.8"
 var EnableTranslate = false
-var NormalGift = "一般"
-var YAAAAAGift = "高端"
 var LoveText = "点亮爱心"
 var FollowText = "关注了主播"
 var JoinText = "加入直播间"

@@ -45,10 +45,7 @@ func importConfig(){
 	for k, v := range UserMark {
 		UserMarks[k] = v.(string)
 	}
-
-	HideGift = config.Get("HideGift").(bool)
-	NormalGift = config.Get("NormalGift").(string)
-	YAAAAAGift = config.Get("YAAAAAGift").(string)
+	
 	LoveText = config.Get("LoveText").(string)
 	FollowText = config.Get("FollowText").(string)
 	JoinText = config.Get("JoinText").(string)

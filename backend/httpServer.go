@@ -203,43 +203,11 @@ func startACWS(hub *Hub, roomID int) {
 			if danmu := dq.GetDanmu(); danmu != nil {
 				for _, d := range danmu {
 					var val = []byte(`{}`)
-					avatar := "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg"
-					avatarStruct, ok := ACPhotoMap[d.UserID]
-					getNewAvater := false
-					//处理用户头像结构体
-					if(!ok){
-						getNewAvater = true
-					}else{
-						//判断缓存
-						if(int(time.Now().Unix() - avatarStruct.Timestamp) > AvatarRefreshRate){
-							getNewAvater = true
-						}else{
-							avatar = avatarStruct.Url
-						}
-					}
-					if(getNewAvater){
-						newavatar, err := getACUserPhoto(d.UserID)
-						if err == nil && newavatar != "" {
-							newAvatarStruct := new(PhotoStruct)
-							newAvatarStruct.Url = newavatar
-							newAvatarStruct.Timestamp = time.Now().Unix()
-							ACPhotoMap[d.UserID] = newAvatarStruct
-							avatar = newavatar
-							//更新头像数组和头像
-						}
-					}
-					//log.Println("Data Photo", avatar)
 					// 根据Type处理弹幕
-					var AuthorType = 0
-					if int64(roomID) == d.UserID {
-						AuthorType = 3
-					}
-					if d.ManagerType == 1 {
-						AuthorType = 2
-					}
-					switch d.Type {
-					case acfundanmu.Comment:
-						if !checkComments(d.Comment) {
+					var avatar, AuthorType = getAvatarAndAuthorType(d, roomID)
+					switch d := d.(type) {
+					case *acfundanmu.Comment:
+						if !checkComments(d.Content) {
 							var data = new(dataUserStruct)
 							data.Cmd = 2
 							data.Data.Id = d.UserID
@@ -248,7 +216,7 @@ func startACWS(hub *Hub, roomID int) {
 							data.Data.AuthorName = d.Nickname
 							data.Data.AuthorType = AuthorType
 							data.Data.PrivilegeType = 0
-							data.Data.Content = d.Comment
+							data.Data.Content = d.Content
 							data.Data.UserMark = getUserMark(d.UserID)
 							data.Data.Medal = d.Medal
 							ddata, err := json.Marshal(data)
@@ -257,8 +225,8 @@ func startACWS(hub *Hub, roomID int) {
 								//log.Println("Conn Comment", string(ddata))
 							}
 						}
-						log.Printf("[Danmaku] %v, %s（%d）：%s\n", roomID, d.Nickname, d.UserID, d.Comment)
-					case acfundanmu.Like:
+						log.Printf("[Danmaku] %v, %s（%d）：%s\n", roomID, d.Nickname, d.UserID, d.Content)
+					case *acfundanmu.Like:
 						var data = new(dataUserStruct)
 						data.Cmd = 8
 						data.Data.Id = d.UserID
@@ -274,7 +242,7 @@ func startACWS(hub *Hub, roomID int) {
 							//log.Println("Conn Comment", string(ddata))
 						}
 						log.Printf("[Danmaku] %v, %s（%d）点赞\n", roomID, d.Nickname, d.UserID)
-					case acfundanmu.EnterRoom:
+					case *acfundanmu.EnterRoom:
 						var data = new(dataUserStruct)
 						data.Cmd = 1
 						data.Data.Id = d.UserID
@@ -290,7 +258,7 @@ func startACWS(hub *Hub, roomID int) {
 							//log.Println("Conn Join", string(ddata))
 						}
 						log.Printf("[Danmaku] %v, %s（%d）进入直播间\n", roomID, d.Nickname, d.UserID)
-					case acfundanmu.FollowAuthor:
+					case *acfundanmu.FollowAuthor:
 						var data = new(dataUserStruct)
 						data.Cmd = 10
 						data.Data.Id = d.UserID
@@ -306,7 +274,7 @@ func startACWS(hub *Hub, roomID int) {
 							//log.Println("Conn Join", string(ddata))
 						}
 						log.Printf("[Danmaku] %v, %s（%d）关注了主播\n", roomID, d.Nickname, d.UserID)
-					case acfundanmu.ThrowBanana:
+					case *acfundanmu.ThrowBanana:
 						var data = new(dataGiftStruct)
 						data.Cmd = 3
 						data.Data.Id = d.UserID
@@ -314,11 +282,7 @@ func startACWS(hub *Hub, roomID int) {
 						data.Data.AvatarUrl = avatar
 						data.Data.Timestamp = time.Now().Unix()
 						data.Data.AuthorName = d.Nickname
-						if !HideGift {
-							data.Data.GiftName = "香蕉"
-						} else {
-							data.Data.GiftName = NormalGift
-						}
+						data.Data.GiftName = "香蕉"
 						data.Data.Num = d.BananaCount
 						data.Data.TotalCoin = 0
 						ddata, err := json.Marshal(data)
@@ -327,35 +291,27 @@ func startACWS(hub *Hub, roomID int) {
 							//log.Println("Conn Gift", string(ddata))
 						}
 						log.Printf("[Danmaku] %v, %s（%d）送出香蕉 * %d\n", roomID, d.Nickname, d.UserID, d.BananaCount)
-					case acfundanmu.Gift:
+					case *acfundanmu.Gift:
 						var data = new(dataGiftStruct)
 						data.Cmd = 3
 						data.Data.Id = d.UserID
-						//data.Data.AvatarUrl = d.Gift.WebpPic
 						data.Data.AvatarUrl = avatar
 						data.Data.Timestamp = time.Now().Unix()
 						data.Data.AuthorName = d.Nickname
-						data.Data.GiftName = d.Gift.Name
-						data.Data.Num = d.Gift.Count
-						var price = d.Gift.Value / 10
-						if d.Gift.Name == "香蕉" {
+						data.Data.GiftName = d.GiftInfo.Giftdetail.GiftName
+						data.Data.Num = int(d.GiftInfo.Count)
+						var price = d.GiftInfo.Value / 10
+						if d.GiftInfo.Giftdetail.GiftName == "香蕉" {
 							price = 0
 						}
-						if HideGift {
-							if price <= 0 {
-								data.Data.GiftName = NormalGift
-							} else {
-								data.Data.GiftName = YAAAAAGift
-							}
-						}
-						data.Data.TotalCoin = price
+						data.Data.TotalCoin = int(price)
 						ddata, err := json.Marshal(data)
 						if err == nil {
 							val = ddata
 							//log.Println("Conn Gift", string(ddata))
 						}
 						//log.Println("Conn Gift", data)
-						log.Printf("[Danmaku] %v, %s（%d）送出礼物 %s * %d，连击数：%d\n", roomID, d.Nickname, d.UserID, d.Gift.Name, d.Gift.Count, d.Gift.Combo)
+						log.Printf("[Danmaku] %v, %s（%d）送出礼物 %s * %d，连击数：%d\n", roomID, d.Nickname, d.UserID, d.GiftName, d.Count, d.Combo)
 					}
 
 					hub.broadcast <- val
