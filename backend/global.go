@@ -23,4 +23,4 @@ var ACPhotoMap = make(map[int64]*PhotoStruct)
 
 var ACUsername = flag.String("username", "", "ACFun login phone/email")
 var ACPassword = flag.String("password", "", "ACFun login password")
-var ACCookies [][]byte
+var ACCookies []string
