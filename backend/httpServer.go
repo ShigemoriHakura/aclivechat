@@ -106,7 +106,7 @@ func startACWS(hub *Hub, roomID int) {
 	}()
 	log.Println("[Danmaku]", roomID, "WS监听服务启动中")
 	// uid为主播的uid
-	dq, err := acfundanmu.Init(int64(roomID), *ACUsername, *ACPassword)
+	dq, err := acfundanmu.Init(int64(roomID), ACCookies)
 	if err != nil {
 		//log.Println(err)
 		log.Println("[Danmaku]", roomID, "5秒后重试")
