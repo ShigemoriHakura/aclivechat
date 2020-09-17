@@ -5,6 +5,7 @@ config.json
 aclivechat.exe
 backend.exe
 package-lock.json
+yarn.lock
 
 # local env files
 .env.local

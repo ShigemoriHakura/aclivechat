@@ -9,7 +9,7 @@ export default {
     roomIdEmpty: '房间ID不能为空',
     roomIdInteger: '房间ID必须为正整数',
     textEmpty: '不能为空',
-    
+
     followText: '用户关注主播提示',
     followTextDefault: '关注了直播间',
     joinText: '用户进入直播间提示',
@@ -27,7 +27,7 @@ export default {
     showJoin: '显示用户进入直播间',
     showQuit: '显示用户离开直播间',
     showLove: '显示点亮爱心',
-    showGift: '显示打赏和新舰长',
+    showGift: '显示礼物',
     showGiftName: '显示礼物名',
     showGiftPrice: '显示礼物价格',
     showACCoinInstead: '用AC币代替价格',

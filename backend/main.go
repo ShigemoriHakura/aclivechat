@@ -57,12 +57,12 @@ func importConfig() {
 func loginToACFun() {
 	if *ACUsername != "" && *ACPassword != "" {
 		log.Println("[Main]", "尝试登录ACFun账号中")
-		cookie, err := acfundanmu.Login(*ACUsername, *ACPassword)
+		cookies, err := acfundanmu.Login(*ACUsername, *ACPassword)
 		if err != nil {
-			log.Println("[Main]", "登录出错：", err)
+			log.Println("[Main]", *ACUsername, "登录出错：", err)
 		} else {
-			log.Println("[Main]", "登录成功")
-			ACCookies = cookie
+			log.Println("[Main]", *ACUsername, "登录成功")
+			ACCookies = cookies
 		}
 	}
 }

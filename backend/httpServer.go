@@ -106,7 +106,7 @@ func startACWS(hub *Hub, roomID int) {
 	}()
 	log.Println("[Danmaku]", roomID, "WS监听服务启动中")
 	// uid为主播的uid
-	dq, err := acfundanmu.Start(ctx, roomID, ACCookies)
+	dq, err := acfundanmu.Init(int64(roomID), ACCookies)
 	if err != nil {
 		//log.Println(err)
 		log.Println("[Danmaku]", roomID, "5秒后重试")
@@ -119,6 +119,7 @@ func startACWS(hub *Hub, roomID int) {
 		}
 		return
 	}
+	dq.StartDanmu(ctx)
 	if hub != nil {
 		var hubTime = hub.timeStamp
 		go func() {
@@ -128,7 +129,7 @@ func startACWS(hub *Hub, roomID int) {
 					return
 				default:
 					// 循环获取watchingList并处理
-					watchingList, err := dq.GetWatchingList(ACCookies)
+					watchingList, err := dq.GetWatchingList()
 					if err != nil {
 						log.Println("[Danmaku]", roomID, "获取在线用户失败：", err)
 					} else {
@@ -141,8 +142,8 @@ func startACWS(hub *Hub, roomID int) {
 
 							//处理旧的
 							var processedList []string
-							processedList2 := make(map[string](acfundanmu.WatchingUser))
-							for _, value := range *watchingListold {
+							processedList2 := make(map[string]acfundanmu.WatchingUser)
+							for _, value := range watchingListold {
 								var stringUserID = strconv.FormatInt(value.UserID, 10)
 								processedList = append(processedList, stringUserID)
 								processedList2[stringUserID] = value
@@ -150,26 +151,28 @@ func startACWS(hub *Hub, roomID int) {
 
 							//处理新的
 							var processedNewList []string
-							for _, value := range *watchingList {
+							for _, value := range watchingList {
 								var stringUserID = strconv.FormatInt(value.UserID, 10)
 								//fmt.Printf("id %v \n", stringUserID)
 								processedNewList = append(processedNewList, stringUserID)
 							}
 							_, removed := Arrcmp(processedList, processedNewList)
 							for _, value := range removed {
-								var userInfo = processedList2[value]
-								if !userInfo.AnonymousUser {
-									var d = userInfo.UserInfo
+								d := processedList2[value]
+								if !d.AnonymousUser {
 									var val = []byte(`{}`)
+									avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 									var data = new(dataUserStruct)
 									data.Cmd = 9
 									data.Data.Id = d.UserID
-									data.Data.AvatarUrl = d.Avatar
+									data.Data.AvatarUrl = avatar
 									data.Data.Timestamp = time.Now().Unix()
 									data.Data.AuthorName = d.Nickname
-									data.Data.AuthorType = 0
+									data.Data.AuthorType = AuthorType
 									data.Data.PrivilegeType = 0
 									data.Data.Content = QuitText
+									data.Data.UserMark = getUserMark(d.UserID)
+									//data.Data.Medal = d.Medal
 									json := jsoniter.ConfigCompatibleWithStandardLibrary
 									ddata, err := json.Marshal(data)
 									if err == nil {
@@ -204,11 +207,11 @@ func startACWS(hub *Hub, roomID int) {
 			if danmu := dq.GetDanmu(); danmu != nil {
 				for _, d := range danmu {
 					var val = []byte(`{}`)
+					avatar, AuthorType := getAvatarAndAuthorType(d.GetUserInfo(), roomID)
 					// 根据Type处理弹幕
 					switch d := d.(type) {
 					case *acfundanmu.Comment:
 						if !checkComments(d.Content) {
-							avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 							var data = new(dataUserStruct)
 							data.Cmd = 2
 							data.Data.Id = d.UserID
@@ -228,7 +231,6 @@ func startACWS(hub *Hub, roomID int) {
 						}
 						log.Printf("[Danmaku] %v, %s（%d）：%s\n", roomID, d.Nickname, d.UserID, d.Content)
 					case *acfundanmu.Like:
-						avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 						var data = new(dataUserStruct)
 						data.Cmd = 8
 						data.Data.Id = d.UserID
@@ -247,7 +249,6 @@ func startACWS(hub *Hub, roomID int) {
 						}
 						log.Printf("[Danmaku] %v, %s（%d）点赞\n", roomID, d.Nickname, d.UserID)
 					case *acfundanmu.EnterRoom:
-						avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 						var data = new(dataUserStruct)
 						data.Cmd = 1
 						data.Data.Id = d.UserID
@@ -266,7 +267,6 @@ func startACWS(hub *Hub, roomID int) {
 						}
 						log.Printf("[Danmaku] %v, %s（%d）进入直播间\n", roomID, d.Nickname, d.UserID)
 					case *acfundanmu.FollowAuthor:
-						avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 						var data = new(dataUserStruct)
 						data.Cmd = 10
 						data.Data.Id = d.UserID
@@ -285,7 +285,6 @@ func startACWS(hub *Hub, roomID int) {
 						}
 						log.Printf("[Danmaku] %v, %s（%d）关注了主播\n", roomID, d.Nickname, d.UserID)
 					case *acfundanmu.ThrowBanana:
-						avatar, _ := getAvatarAndAuthorType(d.UserInfo, roomID)
 						var data = new(dataGiftStruct)
 						data.Cmd = 3
 						data.Data.Id = d.UserID
@@ -304,7 +303,6 @@ func startACWS(hub *Hub, roomID int) {
 						}
 						log.Printf("[Danmaku] %v, %s（%d）送出香蕉 * %d\n", roomID, d.Nickname, d.UserID, d.BananaCount)
 					case *acfundanmu.Gift:
-						avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 						var data = new(dataGiftStruct)
 						data.Cmd = 3
 						data.Data.Id = d.UserID
