@@ -9,5 +9,5 @@ require (
 	github.com/json-iterator/go v1.1.10
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
-	github.com/orzogc/acfundanmu v0.0.0-20200915083436-41fc9d223bf2
+	github.com/orzogc/acfundanmu v0.0.0-20200916110018-56284f8b471d
 )
