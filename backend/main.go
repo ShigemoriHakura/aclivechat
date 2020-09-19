@@ -95,7 +95,7 @@ func startRoomQueue() {
 
 func processMessageQueue()  {
 	for{
-		if(!MessageQ.IsEmpty()){
+		for(!MessageQ.IsEmpty()){
 			tmp := MessageQ.Dequeue()
 			log.Println("[Message Queue]", tmp.RoomID, "处理消息")
 			if connHub, ok := ACConnMap[tmp.RoomID]; ok {
@@ -106,13 +106,13 @@ func processMessageQueue()  {
 				}
 			}
 		}
-		//time.Sleep(0.1 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 }
 
 func processRoomQueue()  {
 	for{
-		if(!RoomQ.IsEmpty()){
+		for(!RoomQ.IsEmpty()){
 			tmp := RoomQ.Dequeue()
 			log.Println("[Room Queue]", tmp.RoomID, "处理房间")
 			if(!IsContain(ACRoomMap, tmp.RoomID)){
@@ -123,7 +123,7 @@ func processRoomQueue()  {
 				log.Println("[Room Queue]", tmp.RoomID, "已存在，不新建")
 			}
 		}
-		time.Sleep(1 / 2 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 }
 
