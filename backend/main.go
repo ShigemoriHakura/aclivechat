@@ -117,7 +117,6 @@ func processRoomQueue()  {
 			log.Println("[Room Queue]", tmp.RoomID, "处理房间")
 			if(!IsContain(ACRoomMap, tmp.RoomID)){
 				log.Println("[Room Queue]", tmp.RoomID, "建立WS链接")
-				ACRoomMap = append(ACRoomMap, tmp.RoomID)
 				go startACWS(tmp.RoomID)
 			}else{
 				log.Println("[Room Queue]", tmp.RoomID, "已存在，不新建")
@@ -129,6 +128,7 @@ func processRoomQueue()  {
 
 func processRoomRetryQueue()  {
 	for{
+		time.Sleep(10 * time.Second)
 		log.Println("[Room Retry Queue]", "检查存在Hub但是不存在弹幕服务的房间")
 		for _, v := range ACConnMap {
 			log.Println("[Room Retry Queue]", "检查", v.roomId)
@@ -138,7 +138,7 @@ func processRoomRetryQueue()  {
 				go startACWS(v.roomId)
 			}
 		}
-		time.Sleep(10 * time.Second)
+		log.Println("[Room Retry Queue]", "检查完成")
 	}
 }
 
@@ -162,6 +162,7 @@ func removeInt(items []int, item int) []int {
 }
 
 func startACWS(roomID int) {
+	ACRoomMap = append(ACRoomMap, roomID)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer func() {
 		log.Println("[Danmaku]", roomID, "结束")

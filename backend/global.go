@@ -8,7 +8,7 @@ import (
 
 const defaultAvatar = "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg"
 
-var Version = "0.2.0"
+var Version = "0.2.1"
 var EnableTranslate = false
 var LoveText = "点亮爱心"
 var FollowText = "关注了主播"
