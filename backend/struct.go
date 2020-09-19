@@ -46,6 +46,69 @@ type PhotoStruct struct {
 	Timestamp int64  `json:"timestamp"`
 }
 
+//处理好的信息
+type Message struct {
+	RoomID int
+	Data interface{}
+}
+
+//信息队列
+type MessageQueue struct {
+	Messages []*Message
+}
+
+type IMessageQueue interface {
+	New() MessageQueue
+	Enqueue(t Message)
+	Dequeue(t Message)
+	IsEmpty() bool
+	Size() int
+}
+
+// 新建
+func (q *MessageQueue)New() *MessageQueue  {
+	q.Messages = []*Message{}
+	return q
+}
+ 
+ // 入队
+func (q *MessageQueue) Enqueue(data *Message)  {
+	q.Messages = append(q.Messages, data)
+}
+ 
+ // 出队
+func (q *MessageQueue) Dequeue() *Message {
+	Message := q.Messages[0]
+	q.Messages = q.Messages[1: len(q.Messages)]
+	return Message
+}
+ 
+ // 队列是否为空
+func (q *MessageQueue) IsEmpty() bool  {
+	return len(q.Messages) == 0
+}
+ 
+ // 队列长度
+func (q *MessageQueue) Size() int  {
+	return len(q.Messages)
+}
+ 
+func initMessageQueue() *MessageQueue  {
+	if MessageQ.Messages == nil{
+		MessageQ = MessageQueue{}
+		MessageQ.New()
+	}
+	return &MessageQ
+}
+
+func initRoomQueue() *MessageQueue  {
+	if RoomQ.Messages == nil{
+		RoomQ = MessageQueue{}
+		RoomQ.New()
+	}
+	return &RoomQ
+}
+
 type Hub struct {
 	htype      int
 	roomId     int

@@ -8,7 +8,7 @@ import (
 
 const defaultAvatar = "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg"
 
-var Version = "0.1.8"
+var Version = "0.2.0"
 var EnableTranslate = false
 var LoveText = "点亮爱心"
 var FollowText = "关注了主播"
@@ -21,6 +21,11 @@ var ACConnMap = make(map[int](*Hub))
 var ACWatchMap = make(map[int][]acfundanmu.WatchingUser)
 var ACPhotoMap = make(map[int64]*PhotoStruct)
 
+var ACRoomMap []int
+
 var ACUsername = flag.String("username", "", "ACFun login phone/email")
 var ACPassword = flag.String("password", "", "ACFun login password")
 var ACCookies []string
+
+var MessageQ MessageQueue
+var RoomQ MessageQueue

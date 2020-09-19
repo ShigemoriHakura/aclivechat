@@ -13,6 +13,7 @@ func (c *Client) readPump() {
 		c.hub.unregister <- c
 		c.conn.Close()
 	}()
+	log.Println("[WS Hub] 用户处理启动")
 	for {
 		_, _, err := c.conn.ReadMessage()
 		if err != nil {
@@ -26,7 +27,6 @@ func (c *Client) readPump() {
 
 func newHub() *Hub {
 	return &Hub{
-		htype:      1,
 		roomId:     -1,
 		timeStamp:  time.Now().Unix(),
 		broadcast:  make(chan []byte),
