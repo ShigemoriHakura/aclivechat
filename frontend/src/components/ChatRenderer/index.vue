@@ -634,6 +634,8 @@ export default {
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css?family=ZCOOL%20KuaiLe");
+
 yt-live-chat-renderer, yt-live-chat-item-list-renderer #item-scroller {
   height: 100%;
 }
