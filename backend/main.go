@@ -2,15 +2,16 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"flag"
 	"log"
 	"os"
-	"time"
-	"context"
 	"strconv"
-	"github.com/orzogc/acfundanmu"
+	"time"
+
 	"github.com/akkuman/parseConfig"
 	jsoniter "github.com/json-iterator/go"
+	"github.com/orzogc/acfundanmu"
 )
 
 func main() {
@@ -93,9 +94,9 @@ func startRoomQueue() {
 	log.Println("[Room Queue]", "初始化成功，当前队列长度：", RoomQ.Size())
 }
 
-func processMessageQueue()  {
-	for{
-		for(!MessageQ.IsEmpty()){
+func processMessageQueue() {
+	for {
+		for !MessageQ.IsEmpty() {
 			tmp := MessageQ.Dequeue()
 			log.Println("[Message Queue]", tmp.RoomID, "处理消息")
 			if connHub, ok := ACConnMap[tmp.RoomID]; ok {
@@ -110,15 +111,15 @@ func processMessageQueue()  {
 	}
 }
 
-func processRoomQueue()  {
-	for{
-		for(!RoomQ.IsEmpty()){
+func processRoomQueue() {
+	for {
+		for !RoomQ.IsEmpty() {
 			tmp := RoomQ.Dequeue()
 			log.Println("[Room Queue]", tmp.RoomID, "处理房间")
-			if(!IsContain(ACRoomMap, tmp.RoomID)){
+			if !IsContain(ACRoomMap, tmp.RoomID) {
 				log.Println("[Room Queue]", tmp.RoomID, "建立WS链接")
 				go startACWS(tmp.RoomID)
-			}else{
+			} else {
 				log.Println("[Room Queue]", tmp.RoomID, "已存在，不新建")
 			}
 		}
@@ -126,13 +127,13 @@ func processRoomQueue()  {
 	}
 }
 
-func processRoomRetryQueue()  {
-	for{
+func processRoomRetryQueue() {
+	for {
 		time.Sleep(10 * time.Second)
 		log.Println("[Room Retry Queue]", "检查存在Hub但是不存在弹幕服务的房间")
 		for _, v := range ACConnMap {
 			log.Println("[Room Retry Queue]", "检查", v.roomId)
-			if(!IsContain(ACRoomMap, v.roomId)){
+			if !IsContain(ACRoomMap, v.roomId) {
 				log.Println("[Room Retry Queue]", v.roomId, "建立WS链接")
 				ACRoomMap = append(ACRoomMap, v.roomId)
 				go startACWS(v.roomId)
@@ -226,7 +227,7 @@ func startACWS(roomID int) {
 								data.Data.PrivilegeType = 0
 								data.Data.Content = QuitText
 								data.Data.UserMark = getUserMark(d.UserID)
-								
+
 								var dataQ = new(Message)
 								dataQ.RoomID = roomID
 								dataQ.Data = data
@@ -364,4 +365,3 @@ func startACWS(roomID int) {
 		}
 	}
 }
-

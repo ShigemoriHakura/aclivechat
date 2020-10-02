@@ -1,6 +1,8 @@
 package main
 
 import (
+	"sync"
+
 	"github.com/gorilla/websocket"
 	"github.com/orzogc/acfundanmu"
 )
@@ -49,11 +51,12 @@ type PhotoStruct struct {
 //处理好的信息
 type Message struct {
 	RoomID int
-	Data interface{}
+	Data   interface{}
 }
 
 //信息队列
 type MessageQueue struct {
+	sync.Mutex
 	Messages []*Message
 }
 
@@ -65,46 +68,46 @@ type IMessageQueue interface {
 	Size() int
 }
 
-// 新建
-func (q *MessageQueue)New() *MessageQueue  {
-	q.Messages = []*Message{}
-	return q
-}
- 
- // 入队
-func (q *MessageQueue) Enqueue(data *Message)  {
+// 入队
+func (q *MessageQueue) Enqueue(data *Message) {
+	q.Lock()
+	defer q.Unlock()
 	q.Messages = append(q.Messages, data)
 }
- 
- // 出队
+
+// 出队
 func (q *MessageQueue) Dequeue() *Message {
+	q.Lock()
+	defer q.Unlock()
 	Message := q.Messages[0]
-	q.Messages = q.Messages[1: len(q.Messages)]
+	q.Messages = q.Messages[1:len(q.Messages)]
 	return Message
 }
- 
- // 队列是否为空
-func (q *MessageQueue) IsEmpty() bool  {
+
+// 队列是否为空
+func (q *MessageQueue) IsEmpty() bool {
+	q.Lock()
+	defer q.Unlock()
 	return len(q.Messages) == 0
 }
- 
- // 队列长度
-func (q *MessageQueue) Size() int  {
+
+// 队列长度
+func (q *MessageQueue) Size() int {
+	q.Lock()
+	defer q.Unlock()
 	return len(q.Messages)
 }
- 
-func initMessageQueue() *MessageQueue  {
-	if MessageQ.Messages == nil{
+
+func initMessageQueue() *MessageQueue {
+	if MessageQ.Messages == nil {
 		MessageQ = MessageQueue{}
-		MessageQ.New()
 	}
 	return &MessageQ
 }
 
-func initRoomQueue() *MessageQueue  {
-	if RoomQ.Messages == nil{
+func initRoomQueue() *MessageQueue {
+	if RoomQ.Messages == nil {
 		RoomQ = MessageQueue{}
-		RoomQ.New()
 	}
 	return &RoomQ
 }

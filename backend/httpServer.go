@@ -75,7 +75,7 @@ func serveWS(conn *websocket.Conn) {
 			case "1":
 				var roomID = any.Get("data", "roomId").ToInt()
 				log.Println("[WS Server]", "请求房间ID：", roomID)
-				ConnM, ok := ACConnMap[roomID];
+				ConnM, ok := ACConnMap[roomID]
 				if !ok {
 					var data = new(Message)
 					data.RoomID = roomID
