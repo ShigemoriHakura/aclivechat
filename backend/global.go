@@ -16,11 +16,15 @@ var QuitText = "离开直播间"
 var AvatarRefreshRate = 86400
 var BanString []string
 var UserMarks = make(map[string]string)
-var ACPhotoMap = make(map[int64]*PhotoStruct)
 
 var ACConnMap struct {
 	sync.Mutex
 	hubMap map[int]*Hub
+}
+
+var ACPhotoMap struct {
+	sync.Mutex
+	photoMap map[int64]*PhotoStruct
 }
 
 var ACRoomMap []int

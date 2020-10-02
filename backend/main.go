@@ -25,6 +25,7 @@ func main() {
 	}()
 
 	ACConnMap.hubMap = make(map[int]*Hub)
+	ACPhotoMap.photoMap = make(map[int64]*PhotoStruct)
 
 	flag.Parse()
 	loginToACFun()

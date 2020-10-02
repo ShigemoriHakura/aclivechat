@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
+
 	jsoniter "github.com/json-iterator/go"
 	"github.com/orzogc/acfundanmu"
 )
@@ -109,7 +110,9 @@ func getAvatarAndAuthorType(userInfo acfundanmu.UserInfo, roomID int) (string, i
 	ManagerType := userInfo.ManagerType
 	var AuthorType = 0
 	avatar := defaultAvatar
-	avatarStruct, ok := ACPhotoMap[UserID]
+	ACPhotoMap.Lock()
+	avatarStruct, ok := ACPhotoMap.photoMap[UserID]
+	ACPhotoMap.Unlock()
 	saveCache := false
 	getNewAvater := false
 	if userInfo.Avatar != "" {
@@ -137,7 +140,9 @@ func getAvatarAndAuthorType(userInfo acfundanmu.UserInfo, roomID int) (string, i
 		newAvatarStruct := new(PhotoStruct)
 		newAvatarStruct.Url = avatar
 		newAvatarStruct.Timestamp = time.Now().Unix()
-		ACPhotoMap[UserID] = newAvatarStruct
+		ACPhotoMap.Lock()
+		ACPhotoMap.photoMap[UserID] = newAvatarStruct
+		ACPhotoMap.Unlock()
 	}
 	//log.Println("Data Photo", avatar)
 	if int64(roomID) == UserID {
@@ -150,9 +155,9 @@ func getAvatarAndAuthorType(userInfo acfundanmu.UserInfo, roomID int) (string, i
 }
 
 func trimLastChar(s string) string {
-    r, size := utf8.DecodeLastRuneInString(s)
-    if r == utf8.RuneError && (size == 0 || size == 1) {
-        size = 0
-    }
-    return s[:len(s)-size]
+	r, size := utf8.DecodeLastRuneInString(s)
+	if r == utf8.RuneError && (size == 0 || size == 1) {
+		size = 0
+	}
+	return s[:len(s)-size]
 }
