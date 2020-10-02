@@ -178,23 +178,6 @@ func startACWS(roomID int) {
 		return
 	}
 	dq.StartDanmu(ctx)
-
-	var data = new(dataUserStruct)
-	data.Cmd = 2
-	data.Data.Id = 0
-	data.Data.AvatarUrl = "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg"
-	data.Data.Timestamp = time.Now().Unix()
-	data.Data.AuthorName = "弹幕姬"
-	data.Data.AuthorType = 0
-	data.Data.PrivilegeType = 0
-	data.Data.Content = "连接成功~"
-	data.Data.UserMark = ""
-	//data.Data.Medal = d.Medal
-	var dataQ = new(Message)
-	dataQ.RoomID = roomID
-	dataQ.Data = data
-	MessageQ.Enqueue(dataQ)
-
 	go func() {
 		var watchingListold []acfundanmu.WatchingUser
 		for {
