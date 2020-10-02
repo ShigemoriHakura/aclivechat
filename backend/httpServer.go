@@ -85,11 +85,6 @@ func serveWS(conn *websocket.Conn) {
 			case "1":
 				var roomID = any.Get("data", "roomId").ToInt()
 				var FrontendV = any.Get("data", "version").ToString()
-				if FrontendV != FrontendVersion {
-					log.Println("[WS Server]", "请求前端版本：", FrontendV, "不匹配后端定义版本：", FrontendVersion, "，提示更新！")
-					conn.WriteMessage(1, []byte(`{"cmd":2,"data":{"id":0,"avatarUrl":"https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg","timestamp":1601641021,"authorName":"弹幕姬","authorType":0,"privilegeType":0,"translation":"","content":"前后端版本不匹配，请检查！","userMark":"","medalInfo":{"UperID":0,"ClubName":"","Level":0}}}`))
-				}
-				conn.WriteMessage(1, []byte(`{"cmd":2,"data":{"id":0,"avatarUrl":"https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg","timestamp":1601641021,"authorName":"弹幕姬","authorType":0,"privilegeType":0,"translation":"","content":"连接成功~","userMark":"","medalInfo":{"UperID":0,"ClubName":"","Level":0}}}`))
 				log.Println("[WS Server]", "请求房间ID：", roomID)
 				ACConnMap.Lock()
 				ConnM, ok := ACConnMap.hubMap[roomID]
@@ -106,6 +101,11 @@ func serveWS(conn *websocket.Conn) {
 					conn.Close()
 					return
 				}
+				if FrontendV != FrontendVersion {
+					log.Println("[WS Server]", "请求前端版本：", FrontendV, "不匹配后端定义版本：", FrontendVersion, "，提示更新！")
+					conn.WriteMessage(1, []byte(`{"cmd":2,"data":{"id":0,"avatarUrl":"https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg","timestamp":1601641021,"authorName":"弹幕姬","authorType":0,"privilegeType":0,"translation":"","content":"前后端版本不匹配，请检查！","userMark":"","medalInfo":{"UperID":0,"ClubName":"","Level":0}}}`))
+				}
+				conn.WriteMessage(1, []byte(`{"cmd":2,"data":{"id":0,"avatarUrl":"https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg","timestamp":1601641021,"authorName":"弹幕姬","authorType":0,"privilegeType":0,"translation":"","content":"连接成功~","userMark":"","medalInfo":{"UperID":0,"ClubName":"","Level":0}}}`))		
 				client := &Client{hub: ConnM, conn: conn, send: make(chan []byte, 8192)}
 				client.hub.register <- client
 				go client.readPump()
