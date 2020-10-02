@@ -116,7 +116,7 @@ export default {
     scContentLineFontSize: '礼物内容字体尺寸',
     scContentLineLineHeight: '礼物内容行高（0为默认）',
     scContentLineColor: '礼物内容颜色',
-    showNewMemberBg: '显示新？？背景',
+    showNewMemberBg: '显示新暂时未定义的可能存在的物品的背景',
     showScTicker: '显示礼物固定栏',
     showScContent: '显示礼物内容',
     showOtherThings: '显示礼物固定栏之外的内容',
