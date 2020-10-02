@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 	"net/http"
 	"strconv"
 
@@ -103,6 +104,22 @@ func serveWS(conn *websocket.Conn) {
 				client := &Client{hub: ConnM, conn: conn, send: make(chan []byte, 8192)}
 				client.hub.register <- client
 				go client.readPump()
+				var data = new(dataUserStruct)
+				data.Cmd = 2
+				data.Data.Id = 0
+				data.Data.AvatarUrl = "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg"
+				data.Data.Timestamp = time.Now().Unix()
+				data.Data.AuthorName = "弹幕姬"
+				data.Data.AuthorType = 0
+				data.Data.PrivilegeType = 0
+				data.Data.Content = "连接成功~"
+				data.Data.UserMark = ""
+				//data.Data.Medal = d.Medal
+				json := jsoniter.ConfigCompatibleWithStandardLibrary
+				ddata, err := json.Marshal(data)
+				if err == nil {
+					conn.WriteMessage(1, ddata)
+				}
 				return
 			}
 		}
