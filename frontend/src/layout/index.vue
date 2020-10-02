@@ -9,7 +9,7 @@
         </router-link>
       </div>
       <div class="version">
-        v0.2.1
+        {{VERSION}}
       </div>
       <sidebar></sidebar>
     </el-aside>
@@ -24,6 +24,7 @@
 
 <script>
 import Sidebar from './Sidebar.vue'
+import * as config from '@/api/config'
 
 export default {
   name: 'Layout',
@@ -32,6 +33,7 @@ export default {
   },
   data() {
     return {
+      Version: config.Version,
       isMobile: false,
       hideSidebar: true
     }

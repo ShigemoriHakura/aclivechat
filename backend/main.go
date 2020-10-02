@@ -31,7 +31,7 @@ func main() {
 	loginToACFun()
 	log.Println("[Main]", "读取配置文件中")
 	importConfig()
-	log.Println("[Main]", "启动中，AcLiveChat，", Version)
+	log.Println("[Main]", "启动中，AcLiveChat，", BackendVersion)
 	log.Println("[Main]", "头像缓存时间：", AvatarRefreshRate, "秒")
 	startMessageQueue()
 	startRoomQueue()

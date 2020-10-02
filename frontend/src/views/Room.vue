@@ -36,6 +36,7 @@ export default {
   data() {
     return {
       config: {...config.DEFAULT_CONFIG},
+      VERSION: config.VERSION,
 
       websocket: null,
       retryCount: 0,
@@ -118,6 +119,7 @@ export default {
         cmd: COMMAND_JOIN_ROOM,
         data: {
           roomId: parseInt(this.$route.params.roomId),
+          version: this.VERSION,
           config: {
             autoTranslate: this.config.autoTranslate
           }

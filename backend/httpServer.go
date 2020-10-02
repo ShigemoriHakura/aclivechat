@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
 	"net/http"
 	"strconv"
 
@@ -35,7 +34,7 @@ func startHttpServer() {
 		http.ServeFile(w, r, "dist/index.html")
 	})
 	r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`{"version": "` + Version + `", "config": {"enableTranslate": ` + strconv.FormatBool(EnableTranslate) + `}}`))
+		w.Write([]byte(`{"version": "` + BackendVersion + `", "config": {"enableTranslate": ` + strconv.FormatBool(EnableTranslate) + `}}`))
 	})
 	r.HandleFunc("/room_info", func(w http.ResponseWriter, r *http.Request) {
 		var roomStr = ""
@@ -45,7 +44,7 @@ func startHttpServer() {
 		}
 		ACConnMap.Unlock()
 		roomStr = trimLastChar(roomStr)
-		w.Write([]byte(`{"version": "` + Version + `", "rooms": "` + roomStr + `"}`))
+		w.Write([]byte(`{"version": "` + BackendVersion + `", "rooms": "` + roomStr + `"}`))
 	})
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
 	http.Handle("/", r)
@@ -85,6 +84,11 @@ func serveWS(conn *websocket.Conn) {
 				break
 			case "1":
 				var roomID = any.Get("data", "roomId").ToInt()
+				var FrontendV = any.Get("data", "version").ToString()
+				if(FrontendV != FrontendVersion){
+					log.Println("[WS Server]", "请求前端版本：", FrontendV, "不匹配后端定义版本：", FrontendVersion, "，提示更新！")
+					conn.WriteMessage(1, []byte(`{"cmd":2,"data":{"id":0,"avatarUrl":"https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg","timestamp":1601641021,"authorName":"弹幕姬","authorType":0,"privilegeType":0,"translation":"","content":"前后端版本不匹配，请检查！","userMark":"","medalInfo":{"UperID":0,"ClubName":"","Level":0}}}`))
+				}
 				log.Println("[WS Server]", "请求房间ID：", roomID)
 				ACConnMap.Lock()
 				ConnM, ok := ACConnMap.hubMap[roomID]
@@ -104,22 +108,7 @@ func serveWS(conn *websocket.Conn) {
 				client := &Client{hub: ConnM, conn: conn, send: make(chan []byte, 8192)}
 				client.hub.register <- client
 				go client.readPump()
-				var data = new(dataUserStruct)
-				data.Cmd = 2
-				data.Data.Id = 0
-				data.Data.AvatarUrl = "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg"
-				data.Data.Timestamp = time.Now().Unix()
-				data.Data.AuthorName = "弹幕姬"
-				data.Data.AuthorType = 0
-				data.Data.PrivilegeType = 0
-				data.Data.Content = "连接成功~"
-				data.Data.UserMark = ""
-				//data.Data.Medal = d.Medal
-				json := jsoniter.ConfigCompatibleWithStandardLibrary
-				ddata, err := json.Marshal(data)
-				if err == nil {
-					conn.WriteMessage(1, ddata)
-				}
+				conn.WriteMessage(1, []byte(`{"cmd":2,"data":{"id":0,"avatarUrl":"https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg","timestamp":1601641021,"authorName":"弹幕姬","authorType":0,"privilegeType":0,"translation":"","content":"连接成功~","userMark":"","medalInfo":{"UperID":0,"ClubName":"","Level":0}}}`))
 				return
 			}
 		}
