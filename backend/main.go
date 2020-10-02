@@ -26,6 +26,7 @@ func main() {
 
 	ACConnMap.hubMap = make(map[int]*Hub)
 	ACPhotoMap.photoMap = make(map[int64]*PhotoStruct)
+	ACRoomMap.roomMap = make(map[int]struct{})
 
 	flag.Parse()
 	loginToACFun()
@@ -114,7 +115,10 @@ func processRoomQueue() {
 		for !RoomQ.IsEmpty() {
 			tmp := RoomQ.Dequeue()
 			log.Println("[Room Queue]", tmp.RoomID, "处理房间")
-			if !IsContain(ACRoomMap, tmp.RoomID) {
+			ACRoomMap.Lock()
+			_, ok := ACRoomMap.roomMap[tmp.RoomID]
+			ACRoomMap.Unlock()
+			if !ok {
 				log.Println("[Room Queue]", tmp.RoomID, "建立WS链接")
 				go startACWS(tmp.RoomID)
 			} else {
@@ -132,42 +136,29 @@ func processRoomRetryQueue() {
 		ACConnMap.Lock()
 		for _, v := range ACConnMap.hubMap {
 			log.Println("[Room Retry Queue]", "检查", v.roomId)
-			if !IsContain(ACRoomMap, v.roomId) {
+			ACRoomMap.Lock()
+			if _, ok := ACRoomMap.roomMap[v.roomId]; !ok {
 				log.Println("[Room Retry Queue]", v.roomId, "建立WS链接")
-				ACRoomMap = append(ACRoomMap, v.roomId)
+				ACRoomMap.roomMap[v.roomId] = struct{}{}
 				go startACWS(v.roomId)
 			}
+			ACRoomMap.Unlock()
 		}
 		ACConnMap.Unlock()
 		log.Println("[Room Retry Queue]", "检查完成")
 	}
 }
 
-func IsContain(items []int, item int) bool {
-	for _, eachItem := range items {
-		if eachItem == item {
-			return true
-		}
-	}
-	return false
-}
-
-func removeInt(items []int, item int) []int {
-	var ret []int
-	for _, eachItem := range items {
-		if eachItem != item {
-			ret = append(ret, eachItem)
-		}
-	}
-	return ret
-}
-
 func startACWS(roomID int) {
-	ACRoomMap = append(ACRoomMap, roomID)
+	ACRoomMap.Lock()
+	ACRoomMap.roomMap[roomID] = struct{}{}
+	ACRoomMap.Unlock()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer func() {
 		log.Println("[Danmaku]", roomID, "结束")
-		ACRoomMap = removeInt(ACRoomMap, roomID)
+		ACRoomMap.Lock()
+		delete(ACRoomMap.roomMap, roomID)
+		ACRoomMap.Unlock()
 		cancel()
 	}()
 	log.Println("[Danmaku]", roomID, "WS监听服务启动中")

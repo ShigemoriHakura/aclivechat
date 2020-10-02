@@ -28,7 +28,10 @@ var ACPhotoMap struct {
 	photoMap map[int64]*PhotoStruct
 }
 
-var ACRoomMap []int
+var ACRoomMap struct {
+	sync.Mutex
+	roomMap map[int]struct{}
+}
 
 var ACUsername = flag.String("username", "", "ACFun login phone/email")
 var ACPassword = flag.String("password", "", "ACFun login password")
