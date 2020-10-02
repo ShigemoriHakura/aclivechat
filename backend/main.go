@@ -24,6 +24,8 @@ func main() {
 		}
 	}()
 
+	ACConnMap.hubMap = make(map[int]*Hub)
+
 	flag.Parse()
 	loginToACFun()
 	log.Println("[Main]", "读取配置文件中")
@@ -99,7 +101,10 @@ func processMessageQueue() {
 		for !MessageQ.IsEmpty() {
 			tmp := MessageQ.Dequeue()
 			log.Println("[Message Queue]", tmp.RoomID, "处理消息")
-			if connHub, ok := ACConnMap[tmp.RoomID]; ok {
+			ACConnMap.Lock()
+			connHub, ok := ACConnMap.hubMap[tmp.RoomID]
+			ACConnMap.Unlock()
+			if ok {
 				json := jsoniter.ConfigCompatibleWithStandardLibrary
 				ddata, err := json.Marshal(tmp.Data)
 				if err == nil {
@@ -131,7 +136,8 @@ func processRoomRetryQueue() {
 	for {
 		time.Sleep(10 * time.Second)
 		log.Println("[Room Retry Queue]", "检查存在Hub但是不存在弹幕服务的房间")
-		for _, v := range ACConnMap {
+		ACConnMap.Lock()
+		for _, v := range ACConnMap.hubMap {
 			log.Println("[Room Retry Queue]", "检查", v.roomId)
 			if !IsContain(ACRoomMap, v.roomId) {
 				log.Println("[Room Retry Queue]", v.roomId, "建立WS链接")
@@ -139,6 +145,7 @@ func processRoomRetryQueue() {
 				go startACWS(v.roomId)
 			}
 		}
+		ACConnMap.Unlock()
 		log.Println("[Room Retry Queue]", "检查完成")
 	}
 }
@@ -182,6 +189,7 @@ func startACWS(roomID int) {
 		for {
 			select {
 			case <-ctx.Done():
+				delete(ACWatchMap, roomID)
 				return
 			default:
 				// 循环获取watchingList并处理

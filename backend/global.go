@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"sync"
 
 	"github.com/orzogc/acfundanmu"
 )
@@ -17,9 +18,13 @@ var QuitText = "离开直播间"
 var AvatarRefreshRate = 86400
 var BanString []string
 var UserMarks = make(map[string]string)
-var ACConnMap = make(map[int](*Hub))
 var ACWatchMap = make(map[int][]acfundanmu.WatchingUser)
 var ACPhotoMap = make(map[int64]*PhotoStruct)
+
+var ACConnMap struct {
+	sync.Mutex
+	hubMap map[int]*Hub
+}
 
 var ACRoomMap []int
 

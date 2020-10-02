@@ -75,14 +75,18 @@ func serveWS(conn *websocket.Conn) {
 			case "1":
 				var roomID = any.Get("data", "roomId").ToInt()
 				log.Println("[WS Server]", "请求房间ID：", roomID)
-				ConnM, ok := ACConnMap[roomID]
+				ACConnMap.Lock()
+				ConnM, ok := ACConnMap.hubMap[roomID]
+				ACConnMap.Unlock()
 				if !ok {
 					var data = new(Message)
 					data.RoomID = roomID
 					RoomQ.Enqueue(data)
-					ACConnMap[roomID] = newHub()
-					ACConnMap[roomID].roomId = roomID
-					go ACConnMap[roomID].run()
+					ACConnMap.Lock()
+					ACConnMap.hubMap[roomID] = newHub()
+					ACConnMap.hubMap[roomID].roomId = roomID
+					go ACConnMap.hubMap[roomID].run()
+					ACConnMap.Unlock()
 					conn.Close()
 					return
 				}

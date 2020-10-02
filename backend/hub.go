@@ -50,8 +50,9 @@ func (h *Hub) run() {
 				log.Println("[Danmaku Hub]", h.roomId, "用户断开")
 				if len(h.clients) <= 0 {
 					log.Println("[Danmaku Hub]", h.roomId, "用户为0，关闭直播间监听")
-					delete(ACConnMap, h.roomId)
-					delete(ACWatchMap, h.roomId)
+					ACConnMap.Lock()
+					delete(ACConnMap.hubMap, h.roomId)
+					ACConnMap.Unlock()
 				}
 			}
 		case message := <-h.broadcast:
