@@ -16,7 +16,7 @@
                 class="style-scope yt-live-chat-item-list-renderer"
                 :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
                 :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
-                :repeated="message.repeated" :userMark="message.userMark" :medal="message.medal" :showEqualMedal="showEqualMedal" :roomID="roomID"
+                :repeated="message.repeated" :userMark="message.userMark" :medal="message.medal" :getShowMedal="getShowMedal(message.medal)" :medalDisplayColorLV="getMedalLVType(message.medal)" :roomID="roomID"
               ></text-message>
               <paid-message :key="message.id" v-else-if="message.type === MESSAGE_TYPE_GIFT"
                 class="style-scope yt-live-chat-item-list-renderer"
@@ -37,7 +37,7 @@
                 class="style-scope yt-live-chat-item-list-renderer"
                 :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
                 :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
-                :repeated="message.repeated"
+                :repeated="message.repeated" :userMark="message.userMark" :medal="message.medal" :getShowMedal="getShowMedal(message.medal)" :medalDisplayColorLV="getMedalLVType(message.medal)" :roomID="roomID"
               ></join-message>
               <quit-message :key="message.id" v-if="message.type === MESSAGE_TYPE_QUIT"
                 class="style-scope yt-live-chat-item-list-renderer"
@@ -186,6 +186,34 @@ export default {
     this.clearMessages()
   },
   methods: {
+    getShowMedal(medal){
+      if(medal && medal.ClubName != ''){
+        if(this.showEqualMedal){
+          if(medal.UperID == this.roomID){
+            return true;
+          }
+        }else{
+          return true;
+        }
+      }
+      return false;
+    },
+    getMedalLVType(medal){
+      if(medal && medal.Level){
+        if (medal.Level <= 3) {
+          return 1;
+        } else if(medal.Level > 3 && medal.Level <= 6) {
+          return 2;
+        } else if(medal.Level > 6 && medal.Level <= 9) {
+          return 3;
+        } else if(medal.Level > 9 && medal.Level <= 12) {
+          return 4;
+        } else if(medal.Level > 12 && medal.Level) {
+          return 5;
+        }
+      }
+      return 0;
+    },
     getGiftShowContent(message) {
       return constants.getGiftShowContent(message, this.showGiftName)
     },

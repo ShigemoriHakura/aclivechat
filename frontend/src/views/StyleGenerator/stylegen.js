@@ -11,11 +11,19 @@ export const DEFAULT_CONFIG = {
   medalNameFont: 'Changa One',
   medalNameFontSize: 20,
   medalNameLineHeight: 0,
-  medalNameColor: '#BEBA9E',
+  medalNameColorLV1: '#4CB166',
+  medalNameColorLV2: '#3E99D1',
+  medalNameColorLV3: '#E29841',
+  medalNameColorLV4: '#C43D37',
+  medalNameColorLV5: '#6630E9',
   medalLevelFont: 'Changa One',
   medalLevelFontSize: 20,
   medalLevelLineHeight: 0,
-  medalLevelColor: '#BEBA9E',
+  medalLevelColorLV1: '#4CB166',
+  medalLevelColorLV2: '#3E99D1',
+  medalLevelColorLV3: '#E29841',
+  medalLevelColorLV4: '#C43D37',
+  medalLevelColorLV5: '#6630E9',
 
   showUserMark: false,
   userMarkFont: 'Changa One',
@@ -203,18 +211,86 @@ yt-live-chat-text-message-renderer #usermark {
 }
 
 /* Medals. */
-yt-live-chat-text-message-renderer #medalName {
+yt-live-chat-text-message-renderer #medalName-1 {
   ${config.showMedalLevel ? 'margin-right:0px!important;' : ''}
   display: ${config.showMedalName ? 'inline' : 'none'} !important;
-  ${config.medalNameColor ? `color: ${config.medalNameColor} !important;` : ''}
+  ${config.medalNameColorLV1 ? `color: ${config.medalNameColorLV1} !important;` : ''}
   font-family: "${cssEscapeStr(config.medalNameFont)}"${FALLBACK_FONTS};
   font-size: ${config.medalNameFontSize}px !important;
   line-height: ${config.medalNameLineHeight || config.medalNameFontSize}px !important;
 }
 
-yt-live-chat-text-message-renderer #medalLevel {
+yt-live-chat-text-message-renderer #medalName-2 {
+  ${config.showMedalLevel ? 'margin-right:0px!important;' : ''}
+  display: ${config.showMedalName ? 'inline' : 'none'} !important;
+  ${config.medalNameColorLV2 ? `color: ${config.medalNameColorLV2} !important;` : ''}
+  font-family: "${cssEscapeStr(config.medalNameFont)}"${FALLBACK_FONTS};
+  font-size: ${config.medalNameFontSize}px !important;
+  line-height: ${config.medalNameLineHeight || config.medalNameFontSize}px !important;
+}
+
+yt-live-chat-text-message-renderer #medalName-3 {
+  ${config.showMedalLevel ? 'margin-right:0px!important;' : ''}
+  display: ${config.showMedalName ? 'inline' : 'none'} !important;
+  ${config.medalNameColorLV3 ? `color: ${config.medalNameColorLV3} !important;` : ''}
+  font-family: "${cssEscapeStr(config.medalNameFont)}"${FALLBACK_FONTS};
+  font-size: ${config.medalNameFontSize}px !important;
+  line-height: ${config.medalNameLineHeight || config.medalNameFontSize}px !important;
+}
+
+yt-live-chat-text-message-renderer #medalName-4 {
+  ${config.showMedalLevel ? 'margin-right:0px!important;' : ''}
+  display: ${config.showMedalName ? 'inline' : 'none'} !important;
+  ${config.medalNameColorLV4 ? `color: ${config.medalNameColorLV4} !important;` : ''}
+  font-family: "${cssEscapeStr(config.medalNameFont)}"${FALLBACK_FONTS};
+  font-size: ${config.medalNameFontSize}px !important;
+  line-height: ${config.medalNameLineHeight || config.medalNameFontSize}px !important;
+}
+
+yt-live-chat-text-message-renderer #medalName-5 {
+  ${config.showMedalLevel ? 'margin-right:0px!important;' : ''}
+  display: ${config.showMedalName ? 'inline' : 'none'} !important;
+  ${config.medalNameColorLV5 ? `color: ${config.medalNameColorLV5} !important;` : ''}
+  font-family: "${cssEscapeStr(config.medalNameFont)}"${FALLBACK_FONTS};
+  font-size: ${config.medalNameFontSize}px !important;
+  line-height: ${config.medalNameLineHeight || config.medalNameFontSize}px !important;
+}
+
+yt-live-chat-text-message-renderer #medalLevel-1 {
   display: ${config.showMedalLevel ? 'inline' : 'none'} !important;
-  ${config.medalLevelColor ? `color: ${config.medalLevelColor} !important;` : ''}
+  ${config.medalLevelColorLV1 ? `color: ${config.medalLevelColorLV1} !important;` : ''}
+  font-family: "${cssEscapeStr(config.medalLevelFont)}"${FALLBACK_FONTS};
+  font-size: ${config.medalLevelFontSize}px !important;
+  line-height: ${config.medalLevelLineHeight || config.medalLevelFontSize}px !important;
+}
+
+yt-live-chat-text-message-renderer #medalLevel-2 {
+  display: ${config.showMedalLevel ? 'inline' : 'none'} !important;
+  ${config.medalLevelColorLV2 ? `color: ${config.medalLevelColorLV2} !important;` : ''}
+  font-family: "${cssEscapeStr(config.medalLevelFont)}"${FALLBACK_FONTS};
+  font-size: ${config.medalLevelFontSize}px !important;
+  line-height: ${config.medalLevelLineHeight || config.medalLevelFontSize}px !important;
+}
+
+yt-live-chat-text-message-renderer #medalLevel-3 {
+  display: ${config.showMedalLevel ? 'inline' : 'none'} !important;
+  ${config.medalLevelColorLV3 ? `color: ${config.medalLevelColorLV3} !important;` : ''}
+  font-family: "${cssEscapeStr(config.medalLevelFont)}"${FALLBACK_FONTS};
+  font-size: ${config.medalLevelFontSize}px !important;
+  line-height: ${config.medalLevelLineHeight || config.medalLevelFontSize}px !important;
+}
+
+yt-live-chat-text-message-renderer #medalLevel-4 {
+  display: ${config.showMedalLevel ? 'inline' : 'none'} !important;
+  ${config.medalLevelColorLV4 ? `color: ${config.medalLevelColorLV4} !important;` : ''}
+  font-family: "${cssEscapeStr(config.medalLevelFont)}"${FALLBACK_FONTS};
+  font-size: ${config.medalLevelFontSize}px !important;
+  line-height: ${config.medalLevelLineHeight || config.medalLevelFontSize}px !important;
+}
+
+yt-live-chat-text-message-renderer #medalLevel-5 {
+  display: ${config.showMedalLevel ? 'inline' : 'none'} !important;
+  ${config.medalLevelColorLV5 ? `color: ${config.medalLevelColorLV5} !important;` : ''}
   font-family: "${cssEscapeStr(config.medalLevelFont)}"${FALLBACK_FONTS};
   font-size: ${config.medalLevelFontSize}px !important;
   line-height: ${config.medalLevelLineHeight || config.medalLevelFontSize}px !important;

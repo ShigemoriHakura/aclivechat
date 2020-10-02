@@ -80,19 +80,11 @@ func loginToACFun() {
 
 func startMessageQueue() {
 	MessageQ := initMessageQueue()
-	var data = new(Message)
-	data.RoomID = 35119946
-	MessageQ.Enqueue(data)
-	MessageQ.Dequeue()
 	log.Println("[Message Queue]", "初始化成功，当前队列长度：", MessageQ.Size())
 }
 
 func startRoomQueue() {
 	RoomQ := initRoomQueue()
-	var data = new(Message)
-	data.RoomID = 35119946
-	RoomQ.Enqueue(data)
-	RoomQ.Dequeue()
 	log.Println("[Room Queue]", "初始化成功，当前队列长度：", RoomQ.Size())
 }
 

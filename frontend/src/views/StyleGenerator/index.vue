@@ -51,9 +51,23 @@
         <el-form-item :label="$t('stylegen.lineHeight')">
           <el-input v-model.number="form.medalNameLineHeight" type="number" min="0"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('stylegen.normalColor')">
-          <el-color-picker v-model="form.medalNameColor"></el-color-picker>
+        <el-form-item :label="`${$t('stylegen.normalColor')} - LV1`">
+          <el-color-picker v-model="form.medalNameColorLV1"></el-color-picker>
         </el-form-item>
+        <el-form-item :label="`${$t('stylegen.normalColor')} - LV2`">
+          <el-color-picker v-model="form.medalNameColorLV2"></el-color-picker>
+        </el-form-item>
+        <el-form-item :label="`${$t('stylegen.normalColor')} - LV3`">
+          <el-color-picker v-model="form.medalNameColorLV3"></el-color-picker>
+        </el-form-item>
+        <el-form-item :label="`${$t('stylegen.normalColor')} - LV4`">
+          <el-color-picker v-model="form.medalNameColorLV4"></el-color-picker>
+        </el-form-item>
+        <el-form-item :label="`${$t('stylegen.normalColor')} - LV5`">
+          <el-color-picker v-model="form.medalNameColorLV5"></el-color-picker>
+        </el-form-item>
+
+
         <el-form-item :label="$t('stylegen.showMedalLevel')">
           <el-switch v-model="form.showMedalLevel"></el-switch>
         </el-form-item>
@@ -66,8 +80,20 @@
         <el-form-item :label="$t('stylegen.lineHeight')">
           <el-input v-model.number="form.medalLevelLineHeight" type="number" min="0"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('stylegen.normalColor')">
-          <el-color-picker v-model="form.medalLevelColor"></el-color-picker>
+        <el-form-item :label="`${$t('stylegen.normalColor')} - LV1`">
+          <el-color-picker v-model="form.medalLevelColorLV1"></el-color-picker>
+        </el-form-item>
+        <el-form-item :label="`${$t('stylegen.normalColor')} - LV2`">
+          <el-color-picker v-model="form.medalLevelColorLV2"></el-color-picker>
+        </el-form-item>
+        <el-form-item :label="`${$t('stylegen.normalColor')} - LV3`">
+          <el-color-picker v-model="form.medalLevelColorLV3"></el-color-picker>
+        </el-form-item>
+        <el-form-item :label="`${$t('stylegen.normalColor')} - LV4`">
+          <el-color-picker v-model="form.medalLevelColorLV4"></el-color-picker>
+        </el-form-item>
+        <el-form-item :label="`${$t('stylegen.normalColor')} - LV5`">
+          <el-color-picker v-model="form.medalLevelColorLV5"></el-color-picker>
         </el-form-item>
 
         <h3>{{$t('stylegen.userNames')}}</h3>
@@ -280,7 +306,7 @@ let textMessageTemplate = {
   authorType: constants.AUTHRO_TYPE_NORMAL,
   content: '',
   userMark: '',
-  medal: {UperID: "35119946", ClubName: "炖猫人", Level: "99"},
+  medal: {UperID: "35119946", ClubName: "炖猫人", Level: "1"},
   privilegeType: 0,
   repeated: 1,
   translation: ''
@@ -372,7 +398,8 @@ const EXAMPLE_MESSAGES = [
     authorType:  constants.AUTHRO_TYPE_MEMBER,
     content: '草',
     privilegeType: 3,
-    repeated: 3
+    repeated: 3,
+    medal: {UperID: "35119946", ClubName: "炖猫人", Level: "5"},
   },
   {
     ...textMessageTemplate,
@@ -380,14 +407,26 @@ const EXAMPLE_MESSAGES = [
     authorName: 'admin房管',
     authorType: constants.AUTHRO_TYPE_ADMIN,
     userMark: '权限狗',
-    content: '哈哈哈哈哈'
+    content: '哈哈哈哈哈',
+    medal: {UperID: "35119946", ClubName: "炖猫人", Level: "8"},
+  },
+  {
+    ...textMessageTemplate,
+    id: (nextId++).toString(),
+    authorName: 'DD头子',
+    authorType: constants.AUTHRO_TYPE_ADMIN,
+    userMark: 'DD',
+    content: 'yoooo',
+    medal: {UperID: "35119946", ClubName: "DDKing", Level: "10"},
   },
   {
     ...joinMessageTemplate,
     id: (nextId++).toString(),
     authorName: '蜜汁主播',
     authorType: constants.AUTHRO_TYPE_OWNER,
-    content: '加入直播间'
+    content: '加入直播间',
+    userMark: '',
+    medal: {UperID: "35119946", ClubName: "炖猫人", Level: "15"},
   },
   {
     ...quitMessageTemplate,

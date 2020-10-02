@@ -8,7 +8,7 @@ export default {
   home: {
     roomIdEmpty: "Room ID can't be empty",
     roomIdInteger: 'Room ID must be positive integer',
-    textEmpty: '',
+    textEmpty: 'Should not be empty',
 
     followText: 'Follow room text',
     followTextDefault: 'follow',
@@ -40,9 +40,6 @@ export default {
 
     block: 'Block',
     giftDanmaku: 'Block system messages (gift effect)',
-    blockLevel: 'Block user level lower than',
-    informalUser: 'Block informal users',
-    unverifiedUser: 'Block unverified users',
     blockKeywords: 'Block keywords',
     onePerLine: 'One per line',
     blockUsers: 'Block users',

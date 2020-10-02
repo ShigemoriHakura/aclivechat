@@ -5,6 +5,9 @@
     ></img-shadow>
     <div id="content" class="style-scope yt-live-chat-text-message-renderer">
       <span id="timestamp" class="style-scope yt-live-chat-text-message-renderer">{{timeText}}</span>
+      <span v-if="getShowMedal" :id="`medalName-${medalDisplayColorLV}`" class="style-scope yt-live-chat-text-message-renderer">{{medal.ClubName}}</span>
+      <span v-if="getShowMedal" :id="`medalLevel-${medalDisplayColorLV}`" class="style-scope yt-live-chat-text-message-renderer">({{medal.Level}})</span>
+      <span v-if="userMark !== ''" id="usermark" class="style-scope yt-live-chat-text-message-renderer">{{userMark}}</span>
       <yt-live-chat-author-chip class="style-scope yt-live-chat-text-message-renderer">
         <span id="author-name" dir="auto" class="style-scope yt-live-chat-author-chip" :type="authorTypeText">{{
           authorName
@@ -50,7 +53,17 @@ export default {
     authorType: Number,
     content: String,
     privilegeType: Number,
-    repeated: Number
+    repeated: Number,
+    userMark: String,
+    medal: Array,
+    medalDisplayColorLV: {
+      type: Number,
+      default: 1
+    },
+    getShowMedal: {
+      type: Boolean,
+      default: false
+    },
   },
   computed: {
     timeText() {
@@ -110,6 +123,27 @@ canvas.yt-live-chat-text-message-renderer, caption.yt-live-chat-text-message-ren
 #timestamp.yt-live-chat-text-message-renderer {
   display: var(--yt-live-chat-item-timestamp-display, inline);
   margin: var(--yt-live-chat-item-timestamp-margin, 0 8px 0 0);
+  color: var(--yt-live-chat-tertiary-text-color);
+  font-size: 11px;
+}
+
+#usermark.yt-live-chat-text-message-renderer {
+  display: var(--yt-live-chat-item-usermark-display, inline);
+  margin: var(--yt-live-chat-item-usermark-margin, 0 8px 0 0);
+  color: var(--yt-live-chat-tertiary-text-color);
+  font-size: 11px;
+}
+
+#medalName-1.yt-live-chat-text-message-renderer, #medalName-2.yt-live-chat-text-message-renderer, #medalName-3.yt-live-chat-text-message-renderer, #medalName-4.yt-live-chat-text-message-renderer, #medalName-5.yt-live-chat-text-message-renderer {
+  display: var(--yt-live-chat-item-medal-display, inline);
+  margin: var(--yt-live-chat-item-medal-margin, 0 8px 0 0);
+  color: var(--yt-live-chat-tertiary-text-color);
+  font-size: 11px;
+}
+
+#medalLevel-1.yt-live-chat-text-message-renderer, #medalLevel-2.yt-live-chat-text-message-renderer, #medalLevel-3.yt-live-chat-text-message-renderer, #medalLevel-4.yt-live-chat-text-message-renderer, #medalLevel-5.yt-live-chat-text-message-renderer {
+  display: var(--yt-live-chat-item-medal-display, inline);
+  margin: var(--yt-live-chat-item-medal-margin, 0 8px 0 0);
   color: var(--yt-live-chat-tertiary-text-color);
   font-size: 11px;
 }

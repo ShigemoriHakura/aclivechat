@@ -36,6 +36,16 @@ func startHttpServer() {
 	r.HandleFunc("/server_info", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"version": "` + Version + `", "config": {"enableTranslate": ` + strconv.FormatBool(EnableTranslate) + `}}`))
 	})
+	r.HandleFunc("/room_info", func(w http.ResponseWriter, r *http.Request) {
+		var roomStr = ""
+		ACConnMap.Lock()
+		for _, v := range ACConnMap.hubMap {
+			roomStr += strconv.Itoa(v.roomId) + ","
+		}
+		ACConnMap.Unlock()
+		roomStr = trimLastChar(roomStr)
+		w.Write([]byte(`{"version": "` + Version + `", "rooms": "` + roomStr + `"}`))
+	})
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("dist")))
 	http.Handle("/", r)
 

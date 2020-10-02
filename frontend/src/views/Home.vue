@@ -88,15 +88,6 @@
         <el-form-item :label="$t('home.giftDanmaku')">
           <el-switch v-model="form.blockGiftDanmaku"></el-switch>
         </el-form-item>
-        <el-form-item :label="$t('home.blockLevel')">
-          <el-slider v-model="form.blockLevel" show-input :min="0" :max="60"></el-slider>
-        </el-form-item>
-        <el-form-item :label="$t('home.informalUser')">
-          <el-switch v-model="form.blockNewbie"></el-switch>
-        </el-form-item>
-        <el-form-item :label="$t('home.unverifiedUser')">
-          <el-switch v-model="form.blockNotMobileVerified"></el-switch>
-        </el-form-item>
         <el-form-item :label="$t('home.blockKeywords')">
           <el-input v-model="form.blockKeywords" type="textarea" :rows="5" :placeholder="$t('home.onePerLine')"></el-input>
         </el-form-item>

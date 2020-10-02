@@ -23,9 +23,6 @@ export const DEFAULT_CONFIG = {
   maxNumber: 60,
 
   blockGiftDanmaku: false,
-  blockLevel: 0,
-  blockNewbie: false,
-  blockNotMobileVerified: false,
   blockKeywords: '',
   blockUsers: '',
   blockMedalLevel: 0,

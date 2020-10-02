@@ -91,9 +91,6 @@ export default {
       cfg.mergeGift = toBool(cfg.mergeGift)
       cfg.maxNumber = toInt(cfg.maxNumber, config.DEFAULT_CONFIG.maxNumber)
       cfg.blockGiftDanmaku = toBool(cfg.blockGiftDanmaku)
-      cfg.blockLevel = toInt(cfg.blockLevel, config.DEFAULT_CONFIG.blockLevel)
-      cfg.blockNewbie = toBool(cfg.blockNewbie)
-      cfg.blockNotMobileVerified = toBool(cfg.blockNotMobileVerified)
       cfg.blockMedalLevel = toInt(cfg.blockMedalLevel, config.DEFAULT_CONFIG.blockMedalLevel)
       cfg.autoTranslate = toBool(cfg.autoTranslate)
 
@@ -154,6 +151,8 @@ export default {
           authorName: data.authorName,
           authorType: data.authorType,
           content: this.config.joinText,
+          userMark: data.userMark,
+          medal: data.medalInfo,
           privilegeType: data.privilegeType,
           repeated: 1,
           translation: data.translation
@@ -308,12 +307,6 @@ export default {
     },
     filterTextMessage(data) {
       if (this.config.blockGiftDanmaku && data.isGiftDanmaku) {
-        return false
-      } else if (this.config.blockLevel > 0 && data.authorLevel < this.config.blockLevel) {
-        return false
-      } else if (this.config.blockNewbie && data.isNewbie) {
-        return false
-      } else if (this.config.blockNotMobileVerified && !data.isMobileVerified) {
         return false
       } else if (this.config.blockMedalLevel > 0 && data.medalLevel < this.config.blockMedalLevel) {
         return false
