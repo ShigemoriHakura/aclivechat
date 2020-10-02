@@ -33,7 +33,7 @@ export default {
   },
   data() {
     return {
-      Version: config.Version,
+      VERSION: config.VERSION,
       isMobile: false,
       hideSidebar: true
     }
