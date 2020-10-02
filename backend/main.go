@@ -178,10 +178,10 @@ func startACWS(roomID int) {
 	}
 	dq.StartDanmu(ctx)
 	go func() {
+		var watchingListold []acfundanmu.WatchingUser
 		for {
 			select {
 			case <-ctx.Done():
-				delete(ACWatchMap, roomID)
 				return
 			default:
 				// 循环获取watchingList并处理
@@ -189,54 +189,47 @@ func startACWS(roomID int) {
 				if err != nil {
 					log.Println("[Danmaku]", roomID, "获取在线用户失败：", err)
 				} else {
-					watchingListold, ok := ACWatchMap[roomID]
-					if !ok {
-						ACWatchMap[roomID] = watchingList
-						//return
-					} else {
-						ACWatchMap[roomID] = watchingList
+					//处理旧的
+					var processedList []string
+					processedList2 := make(map[string]acfundanmu.WatchingUser)
+					for _, value := range watchingListold {
+						var stringUserID = strconv.FormatInt(value.UserID, 10)
+						processedList = append(processedList, stringUserID)
+						processedList2[stringUserID] = value
+					}
 
-						//处理旧的
-						var processedList []string
-						processedList2 := make(map[string]acfundanmu.WatchingUser)
-						for _, value := range watchingListold {
-							var stringUserID = strconv.FormatInt(value.UserID, 10)
-							processedList = append(processedList, stringUserID)
-							processedList2[stringUserID] = value
-						}
+					//处理新的
+					var processedNewList []string
+					for _, value := range watchingList {
+						var stringUserID = strconv.FormatInt(value.UserID, 10)
+						//fmt.Printf("id %v \n", stringUserID)
+						processedNewList = append(processedNewList, stringUserID)
+					}
+					_, removed := Arrcmp(processedList, processedNewList)
+					for _, value := range removed {
+						d := processedList2[value]
+						if !d.AnonymousUser {
+							avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
+							var data = new(dataUserStruct)
+							data.Cmd = 9
+							data.Data.Id = d.UserID
+							data.Data.AvatarUrl = avatar
+							data.Data.Timestamp = time.Now().Unix()
+							data.Data.AuthorName = d.Nickname
+							data.Data.AuthorType = AuthorType
+							data.Data.PrivilegeType = 0
+							data.Data.Content = QuitText
+							data.Data.UserMark = getUserMark(d.UserID)
 
-						//处理新的
-						var processedNewList []string
-						for _, value := range watchingList {
-							var stringUserID = strconv.FormatInt(value.UserID, 10)
-							//fmt.Printf("id %v \n", stringUserID)
-							processedNewList = append(processedNewList, stringUserID)
-						}
-						_, removed := Arrcmp(processedList, processedNewList)
-						for _, value := range removed {
-							d := processedList2[value]
-							if !d.AnonymousUser {
-								avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
-								var data = new(dataUserStruct)
-								data.Cmd = 9
-								data.Data.Id = d.UserID
-								data.Data.AvatarUrl = avatar
-								data.Data.Timestamp = time.Now().Unix()
-								data.Data.AuthorName = d.Nickname
-								data.Data.AuthorType = AuthorType
-								data.Data.PrivilegeType = 0
-								data.Data.Content = QuitText
-								data.Data.UserMark = getUserMark(d.UserID)
-
-								var dataQ = new(Message)
-								dataQ.RoomID = roomID
-								dataQ.Data = data
-								MessageQ.Enqueue(dataQ)
-								log.Printf("[Danmaku] %v, %s（%d）离开直播间\n", roomID, d.Nickname, d.UserID)
-							}
+							var dataQ = new(Message)
+							dataQ.RoomID = roomID
+							dataQ.Data = data
+							MessageQ.Enqueue(dataQ)
+							log.Printf("[Danmaku] %v, %s（%d）离开直播间\n", roomID, d.Nickname, d.UserID)
 						}
 					}
 				}
+				watchingListold = watchingList
 				time.Sleep(5 * time.Second)
 			}
 		}

@@ -3,8 +3,6 @@ package main
 import (
 	"flag"
 	"sync"
-
-	"github.com/orzogc/acfundanmu"
 )
 
 const defaultAvatar = "https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg"
@@ -18,7 +16,6 @@ var QuitText = "离开直播间"
 var AvatarRefreshRate = 86400
 var BanString []string
 var UserMarks = make(map[string]string)
-var ACWatchMap = make(map[int][]acfundanmu.WatchingUser)
 var ACPhotoMap = make(map[int64]*PhotoStruct)
 
 var ACConnMap struct {
