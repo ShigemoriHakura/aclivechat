@@ -78,5 +78,21 @@ export default {
 }
 </script>
 
+<style>
+yt-live-chat-text-message-renderer>#content>#loveMessage>.el-badge {
+  margin-left: 10px;
+}
+
+yt-live-chat-text-message-renderer>#content>#loveMessage>.el-badge .el-badge__content {
+  font-size: 12px !important;
+  line-height: 18px !important;
+  text-shadow: none !important;
+  font-family: sans-serif !important;
+  color: #FFF !important;
+  background-color: var(--repeated-mark-color) !important;
+  border: none;
+}
+</style>
+
 <style src="@/assets/css/youtube/yt-live-chat-text-message-renderer.css"></style>
 <style src="@/assets/css/youtube/yt-live-chat-author-chip.css"></style>
