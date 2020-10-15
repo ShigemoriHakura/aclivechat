@@ -5,6 +5,7 @@
     ></img-shadow>
     <div id="content" class="style-scope yt-live-chat-text-message-renderer">
       <span id="timestamp" class="style-scope yt-live-chat-text-message-renderer">{{timeText}}</span>
+      <span v-if="userMark !== ''" id="usermark" class="style-scope yt-live-chat-text-message-renderer">{{userMark}}</span>
       <yt-live-chat-author-chip class="style-scope yt-live-chat-text-message-renderer">
         <span id="author-name" dir="auto" class="style-scope yt-live-chat-author-chip" :type="authorTypeText">{{
           authorName
@@ -17,7 +18,7 @@
           ></author-badge>
         </span>
       </yt-live-chat-author-chip>
-      <span id="loveMessage" class="style-scope yt-live-chat-text-message-renderer">{{
+      <span id="joinGroupMessage" class="style-scope yt-live-chat-text-message-renderer">{{
         content
         }}<el-badge :value="repeated" :max="99" v-show="repeated > 1" class="style-scope yt-live-chat-text-message-renderer"
           :style="{'--repeated-mark-color': repeatedMarkColor}"
@@ -38,7 +39,7 @@ const REPEATED_MARK_COLOR_START = [210, 100.0, 62.5]
 const REPEATED_MARK_COLOR_END = [360, 87.3, 69.2]
 
 export default {
-  name: 'LoveMessage',
+  name: 'JoinGroupMessage',
   components: {
     ImgShadow,
     AuthorBadge
@@ -50,7 +51,17 @@ export default {
     authorType: Number,
     content: String,
     privilegeType: Number,
-    repeated: Number
+    repeated: Number,
+    userMark: String,
+    medal: Array,
+    medalDisplayColorLV: {
+      type: Number,
+      default: 1
+    },
+    getShowMedal: {
+      type: Boolean,
+      default: false
+    },
   },
   computed: {
     timeText() {

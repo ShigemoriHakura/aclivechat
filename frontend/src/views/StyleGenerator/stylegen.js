@@ -52,6 +52,7 @@ export const DEFAULT_CONFIG = {
   messageQuitColor: '#1B4356',
   messageFollowColor: '#3FE1BB',
   messageLoveColor: '#EB1F1F',
+  messageJoinGroupColor: '#C300FF',
   messageOnNewLine: false,
 
   showTime: false,
@@ -332,6 +333,18 @@ yt-live-chat-text-message-renderer #joinMessage * {
 }
 
 ${!config.messageOnNewLine ? '' : `yt-live-chat-text-message-renderer #joinMessage {
+  display: block !important;
+}`}
+
+yt-live-chat-text-message-renderer #joinGroupMessage,
+yt-live-chat-text-message-renderer #joinGroupMessage * {
+  ${config.messageJoinGroupColor ? `color: ${config.messageJoinGroupColor} !important;` : ''}
+  font-family: "${cssEscapeStr(config.messageFont)}"${FALLBACK_FONTS};
+  font-size: ${config.messageFontSize}px !important;
+  line-height: ${config.messageLineHeight || config.messageFontSize}px !important;
+}
+
+${!config.messageOnNewLine ? '' : `yt-live-chat-text-message-renderer #joinGroupMessage {
   display: block !important;
 }`}
 

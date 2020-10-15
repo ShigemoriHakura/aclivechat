@@ -102,6 +102,7 @@ func processMessageQueue() {
 				json := jsoniter.ConfigCompatibleWithStandardLibrary
 				ddata, err := json.Marshal(tmp.Data)
 				if err == nil {
+					//log.Println("Sent: ", 1, string(ddata))
 					connHub.broadcast <- ddata
 				}
 			}
@@ -132,10 +133,10 @@ func processRoomQueue() {
 func processRoomRetryQueue() {
 	for {
 		time.Sleep(10 * time.Second)
-		log.Println("[Room Retry Queue]", "检查存在Hub但是不存在弹幕服务的房间")
+		//log.Println("[Room Retry Queue]", "检查存在Hub但是不存在弹幕服务的房间")
 		ACConnMap.Lock()
 		for _, v := range ACConnMap.hubMap {
-			log.Println("[Room Retry Queue]", "检查", v.roomId)
+			//log.Println("[Room Retry Queue]", "检查", v.roomId)
 			ACRoomMap.Lock()
 			if _, ok := ACRoomMap.roomMap[v.roomId]; !ok {
 				log.Println("[Room Retry Queue]", v.roomId, "建立WS链接")
@@ -145,7 +146,7 @@ func processRoomRetryQueue() {
 			ACRoomMap.Unlock()
 		}
 		ACConnMap.Unlock()
-		log.Println("[Room Retry Queue]", "检查完成")
+		//log.Println("[Room Retry Queue]", "检查完成")
 	}
 }
 
@@ -168,7 +169,7 @@ func startACWS(roomID int) {
 		log.Println("[Danmaku]", roomID, "出错结束")
 		return
 	}
-	dq.StartDanmu(ctx)
+	dq.StartDanmu(ctx, false)
 	go func() {
 		var watchingListold []acfundanmu.WatchingUser
 		for {
@@ -307,6 +308,8 @@ func startACWS(roomID int) {
 					data.Cmd = 3
 					data.Data.Id = d.UserID
 					data.Data.AvatarUrl = avatar
+					data.Data.WebpPic = "https://static.yximgs.com/bs2/giftCenter/giftCenter-20200316101317UbXssBoH.webp"
+					data.Data.PngPic = "https://static.yximgs.com/bs2/giftCenter/giftCenter-20200812141711JRxMyUWH.png"
 					data.Data.Timestamp = time.Now().Unix()
 					data.Data.AuthorName = d.Nickname
 					data.Data.UserMark = getUserMark(d.UserID)
@@ -324,6 +327,8 @@ func startACWS(roomID int) {
 					data.Cmd = 3
 					data.Data.Id = d.UserID
 					data.Data.AvatarUrl = avatar
+					data.Data.WebpPic = d.WebpPic
+					data.Data.PngPic = d.PngPic
 					data.Data.Timestamp = time.Now().Unix()
 					data.Data.AuthorName = d.Nickname
 					data.Data.AuthorType = AuthorType

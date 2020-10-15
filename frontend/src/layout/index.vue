@@ -24,7 +24,7 @@
 
 <script>
 import Sidebar from './Sidebar.vue'
-import * as config from '@/api/config'
+import * as chatConfig from '@/api/chatConfig'
 
 export default {
   name: 'Layout',
@@ -33,7 +33,7 @@ export default {
   },
   data() {
     return {
-      VERSION: config.VERSION,
+      VERSION: chatConfig.VERSION,
       isMobile: false,
       hideSidebar: true
     }
@@ -55,7 +55,7 @@ export default {
 
 <style>
 html {
-  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "\5FAE\8F6F\96C5\9ED1", "微软雅黑", Arial, sans-serif;
 }
 
 html, body, #app, .app-wrapper, .sidebar-container {

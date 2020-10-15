@@ -24,6 +24,9 @@ func startHttpServer() {
 	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
 		serveHome(w, r)
 	})
+	r.HandleFunc("/api/chat", func(w http.ResponseWriter, r *http.Request) {
+		serveHome(w, r)
+	})
 	r.HandleFunc("/room/{key}", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "dist/index.html")
 	})
@@ -76,9 +79,9 @@ func serveWS(conn *websocket.Conn) {
 			conn.Close()
 			break
 		} else {
-			//log.Println("Conn: ", mType, string(msg))
 			any := jsoniter.Get(msg)
 			var cmd = any.Get("cmd").ToString()
+			//log.Println("Conn: ", 1, string(msg))
 			//log.Println("Conn cmd: ", cmd)
 			switch cmd {
 			case "0":

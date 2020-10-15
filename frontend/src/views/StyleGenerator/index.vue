@@ -150,6 +150,9 @@
         <el-form-item :label="$t('stylegen.loveColor')">
           <el-color-picker v-model="form.messageLoveColor"></el-color-picker>
         </el-form-item>
+        <el-form-item :label="$t('stylegen.joinGroupColor')">
+          <el-color-picker v-model="form.messageJoinGroupColor"></el-color-picker>
+        </el-form-item>
         <el-form-item :label="$t('stylegen.onNewLine')">
           <el-switch v-model="form.messageOnNewLine"></el-switch>
         </el-form-item>
@@ -350,7 +353,7 @@ let followMessageTemplate = {
   repeated: 1,
   translation: ''
 }
-let legacyPaidMessageTemplate = {
+/*let legacyPaidMessageTemplate = {
   id: 0,
   addTime: time,
   type: constants.MESSAGE_TYPE_MEMBER,
@@ -358,6 +361,15 @@ let legacyPaidMessageTemplate = {
   time: time,
   authorName: '',
   title: 'NEW MEMBER!',
+  content: ''
+}*/
+let joinGroupMessageTemplate = {
+  id: 0,
+  addTime: time,
+  type: constants.MESSAGE_TYPE_JOIN_GROUP,
+  avatarUrl: 'https://tx-free-imgs.acfun.cn/style/image/defaultAvatar.jpg',
+  time: time,
+  authorName: '',
   content: ''
 }
 let paidMessageTemplate = {
@@ -449,11 +461,17 @@ const EXAMPLE_MESSAGES = [
     authorType: constants.AUTHRO_TYPE_MEMBER,
     content: '点亮爱心'
   },
-  {
+  /*{
     ...legacyPaidMessageTemplate,
     id: (nextId++).toString(),
     authorName: '日日老师',
-    content: 'Welcome 日日老师!'
+    content: '欢迎 日日老师!'
+  },*/
+  {
+    ...joinGroupMessageTemplate,
+    id: (nextId++).toString(),
+    authorName: '腹肌',
+    content: '加入了守护团'
   },
   /*{
     ...paidMessageTemplate,

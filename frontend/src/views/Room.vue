@@ -5,6 +5,7 @@
     :showGiftPrice="config.showGiftPrice" 
     :exchangeRate="config.exchangeRate" 
     :showACCoinInstead="config.showACCoinInstead" 
+    :showGiftPngInstead="config.showGiftPngInstead" 
     :showEqualMedal="config.showEqualMedal"
     :roomID="this.$route.params.roomId"
   ></chat-renderer>
@@ -12,7 +13,7 @@
 
 <script>
 import {mergeConfig, toBool, toInt} from '@/utils'
-import * as config from '@/api/config'
+import * as chatConfig from '@/api/chatConfig'
 import ChatRenderer from '@/components/ChatRenderer'
 import * as constants from '@/components/ChatRenderer/constants'
 
@@ -27,6 +28,7 @@ const COMMAND_UPDATE_TRANSLATION = 7
 const COMMAND_ADD_LOVE = 8
 const COMMAND_QUIT_ROOM = 9
 const COMMAND_ADD_FOLLOW = 10
+const COMMAND_ADD_JOIN_GROUP = 11
 
 export default {
   name: 'Room',
@@ -35,8 +37,8 @@ export default {
   },
   data() {
     return {
-      config: {...config.DEFAULT_CONFIG},
-      VERSION: config.VERSION,
+      config: {...chatConfig.DEFAULT_CONFIG},
+      VERSION: chatConfig.VERSION,
 
       websocket: null,
       retryCount: 0,
@@ -74,9 +76,9 @@ export default {
           cfg[i] = this.$route.query[i]
         }
       }
-      cfg = mergeConfig(cfg, config.DEFAULT_CONFIG)
-      cfg.minGiftPrice = toInt(cfg.minGiftPrice, config.DEFAULT_CONFIG.minGiftPrice)
-      cfg.exchangeRate = toInt(cfg.exchangeRate, config.DEFAULT_CONFIG.exchangeRate)
+      cfg = mergeConfig(cfg, chatConfig.DEFAULT_CONFIG)
+      cfg.minGiftPrice = toInt(cfg.minGiftPrice, chatConfig.DEFAULT_CONFIG.minGiftPrice)
+      cfg.exchangeRate = toInt(cfg.exchangeRate, chatConfig.DEFAULT_CONFIG.exchangeRate)
       cfg.showDanmaku = toBool(cfg.showDanmaku)
       cfg.showEqualMedal = toBool(cfg.showEqualMedal)
       cfg.showLove = toBool(cfg.showLove)
@@ -87,12 +89,13 @@ export default {
       cfg.showGiftName = toBool(cfg.showGiftName)
       cfg.showGiftPrice = toBool(cfg.showGiftPrice)
       cfg.showACCoinInstead = toBool(cfg.showACCoinInstead)
+      cfg.showGiftPngInstead = toBool(cfg.showGiftPngInstead)
       cfg.mergeSimilarDanmaku = toBool(cfg.mergeSimilarDanmaku)
       cfg.mergeSimilarOther = toBool(cfg.mergeSimilarOther)
       cfg.mergeGift = toBool(cfg.mergeGift)
-      cfg.maxNumber = toInt(cfg.maxNumber, config.DEFAULT_CONFIG.maxNumber)
+      cfg.maxNumber = toInt(cfg.maxNumber, chatConfig.DEFAULT_CONFIG.maxNumber)
       cfg.blockGiftDanmaku = toBool(cfg.blockGiftDanmaku)
-      cfg.blockMedalLevel = toInt(cfg.blockMedalLevel, config.DEFAULT_CONFIG.blockMedalLevel)
+      cfg.blockMedalLevel = toInt(cfg.blockMedalLevel, chatConfig.DEFAULT_CONFIG.blockMedalLevel)
       cfg.autoTranslate = toBool(cfg.autoTranslate)
 
       this.config = cfg
@@ -212,10 +215,14 @@ export default {
           type: constants.MESSAGE_TYPE_GIFT,
           avatarUrl: data.avatarUrl,
           time: new Date(data.timestamp * 1000),
-          authorName: data.authorName,
+          webpPicUrl: data.webpPicUrl,
+          pngPicUrl: data.pngPicUrl,
           price: price,
           giftName: data.giftName,
-          num: data.num
+          num: data.num,
+          authorName: data.authorName,
+          authorType: data.authorType,
+          privilegeType: data.privilegeType,
         }
         break
       }
@@ -230,11 +237,8 @@ export default {
           time: new Date(data.timestamp * 1000),
           authorName: data.authorName,
           authorType: data.authorType,
+          privilegeType: data.privilegeType,
           content: this.config.loveText,
-          price: 0,
-          repeated: 1,
-          giftName: data.giftName,
-          num: data.num
         }
         break
       }
@@ -248,10 +252,25 @@ export default {
           avatarUrl: data.avatarUrl,
           time: new Date(data.timestamp * 1000),
           authorName: data.authorName,
+          authorType: data.authorType,
+          privilegeType: data.privilegeType,
           content: this.config.followText,
-          price: 0,
-          giftName: data.giftName,
-          num: data.num
+        }
+        break
+      }
+      case COMMAND_ADD_JOIN_GROUP: {
+        if (!this.config.showJoinGroup) {
+          break
+        }
+        message = {
+          id: data.id,
+          type: constants.MESSAGE_TYPE_FOLLOW,
+          avatarUrl: data.avatarUrl,
+          time: new Date(data.timestamp * 1000),
+          authorName: data.authorName,
+          authorType: data.authorType,
+          privilegeType: data.privilegeType,
+          content: this.config.joinGroupText,
         }
         break
       }

@@ -52,6 +52,12 @@
         <el-form-item :label="$t('home.loveText')" required prop="loveText">
           <el-input v-model="form.loveText" type="textarea" :rows="1" :placeholder="$t('home.loveTextDefault')"></el-input>
         </el-form-item>
+        <el-form-item :label="$t('home.showJoinGroup')">
+          <el-switch v-model="form.showJoin"></el-switch>
+        </el-form-item>
+        <el-form-item :label="$t('home.joinGroupText')" required prop="joinText">
+          <el-input v-model="form.joinGroupText" type="textarea" :rows="1" :placeholder="$t('home.joinGroupTextDefault')"></el-input>
+        </el-form-item>
         <el-form-item :label="$t('home.showGift')">
           <el-switch v-model="form.showGift"></el-switch>
         </el-form-item>
@@ -63,6 +69,9 @@
         </el-form-item>
         <el-form-item :label="$t('home.showACCoinInstead')">
           <el-switch v-model="form.showACCoinInstead"></el-switch>
+        </el-form-item>
+        <el-form-item :label="$t('home.showGiftPngInstead')">
+          <el-switch v-model="form.showGiftPngInstead"></el-switch>
         </el-form-item>
         <el-form-item :label="$t('home.mergeSimilarDanmaku')">
           <el-switch v-model="form.mergeSimilarDanmaku"></el-switch>
@@ -125,7 +134,7 @@ import axios from 'axios'
 import download from 'downloadjs'
 
 import {mergeConfig} from '@/utils'
-import * as config from '@/api/config'
+import * as chatConfig from '@/api/chatConfig'
 
 export default {
   name: 'Home',
@@ -136,7 +145,7 @@ export default {
       },
       form: {
         roomId: parseInt(window.localStorage.roomId || '1'),
-        ...config.getLocalConfig()
+        ...chatConfig.getLocalConfig()
       }
     }
   },
@@ -147,6 +156,7 @@ export default {
       || this.form.joinText === ''
       || this.form.quitText === ''
       || this.form.loveText === ''
+      || this.form.joinGroupText === ''
       ) {
         return ''
       }
@@ -159,7 +169,7 @@ export default {
   watch: {
     roomUrl: _.debounce(function() {
       window.localStorage.roomId = this.form.roomId
-      config.setLocalConfig(this.form)
+      chatConfig.setLocalConfig(this.form)
     }, 500)
   },
   mounted() {
@@ -181,7 +191,7 @@ export default {
       document.execCommand('Copy')
     },
     exportConfig() {
-      let cfg = mergeConfig(this.form, config.DEFAULT_CONFIG)
+      let cfg = mergeConfig(this.form, chatConfig.DEFAULT_CONFIG)
       download(JSON.stringify(cfg, null, 2), 'aclivechat.json', 'application/json')
     },
     importConfig() {
@@ -198,7 +208,7 @@ export default {
             this.$message.error(this.$t('home.failedToParseConfig') + e)
             return
           }
-          cfg = mergeConfig(cfg, config.DEFAULT_CONFIG)
+          cfg = mergeConfig(cfg, chatConfig.DEFAULT_CONFIG)
           this.form = {roomId: this.form.roomId, ...cfg}
         }
         reader.readAsText(input.files[0])

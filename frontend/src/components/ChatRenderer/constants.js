@@ -5,16 +5,16 @@ export const AUTHRO_TYPE_OWNER = 3
 
 export const AUTHOR_TYPE_TO_TEXT = [
   '',
-  'member', // 舰队
+  'member', // ?
   'moderator', // 房管
   'owner' // 主播
 ]
 
 export const GUARD_LEVEL_TO_TEXT = [
   '',
-  '总督',
-  '提督',
-  '舰长'
+  '1',
+  '2',
+  '3'
 ]
 
 export const MESSAGE_TYPE_TEXT = 0
@@ -27,6 +27,7 @@ export const MESSAGE_TYPE_LOVE = 6
 export const MESSAGE_TYPE_JOIN = 7
 export const MESSAGE_TYPE_FOLLOW = 8
 export const MESSAGE_TYPE_QUIT = 9
+export const MESSAGE_TYPE_JOIN_GROUP = 10
 
 // 自定义 -> 人民币 汇率
 const EXCHANGE_RATE = 1

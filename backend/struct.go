@@ -9,7 +9,9 @@ import (
 
 type dataGift struct {
 	Id         int64                `json:"id"`         // 用户ID
-	AvatarUrl  string               `json:"avatarUrl"`  // 礼物URL
+	AvatarUrl  string               `json:"avatarUrl"`  // 用户头像URL
+	WebpPic    string               `json:"webpPicUrl"` // 礼物的webp格式图片（动图）
+	PngPic     string               `json:"pngPicUrl"`  // 礼物的png格式图片（大）
 	Timestamp  int64                `json:"timestamp"`  // 发送时间
 	AuthorName string               `json:"authorName"` // 用户名
 	AuthorType int                  `json:"authorType"` // 房管类型
