@@ -120,7 +120,7 @@ export default {
         color1 = 'rgba(15,157,88,1)'
         color2 = 'rgba(11,128,67,1)'
       } else {
-        let config = constants.getPriceConfig(message.price)
+        let config = constants.getPriceConfig(message.price/this.exchangeRate)
         color1 = config.colors.contentBg
         color2 = config.colors.headerBg
       }
@@ -137,7 +137,7 @@ export default {
       if (message.type === constants.MESSAGE_TYPE_MEMBER) {
         return 'rgb(255,255,255)'
       }
-      return constants.getPriceConfig(message.price).colors.header
+      return constants.getPriceConfig(message.price/this.exchangeRate).colors.header
     },
     getText(message) {
       if(!this.showGiftPrice){
@@ -155,7 +155,7 @@ export default {
       if (message.type === constants.MESSAGE_TYPE_MEMBER) {
         return 2
       }
-      return constants.getPriceConfig(message.price).pinTime
+      return constants.getPriceConfig(message.price/this.exchangeRate).pinTime
     },
     updateProgress() {
       this.curTime = new Date()
