@@ -11,15 +11,15 @@ export default {
     textEmpty: 'Should not be empty',
 
     followText: 'Follow room text',
-    followTextDefault: 'followed (Required)',
+    followTextDefault: 'followed',
     joinText: 'Join room text',
-    joinTextDefault: 'join (Required)',
+    joinTextDefault: 'join',
     quitText: 'Quit room text',
-    quitTextDefault: 'left (Required)',
+    quitTextDefault: 'left',
     loveText: 'Love text',
-    loveTextDefault: 'like the live (Required)',
+    loveTextDefault: 'like the live',
     joinGroupText: 'Join group text',
-    joinGroupTextDefault: 'joined group (Required)',
+    joinGroupTextDefault: 'joined group',
 
     general: 'General',
     roomId: 'AC Room ID',
@@ -30,7 +30,7 @@ export default {
     showJoin: 'Show user join',
     showJoinGroup: 'show user join group',
     showQuit: 'Show user quit',
-    showGift: 'Show Super Chats',
+    showGift: 'Show Gifts',
     showGiftName: 'Show gift name',
     showGiftPrice: 'Show gift price',
     showACCoinInstead: 'Show ac coin instead',
@@ -39,7 +39,7 @@ export default {
     mergeSimilarDanmaku: 'Merge similar messages',
     mergeSimilarOther: 'Merge similar other messages',
     mergeGift: 'Merge gifts',
-    minGiftPrice: 'Min price of Super Chats to show (CNY)',
+    minGiftPrice: 'Min price of Gift to show (CNY)',
     maxNumber: 'Max number of messages',
 
     block: 'Block',
@@ -144,6 +144,7 @@ export default {
     p2: '2. Enter the room ID into the room ID on the home page. Copy the room URL',
     p3: '3. Generate styles with the style generator. Copy the CSS',
     p4: '4. Add browser source in OBS',
-    p5: '5. Enter the previously copied room URL at URL, and enter the previously copied CSS at custom CSS'
+    p5: '5. Enter the previously copied room URL at URL, and enter the previously copied CSS at custom CSS',
+    p6: '6. After the version update, plz refresh the browser source'
   }
 }

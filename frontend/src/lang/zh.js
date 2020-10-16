@@ -11,15 +11,15 @@ export default {
     textEmpty: '不能为空',
 
     followText: '用户关注主播提示',
-    followTextDefault: '关注了直播间（必填）',
+    followTextDefault: '关注了直播间',
     joinText: '用户进入直播间提示',
-    joinTextDefault: '进入直播间（必填）',
+    joinTextDefault: '进入直播间',
     quitText: '用户离开直播间提示',
-    quitTextDefault: '离开直播间（必填）',
+    quitTextDefault: '离开直播间',
     loveText: '用户点亮爱心提示',
-    loveTextDefault: '点亮爱心（必填）',
+    loveTextDefault: '点亮爱心',
     joinGroupText: '用户加入守护团提示',
-    joinGroupTextDefault: '加入了守护团（必填）',
+    joinGroupTextDefault: '加入了守护团',
 
     general: '常规',
     roomId: 'AC 房间ID',
@@ -146,6 +146,7 @@ export default {
     p2: '2. 把房间ID输入到首页的房间ID，复制房间URL',
     p3: '3. 使用样式生成器生成样式，复制CSS',
     p4: '4. 在OBS中添加浏览器源',
-    p5: '5. URL处输入之前复制的房间URL，自定义CSS处输入之前复制的CSS'
+    p5: '5. URL处输入之前复制的房间URL，自定义CSS处输入之前复制的CSS',
+    p6: '6. 更新版本后请重新刷新浏览器源'
   }
 }

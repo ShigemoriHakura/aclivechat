@@ -53,7 +53,7 @@
           <el-input v-model="form.loveText" type="textarea" :rows="1" :placeholder="$t('home.loveTextDefault')"></el-input>
         </el-form-item>
         <el-form-item :label="$t('home.showJoinGroup')">
-          <el-switch v-model="form.showJoin"></el-switch>
+          <el-switch v-model="form.showJoinGroup"></el-switch>
         </el-form-item>
         <el-form-item :label="$t('home.joinGroupText')" required prop="joinText">
           <el-input v-model="form.joinGroupText" type="textarea" :rows="1" :placeholder="$t('home.joinGroupTextDefault')"></el-input>
@@ -151,17 +151,26 @@ export default {
   },
   computed: {
     roomUrl() {
-      if (this.form.roomId === ''
-      || this.form.followText === ''
-      || this.form.joinText === ''
-      || this.form.quitText === ''
-      || this.form.loveText === ''
-      || this.form.joinGroupText === ''
-      ) {
+      if (this.form.roomId === '') {
         return ''
       }
       let query = {...this.form}
       delete query.roomId
+      if(query.followText === ''){
+        query.followText = this.$t('home.followTextDefault')
+      }
+      if(query.joinText === ''){
+        query.joinText = this.$t('home.joinTextDefault')
+      }
+      if(query.quitText === ''){
+        query.quitText = this.$t('home.quitTextDefault')
+      }
+      if(query.loveText === ''){
+        query.loveText = this.$t('home.loveTextDefault')
+      }
+      if(query.joinGroupText === ''){
+        query.joinGroupText = this.$t('home.joinGroupTextDefault')
+      }
       let resolved = this.$router.resolve({name: 'room', params: {roomId: this.form.roomId}, query})
       return `${window.location.protocol}//${window.location.host}${resolved.href}`
     }

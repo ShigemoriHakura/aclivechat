@@ -20,7 +20,9 @@
     <p><el-image src="/static/img/tutorial/tutorial-4.png"></el-image></p>
     <p>{{$t('help.p5')}}</p>
     <p><el-image src="/static/img/tutorial/tutorial-5.png"></el-image></p>
-    <p><br><br><br><br><br><br><br><br>--------------------------------------------------------------------------------------------------------</p>
+    <p>{{$t('help.p6')}}</p>
+    <p><el-image src="/static/img/tutorial/tutorial-6.png"></el-image></p>
+    <p><br>--------------------------------------------------------------------------------------------------------</p>
     <p>喜欢的话可以推荐给别人，文章求支持_(:з」∠)_  <a href="https://www.acfun.cn/a/ac17755282" target="_blank">https://www.acfun.cn/a/ac17755282</a></p>
   </div>
 </template>
