@@ -31,31 +31,31 @@
         <el-form-item :label="$t('home.showFollow')">
           <el-switch v-model="form.showFollow"></el-switch>
         </el-form-item>
-        <el-form-item :label="$t('home.followText')" required prop="followText">
+        <el-form-item :label="$t('home.followText')">
           <el-input v-model="form.followText" type="textarea" :rows="1" :placeholder="$t('home.followTextDefault')"></el-input>
         </el-form-item>
         <el-form-item :label="$t('home.showJoin')">
           <el-switch v-model="form.showJoin"></el-switch>
         </el-form-item>
-        <el-form-item :label="$t('home.joinText')" required prop="joinText">
+        <el-form-item :label="$t('home.joinText')">
           <el-input v-model="form.joinText" type="textarea" :rows="1" :placeholder="$t('home.joinTextDefault')"></el-input>
         </el-form-item>
         <el-form-item :label="$t('home.showQuit')">
           <el-switch v-model="form.showQuit"></el-switch>
         </el-form-item>
-        <el-form-item :label="$t('home.quitText')" required prop="quitText">
+        <el-form-item :label="$t('home.quitText')">
           <el-input v-model="form.quitText" type="textarea" :rows="1" :placeholder="$t('home.quitTextDefault')"></el-input>
         </el-form-item>
         <el-form-item :label="$t('home.showLove')">
           <el-switch v-model="form.showLove"></el-switch>
         </el-form-item>
-        <el-form-item :label="$t('home.loveText')" required prop="loveText">
+        <el-form-item :label="$t('home.loveText')">
           <el-input v-model="form.loveText" type="textarea" :rows="1" :placeholder="$t('home.loveTextDefault')"></el-input>
         </el-form-item>
         <el-form-item :label="$t('home.showJoinGroup')">
           <el-switch v-model="form.showJoinGroup"></el-switch>
         </el-form-item>
-        <el-form-item :label="$t('home.joinGroupText')" required prop="joinText">
+        <el-form-item :label="$t('home.joinGroupText')">
           <el-input v-model="form.joinGroupText" type="textarea" :rows="1" :placeholder="$t('home.joinGroupTextDefault')"></el-input>
         </el-form-item>
         <el-form-item :label="$t('home.showGift')">
