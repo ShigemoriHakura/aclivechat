@@ -350,7 +350,7 @@ func startACWS(roomID int) {
 					log.Printf("[Danmaku] %v, %s（%d）送出礼物 %s * %d，连击数：%d\n", roomID, d.Nickname, d.UserID, d.GiftName, d.Count, d.Combo)
 				case *acfundanmu.JoinClub:
 					var data = new(dataUserStruct)
-					data.Cmd = 1
+					data.Cmd = 11
 					data.Data.Id = d.FansInfo.UserID
 					data.Data.AvatarUrl = avatar
 					data.Data.Timestamp = time.Now().Unix()
