@@ -11,5 +11,5 @@ require (
 	github.com/klauspost/compress v1.11.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
-	github.com/orzogc/acfundanmu v0.0.0-20201015194456-742aeb0f0bd0
+	github.com/orzogc/acfundanmu v0.0.0-20201020103550-e5e8e36889df
 )

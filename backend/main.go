@@ -63,6 +63,7 @@ func importConfig() {
 	LoveText = config.Get("LoveText").(string)
 	FollowText = config.Get("FollowText").(string)
 	JoinText = config.Get("JoinText").(string)
+	JoinClubText = config.Get("JoinClubText").(string)
 	QuitText = config.Get("QuitText").(string)
 	AvatarRefreshRate = int(config.Get("AvatarRefreshRate").(float64))
 }
@@ -347,6 +348,22 @@ func startACWS(roomID int) {
 					MessageQ.Enqueue(dataQ)
 					//log.Println("Conn Gift", data)
 					log.Printf("[Danmaku] %v, %s（%d）送出礼物 %s * %d，连击数：%d\n", roomID, d.Nickname, d.UserID, d.GiftName, d.Count, d.Combo)
+				case *acfundanmu.JoinClub:
+					var data = new(dataUserStruct)
+					data.Cmd = 1
+					data.Data.Id = d.FansInfo.UserID
+					data.Data.AvatarUrl = avatar
+					data.Data.Timestamp = time.Now().Unix()
+					data.Data.AuthorName = d.FansInfo.Nickname
+					data.Data.AuthorType = AuthorType
+					data.Data.PrivilegeType = 0
+					data.Data.Content = JoinClubText
+					data.Data.UserMark = getUserMark(d.FansInfo.UserID)
+					var dataQ = new(Message)
+					dataQ.RoomID = roomID
+					dataQ.Data = data
+					MessageQ.Enqueue(dataQ)
+					log.Printf("%s（%d）加入主播%s（%d）的守护团", d.FansInfo.Nickname, d.FansInfo.UserID, d.UperInfo.Nickname, d.UperInfo.UserID)
 				}
 			}
 		} else {
