@@ -239,6 +239,7 @@ export default {
           authorType: data.authorType,
           privilegeType: data.privilegeType,
           content: this.config.loveText,
+          repeated: 1,
         }
         break
       }

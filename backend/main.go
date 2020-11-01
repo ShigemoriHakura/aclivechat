@@ -105,6 +105,7 @@ func processMessageQueue() {
 				if err == nil {
 					//log.Println("Sent: ", 1, string(ddata))
 					connHub.broadcast <- ddata
+					time.Sleep(time.Duration(80) * time.Millisecond)
 				}
 			}
 		}
