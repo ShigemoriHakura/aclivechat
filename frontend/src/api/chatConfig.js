@@ -1,4 +1,4 @@
-import {mergeConfig} from '@/utils'
+import { mergeConfig } from '@/utils'
 
 export const DEFAULT_CONFIG = {
   minGiftPrice: 0, // ￥0
@@ -33,14 +33,14 @@ export const DEFAULT_CONFIG = {
   autoTranslate: false
 }
 
-export const VERSION = "0.2.7"; 
+export const VERSION = "0.2.8";
 
-export function setLocalConfig (config) {
+export function setLocalConfig(config) {
   config = mergeConfig(config, DEFAULT_CONFIG)
   window.localStorage.config = JSON.stringify(config)
 }
 
-export function getLocalConfig () {
+export function getLocalConfig() {
   if (!window.localStorage.config) {
     return DEFAULT_CONFIG
   }

@@ -62,13 +62,13 @@ const router = new VueRouter({
       path: '/',
       component: Layout,
       children: [
-        {path: '', component: Home},
-        {path: 'stylegen', name: 'stylegen', component: StyleGenerator},
-        {path: 'help', name: 'help', component: Help}
+        { path: '', component: Home },
+        { path: 'stylegen', name: 'stylegen', component: StyleGenerator },
+        { path: 'help', name: 'help', component: Help }
       ]
     },
-    {path: '/room/:roomId', name: 'room', component: Room},
-    {path: '*', component: NotFound}
+    { path: '/room/:roomId', name: 'room', component: Room },
+    { path: '*', component: NotFound }
   ]
 })
 

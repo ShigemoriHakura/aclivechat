@@ -1,67 +1,58 @@
 <template>
-  <yt-live-chat-renderer class="style-scope yt-live-chat-app" style="--scrollbar-width:11px;" hide-timestamps hide-usermark hide-medal
-    @mousemove="refreshCantScrollStartTime"
-  >
-    <ticker class="style-scope yt-live-chat-renderer" :messages="paidMessages" :showGiftName="showGiftName" :exchangeRate="exchangeRate" :showGiftPrice="showGiftPrice" :showACCoinInstead="showACCoinInstead"></ticker>
+  <yt-live-chat-renderer class="style-scope yt-live-chat-app" style="--scrollbar-width:11px;" hide-timestamps
+    hide-usermark hide-medal @mousemove="refreshCantScrollStartTime">
+    <ticker class="style-scope yt-live-chat-renderer" :messages="paidMessages" :showGiftName="showGiftName"
+      :exchangeRate="exchangeRate" :showGiftPrice="showGiftPrice" :showACCoinInstead="showACCoinInstead"></ticker>
     <yt-live-chat-item-list-renderer class="style-scope yt-live-chat-renderer" allow-scroll>
-      <div ref="scroller" id="item-scroller" class="style-scope yt-live-chat-item-list-renderer animated" @scroll="onScroll">
+      <div ref="scroller" id="item-scroller" class="style-scope yt-live-chat-item-list-renderer animated"
+        @scroll="onScroll">
         <div ref="itemOffset" id="item-offset" class="style-scope yt-live-chat-item-list-renderer" style="height: 0px;">
           <div ref="items" id="items" class="style-scope yt-live-chat-item-list-renderer" style="overflow: hidden"
-            :style="{transform: `translateY(${Math.floor(scrollPixelsRemaining)}px)`}"
-          >
+            :style="{transform: `translateY(${Math.floor(scrollPixelsRemaining)}px)`}">
             <template v-for="message in messages">
-              <text-message :key="message.id" v-if="message.type === MESSAGE_TYPE_TEXT"
-                class="style-scope yt-live-chat-item-list-renderer"
-                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
-                :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
-                :repeated="message.repeated" :userMark="message.userMark" :medal="message.medal" :getShowMedal="getShowMedal(message.medal)" :medalDisplayColorLV="getMedalLVType(message.medal)"
-              ></text-message>
-              <paid-message :key="message.id" v-else-if="message.type === MESSAGE_TYPE_GIFT"
-                class="style-scope yt-live-chat-item-list-renderer"
-                :price="message.price" :avatarUrl="message.avatarUrl" :webpPicUrl="message.webpPicUrl" :authorName="message.authorName"
-                :time="message.time" :content="getGiftShowContent(message)" :showGiftPrice="showGiftPrice" :exchangeRate="exchangeRate"
-                :showACCoinInstead="showACCoinInstead" :showGiftPngInstead="showGiftPngInstead"
-              ></paid-message>
-              <membership-item :key="message.id" v-else-if="message.type === MESSAGE_TYPE_MEMBER"
-                class="style-scope yt-live-chat-item-list-renderer"
-                :avatarUrl="message.avatarUrl" :authorName="message.authorName" :privilegeType="message.privilegeType"
-                :title="message.title" :time="message.time"
-              ></membership-item>
-              <paid-message :key="message.id" v-else-if="message.type === MESSAGE_TYPE_SUPER_CHAT"
-                class="style-scope yt-live-chat-item-list-renderer"
-                :price="message.price" :avatarUrl="message.avatarUrl" :authorName="message.authorName"
-                :time="message.time" :content="getShowContent(message)"
-              ></paid-message>
-              <join-message :key="message.id" v-if="message.type === MESSAGE_TYPE_JOIN"
-                class="style-scope yt-live-chat-item-list-renderer"
-                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
-                :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
-                :repeated="message.repeated" :userMark="message.userMark" :medal="message.medal" :getShowMedal="getShowMedal(message.medal)" :medalDisplayColorLV="getMedalLVType(message.medal)"
-              ></join-message>
-              <join-group-message :key="message.id" v-if="message.type === MESSAGE_TYPE_JOIN_GROUP"
-                class="style-scope yt-live-chat-item-list-renderer"
-                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
-                :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
-                :repeated="message.repeated" :userMark="message.userMark" 
-              ></join-group-message>
-              <quit-message :key="message.id" v-if="message.type === MESSAGE_TYPE_QUIT"
-                class="style-scope yt-live-chat-item-list-renderer"
-                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
-                :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
-                :repeated="message.repeated"
-              ></quit-message>
-              <love-message :key="message.id" v-if="message.type === MESSAGE_TYPE_LOVE"
-                class="style-scope yt-live-chat-item-list-renderer"
-                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
-                :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
-                :repeated="message.repeated"
-              ></love-message>
-              <follow-message :key="message.id" v-if="message.type === MESSAGE_TYPE_FOLLOW"
-                class="style-scope yt-live-chat-item-list-renderer"
-                :avatarUrl="message.avatarUrl" :time="message.time" :authorName="message.authorName"
-                :authorType="message.authorType" :content="getShowContent(message)" :privilegeType="message.privilegeType"
-                :repeated="message.repeated"
-              ></follow-message>
+              <text-message :key="message.uniqueId" v-if="message.type === MESSAGE_TYPE_TEXT"
+                class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl" :time="message.time"
+                :authorName="message.authorName" :authorType="message.authorType" :content="getShowContent(message)"
+                :privilegeType="message.privilegeType" :repeated="message.repeated" :userMark="message.userMark"
+                :medal="message.medal" :getShowMedal="getShowMedal(message.medal)"
+                :medalDisplayColorLV="getMedalLVType(message.medal)"></text-message>
+              <paid-message :key="message.uniqueId" v-else-if="message.type === MESSAGE_TYPE_GIFT"
+                class="style-scope yt-live-chat-item-list-renderer" :price="message.price"
+                :avatarUrl="message.avatarUrl" :webpPicUrl="message.webpPicUrl" :authorName="message.authorName"
+                :time="message.time" :content="getGiftShowContent(message)" :showGiftPrice="showGiftPrice"
+                :exchangeRate="exchangeRate" :showACCoinInstead="showACCoinInstead"
+                :showGiftPngInstead="showGiftPngInstead"></paid-message>
+              <membership-item :key="message.uniqueId" v-else-if="message.type === MESSAGE_TYPE_MEMBER"
+                class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl"
+                :authorName="message.authorName" :privilegeType="message.privilegeType" :title="message.title"
+                :time="message.time"></membership-item>
+              <paid-message :key="message.uniqueId" v-else-if="message.type === MESSAGE_TYPE_SUPER_CHAT"
+                class="style-scope yt-live-chat-item-list-renderer" :price="message.price"
+                :avatarUrl="message.avatarUrl" :authorName="message.authorName" :time="message.time"
+                :content="getShowContent(message)"></paid-message>
+              <join-message :key="message.uniqueId" v-if="message.type === MESSAGE_TYPE_JOIN"
+                class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl" :time="message.time"
+                :authorName="message.authorName" :authorType="message.authorType" :content="getShowContent(message)"
+                :privilegeType="message.privilegeType" :repeated="message.repeated" :userMark="message.userMark"
+                :medal="message.medal" :getShowMedal="getShowMedal(message.medal)"
+                :medalDisplayColorLV="getMedalLVType(message.medal)"></join-message>
+              <join-group-message :key="message.uniqueId" v-if="message.type === MESSAGE_TYPE_JOIN_GROUP"
+                class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl" :time="message.time"
+                :authorName="message.authorName" :authorType="message.authorType" :content="getShowContent(message)"
+                :privilegeType="message.privilegeType" :repeated="message.repeated" :userMark="message.userMark">
+              </join-group-message>
+              <quit-message :key="message.uniqueId" v-if="message.type === MESSAGE_TYPE_QUIT"
+                class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl" :time="message.time"
+                :authorName="message.authorName" :authorType="message.authorType" :content="getShowContent(message)"
+                :privilegeType="message.privilegeType" :repeated="message.repeated"></quit-message>
+              <love-message :key="message.uniqueId" v-if="message.type === MESSAGE_TYPE_LOVE"
+                class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl" :time="message.time"
+                :authorName="message.authorName" :authorType="message.authorType" :content="getShowContent(message)"
+                :privilegeType="message.privilegeType" :repeated="message.repeated"></love-message>
+              <follow-message :key="message.uniqueId" v-if="message.type === MESSAGE_TYPE_FOLLOW"
+                class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl" :time="message.time"
+                :authorName="message.authorName" :authorType="message.authorType" :content="getShowContent(message)"
+                :privilegeType="message.privilegeType" :repeated="message.repeated"></follow-message>
             </template>
           </div>
         </div>
@@ -198,29 +189,29 @@ export default {
     this.clearMessages()
   },
   methods: {
-    getShowMedal(medal){
-      if(medal && medal.ClubName != ''){
-        if(this.showEqualMedal){
-          if(medal.UperID == this.roomID){
+    getShowMedal(medal) {
+      if (medal && medal.ClubName != '') {
+        if (this.showEqualMedal) {
+          if (medal.UperID == this.roomID) {
             return true;
           }
-        }else{
+        } else {
           return true;
         }
       }
       return false;
     },
-    getMedalLVType(medal){
-      if(medal && medal.Level){
+    getMedalLVType(medal) {
+      if (medal && medal.Level) {
         if (medal.Level <= 3) {
           return 1;
-        } else if(medal.Level > 3 && medal.Level <= 6) {
+        } else if (medal.Level > 3 && medal.Level <= 6) {
           return 2;
-        } else if(medal.Level > 6 && medal.Level <= 9) {
+        } else if (medal.Level > 6 && medal.Level <= 9) {
           return 3;
-        } else if(medal.Level > 9 && medal.Level <= 12) {
+        } else if (medal.Level > 9 && medal.Level <= 12) {
           return 4;
-        } else if(medal.Level > 12 && medal.Level) {
+        } else if (medal.Level > 12 && medal.Level) {
           return 5;
         }
       }
@@ -254,7 +245,7 @@ export default {
           shorter = messageContent
         }
         if (longer.indexOf(shorter) !== -1 // 长的包含短的
-            && longer.length - shorter.length < shorter.length // 长度差较小
+          && longer.length - shorter.length < shorter.length // 长度差较小
         ) {
           // 其实有小概率导致弹幕卡住
           message.repeated++
@@ -269,15 +260,15 @@ export default {
       content = content.trim().toLowerCase()
       let res = false
       this.forEachRecentMessage(10, message => {
-        if (message.type !== constants.MESSAGE_TYPE_LOVE && 
-         message.type !== constants.MESSAGE_TYPE_JOIN && 
-         message.type !== constants.MESSAGE_TYPE_JOIN_GROUP && 
-         message.type !== constants.MESSAGE_TYPE_QUIT && 
-         message.type !== constants.MESSAGE_TYPE_FOLLOW
-         ) {
+        if (message.type !== constants.MESSAGE_TYPE_LOVE &&
+          message.type !== constants.MESSAGE_TYPE_JOIN &&
+          message.type !== constants.MESSAGE_TYPE_JOIN_GROUP &&
+          message.type !== constants.MESSAGE_TYPE_QUIT &&
+          message.type !== constants.MESSAGE_TYPE_FOLLOW
+        ) {
           return true
         }
-        if(message.authorName != authorName){
+        if (message.authorName != authorName) {
           return true
         }
         let messageContent = message.content.trim().toLowerCase()
@@ -290,7 +281,7 @@ export default {
           shorter = messageContent
         }
         if (longer.indexOf(shorter) !== -1 // 长的包含短的
-            && longer.length - shorter.length < shorter.length // 长度差较小
+          && longer.length - shorter.length < shorter.length // 长度差较小
         ) {
           // 其实有小概率导致弹幕卡住
           message.repeated++
@@ -305,8 +296,8 @@ export default {
       let res = false
       this.forEachRecentMessage(5, message => {
         if (message.type === constants.MESSAGE_TYPE_GIFT
-            && message.authorName === authorName
-            && message.giftName === giftName
+          && message.authorName === authorName
+          && message.giftName === giftName
         ) {
           message.price += price
           message.num += num
@@ -395,7 +386,7 @@ export default {
         }
       }
       if (messageGroup.length > 0) {
-          this.smoothedMessageQueue.push(messageGroup)
+        this.smoothedMessageQueue.push(messageGroup)
       }
 
       if (!this.emitSmoothedMessageTimerId) {
@@ -490,7 +481,7 @@ export default {
       }
 
       this.maybeResizeScrollContainer(),
-      this.flushMessagesBuffer()
+        this.flushMessagesBuffer()
       this.$nextTick(this.maybeScrollToBottom)
     },
     handleAddMessage(message) {
@@ -500,16 +491,16 @@ export default {
       }
       this.messagesBuffer.push(message)
       if (message.type !== constants.MESSAGE_TYPE_TEXT &&
-          message.type !== constants.MESSAGE_TYPE_LOVE &&
-          message.type !== constants.MESSAGE_TYPE_JOIN &&
-          message.type !== constants.MESSAGE_TYPE_JOIN_GROUP &&
-          message.type !== constants.MESSAGE_TYPE_QUIT &&
-          message.type !== constants.MESSAGE_TYPE_FOLLOW
+        message.type !== constants.MESSAGE_TYPE_LOVE &&
+        message.type !== constants.MESSAGE_TYPE_JOIN &&
+        message.type !== constants.MESSAGE_TYPE_JOIN_GROUP &&
+        message.type !== constants.MESSAGE_TYPE_QUIT &&
+        message.type !== constants.MESSAGE_TYPE_FOLLOW
       ) {
         this.paidMessages.unshift(message)
       }
     },
-    handleDelMessage({id}) {
+    handleDelMessage({ id }) {
       for (let arr of [this.messages, this.paidMessages, this.messagesBuffer]) {
         for (let i = 0; i < arr.length; i++) {
           if (arr[i].id === id) {
@@ -520,7 +511,7 @@ export default {
         }
       }
     },
-    handleUpdateMessage({id, newValuesObj}) {
+    handleUpdateMessage({ id, newValuesObj }) {
       // 遍历滚动的消息
       this.forEachRecentMessage(999999999, message => {
         if (message.id !== id) {

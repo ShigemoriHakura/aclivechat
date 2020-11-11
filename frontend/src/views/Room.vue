@@ -1,18 +1,12 @@
 <template>
-  <chat-renderer ref="renderer" 
-    :maxNumber="config.maxNumber" 
-    :showGiftName="config.showGiftName" 
-    :showGiftPrice="config.showGiftPrice" 
-    :exchangeRate="config.exchangeRate" 
-    :showACCoinInstead="config.showACCoinInstead" 
-    :showGiftPngInstead="config.showGiftPngInstead" 
-    :showEqualMedal="config.showEqualMedal"
-    :roomID="this.$route.params.roomId"
-  ></chat-renderer>
+  <chat-renderer ref="renderer" :maxNumber="config.maxNumber" :showGiftName="config.showGiftName"
+    :showGiftPrice="config.showGiftPrice" :exchangeRate="config.exchangeRate"
+    :showACCoinInstead="config.showACCoinInstead" :showGiftPngInstead="config.showGiftPngInstead"
+    :showEqualMedal="config.showEqualMedal" :roomID="parseInt(this.$route.params.roomId)"></chat-renderer>
 </template>
 
 <script>
-import {mergeConfig, toBool, toInt} from '@/utils'
+import { mergeConfig, toBool, toInt } from '@/utils'
 import * as chatConfig from '@/api/chatConfig'
 import ChatRenderer from '@/components/ChatRenderer'
 import * as constants from '@/components/ChatRenderer/constants'
@@ -37,7 +31,7 @@ export default {
   },
   data() {
     return {
-      config: {...chatConfig.DEFAULT_CONFIG},
+      config: { ...chatConfig.DEFAULT_CONFIG },
       VERSION: chatConfig.VERSION,
 
       websocket: null,
@@ -141,191 +135,204 @@ export default {
       this.wsConnect()
     },
     onWsMessage(event) {
-      let {cmd, data} = JSON.parse(event.data)
+      let { cmd, data } = JSON.parse(event.data)
       let message = null
       switch (cmd) {
-      case COMMAND_JOIN_ROOM:
-        if (!this.config.showJoin || this.mergeSimilarOther(data.authorName, this.config.joinText)) {
+        case COMMAND_JOIN_ROOM:
+          if (!this.config.showJoin || this.mergeSimilarOther(data.authorName, this.config.joinText)) {
+            break
+          }
+          message = {
+            id: data.id,
+            type: constants.MESSAGE_TYPE_JOIN,
+            avatarUrl: data.avatarUrl,
+            time: new Date(data.timestamp * 1000),
+            authorName: data.authorName,
+            authorType: data.authorType,
+            content: this.config.joinText,
+            userMark: data.userMark,
+            medal: data.medalInfo,
+            privilegeType: data.privilegeType,
+            repeated: 1,
+            translation: data.translation
+          }
+          break
+        case COMMAND_QUIT_ROOM:
+          if (!this.config.showQuit || this.mergeSimilarOther(data.authorName, this.config.quitText)) {
+            break
+          }
+          message = {
+            id: data.id,
+            type: constants.MESSAGE_TYPE_QUIT,
+            avatarUrl: data.avatarUrl,
+            time: new Date(data.timestamp * 1000),
+            authorName: data.authorName,
+            authorType: data.authorType,
+            content: this.config.quitText,
+            privilegeType: data.privilegeType,
+            repeated: 1,
+            translation: data.translation
+          }
+          break
+        case COMMAND_ADD_TEXT:
+          if (!this.config.showDanmaku || !this.filterTextMessage(data) || this.mergeSimilarText(data.content)) {
+            break
+          }
+          message = {
+            id: data.id,
+            type: constants.MESSAGE_TYPE_TEXT,
+            avatarUrl: data.avatarUrl,
+            time: new Date(data.timestamp * 1000),
+            authorName: data.authorName,
+            authorType: data.authorType,
+            content: data.content,
+            userMark: data.userMark,
+            medal: data.medalInfo,
+            privilegeType: data.privilegeType,
+            repeated: 1,
+            translation: data.translation
+          }
+          break
+        case COMMAND_ADD_GIFT: {
+          if (!this.config.showGift) {
+            break
+          }
+          let price = data.totalCoin / 1000
+          if (this.mergeSimilarGift(data.authorName, price, data.giftName, data.num)) {
+            break
+          }
+          if (price < this.config.minGiftPrice) { // 丢人
+            break
+          }
+          message = {
+            id: data.id,
+            type: constants.MESSAGE_TYPE_GIFT,
+            avatarUrl: data.avatarUrl,
+            time: new Date(data.timestamp * 1000),
+            webpPicUrl: data.webpPicUrl,
+            pngPicUrl: data.pngPicUrl,
+            price: price,
+            giftName: data.giftName,
+            num: data.num,
+            authorName: data.authorName,
+            authorType: data.authorType,
+            privilegeType: data.privilegeType,
+          }
           break
         }
-        message = {
-          id: data.id,
-          type: constants.MESSAGE_TYPE_JOIN,
-          avatarUrl: data.avatarUrl,
-          time: new Date(data.timestamp * 1000),
-          authorName: data.authorName,
-          authorType: data.authorType,
-          content: this.config.joinText,
-          userMark: data.userMark,
-          medal: data.medalInfo,
-          privilegeType: data.privilegeType,
-          repeated: 1,
-          translation: data.translation
-        }
-        break
-      case COMMAND_QUIT_ROOM:
-        if (!this.config.showQuit || this.mergeSimilarOther(data.authorName, this.config.quitText)) {
+        case COMMAND_ADD_LOVE: {
+          if (!this.config.showLove || this.mergeSimilarOther(data.authorName, this.config.loveText)) {
+            break
+          }
+          message = {
+            id: data.id,
+            type: constants.MESSAGE_TYPE_LOVE,
+            avatarUrl: data.avatarUrl,
+            time: new Date(data.timestamp * 1000),
+            authorName: data.authorName,
+            authorType: data.authorType,
+            privilegeType: data.privilegeType,
+            content: this.config.loveText,
+            repeated: 1,
+          }
           break
         }
-        message = {
-          id: data.id,
-          type: constants.MESSAGE_TYPE_QUIT,
-          avatarUrl: data.avatarUrl,
-          time: new Date(data.timestamp * 1000),
-          authorName: data.authorName,
-          authorType: data.authorType,
-          content: this.config.quitText,
-          privilegeType: data.privilegeType,
-          repeated: 1,
-          translation: data.translation
-        }
-        break
-      case COMMAND_ADD_TEXT:
-        if (!this.config.showDanmaku || !this.filterTextMessage(data) || this.mergeSimilarText(data.content)) {
+        case COMMAND_ADD_FOLLOW: {
+          if (!this.config.showFollow || this.mergeSimilarOther(data.authorName, this.config.followText)) {
+            break
+          }
+          message = {
+            id: data.id,
+            type: constants.MESSAGE_TYPE_FOLLOW,
+            avatarUrl: data.avatarUrl,
+            time: new Date(data.timestamp * 1000),
+            authorName: data.authorName,
+            authorType: data.authorType,
+            privilegeType: data.privilegeType,
+            content: this.config.followText,
+          }
           break
         }
-        message = {
-          id: data.id,
-          type: constants.MESSAGE_TYPE_TEXT,
-          avatarUrl: data.avatarUrl,
-          time: new Date(data.timestamp * 1000),
-          authorName: data.authorName,
-          authorType: data.authorType,
-          content: data.content,
-          userMark: data.userMark,
-          medal: data.medalInfo,
-          privilegeType: data.privilegeType,
-          repeated: 1,
-          translation: data.translation
-        }
-        break
-      case COMMAND_ADD_GIFT: {
-        if (!this.config.showGift) {
+        case COMMAND_ADD_JOIN_GROUP: {
+          if (!this.config.showJoinGroup) {
+            break
+          }
+          message = {
+            id: data.id,
+            type: constants.MESSAGE_TYPE_FOLLOW,
+            avatarUrl: data.avatarUrl,
+            time: new Date(data.timestamp * 1000),
+            authorName: data.authorName,
+            authorType: data.authorType,
+            privilegeType: data.privilegeType,
+            content: this.config.joinGroupText,
+          }
           break
         }
-        let price = data.totalCoin / 1000
-        if (this.mergeSimilarGift(data.authorName, price, data.giftName, data.num)) {
+        case COMMAND_ADD_MEMBER:
+          if (!this.config.showGift || !this.filterNewMemberMessage(data)) {
+            break
+          }
+          message = {
+            id: data.id,
+            type: constants.MESSAGE_TYPE_MEMBER,
+            avatarUrl: data.avatarUrl,
+            time: new Date(data.timestamp * 1000),
+            authorName: data.authorName,
+            title: 'NEW MEMBER!',
+            content: `Welcome ${data.authorName}!`
+          }
           break
-        }
-        if (price < this.config.minGiftPrice) { // 丢人
+        case COMMAND_ADD_SUPER_CHAT:
+          if (!this.config.showGift || !this.filterSuperChatMessage(data)) {
+            break
+          }
+          if (data.price < this.config.minGiftPrice) { // 丢人
+            break
+          }
+          message = {
+            id: data.id,
+            type: constants.MESSAGE_TYPE_SUPER_CHAT,
+            avatarUrl: data.avatarUrl,
+            authorName: data.authorName,
+            price: data.price,
+            time: new Date(data.timestamp * 1000),
+            content: data.content.trim()
+          }
           break
-        }
-        message = {
-          id: data.id,
-          type: constants.MESSAGE_TYPE_GIFT,
-          avatarUrl: data.avatarUrl,
-          time: new Date(data.timestamp * 1000),
-          webpPicUrl: data.webpPicUrl,
-          pngPicUrl: data.pngPicUrl,
-          price: price,
-          giftName: data.giftName,
-          num: data.num,
-          authorName: data.authorName,
-          authorType: data.authorType,
-          privilegeType: data.privilegeType,
-        }
-        break
-      }
-      case COMMAND_ADD_LOVE: {
-        if (!this.config.showLove || this.mergeSimilarOther(data.authorName, this.config.loveText)) {
+        case COMMAND_DEL_SUPER_CHAT:
+          for (let id of data.ids) {
+            this.$refs.renderer.delMessage(id)
+          }
           break
-        }
-        message = {
-          id: data.id,
-          type: constants.MESSAGE_TYPE_LOVE,
-          avatarUrl: data.avatarUrl,
-          time: new Date(data.timestamp * 1000),
-          authorName: data.authorName,
-          authorType: data.authorType,
-          privilegeType: data.privilegeType,
-          content: this.config.loveText,
-          repeated: 1,
-        }
-        break
-      }
-      case COMMAND_ADD_FOLLOW: {
-        if (!this.config.showFollow || this.mergeSimilarOther(data.authorName, this.config.followText)) {
+        case COMMAND_UPDATE_TRANSLATION:
+          if (!this.config.autoTranslate) {
+            break
+          }
+          data = {
+            id: data[0],
+            translation: data[1]
+          }
+          this.$refs.renderer.updateMessage(data.id, { translation: data.translation })
           break
-        }
-        message = {
-          id: data.id,
-          type: constants.MESSAGE_TYPE_FOLLOW,
-          avatarUrl: data.avatarUrl,
-          time: new Date(data.timestamp * 1000),
-          authorName: data.authorName,
-          authorType: data.authorType,
-          privilegeType: data.privilegeType,
-          content: this.config.followText,
-        }
-        break
-      }
-      case COMMAND_ADD_JOIN_GROUP: {
-        if (!this.config.showJoinGroup) {
-          break
-        }
-        message = {
-          id: data.id,
-          type: constants.MESSAGE_TYPE_FOLLOW,
-          avatarUrl: data.avatarUrl,
-          time: new Date(data.timestamp * 1000),
-          authorName: data.authorName,
-          authorType: data.authorType,
-          privilegeType: data.privilegeType,
-          content: this.config.joinGroupText,
-        }
-        break
-      }
-      case COMMAND_ADD_MEMBER:
-        if (!this.config.showGift || !this.filterNewMemberMessage(data)) {
-          break
-        }
-        message = {
-          id: data.id,
-          type: constants.MESSAGE_TYPE_MEMBER,
-          avatarUrl: data.avatarUrl,
-          time: new Date(data.timestamp * 1000),
-          authorName: data.authorName,
-          title: 'NEW MEMBER!',
-          content: `Welcome ${data.authorName}!`
-        }
-        break
-      case COMMAND_ADD_SUPER_CHAT:
-        if (!this.config.showGift || !this.filterSuperChatMessage(data)) {
-          break
-        }
-        if (data.price < this.config.minGiftPrice) { // 丢人
-          break
-        }
-        message = {
-          id: data.id,
-          type: constants.MESSAGE_TYPE_SUPER_CHAT,
-          avatarUrl: data.avatarUrl,
-          authorName: data.authorName,
-          price: data.price,
-          time: new Date(data.timestamp * 1000),
-          content: data.content.trim()
-        }
-        break
-      case COMMAND_DEL_SUPER_CHAT:
-        for (let id of data.ids) {
-          this.$refs.renderer.delMessage(id)
-        }
-        break
-      case COMMAND_UPDATE_TRANSLATION:
-        if (!this.config.autoTranslate) {
-          break
-        }
-        data = {
-          id: data[0],
-          translation: data[1]
-        }
-        this.$refs.renderer.updateMessage(data.id, {translation: data.translation})
-        break
       }
       if (message) {
+        message.uniqueId = "Timestamp|" + Date.now() + "|Rand|" + Math.ceil(Math.random() * 10) + "|UUID|" + this.genUuid() + "|UID|" + message.id
         this.$refs.renderer.addMessage(message)
       }
-    
+    },
+    genUuid() {
+      var s = [];
+      var hexDigits = "0123456789abcdef";
+      for (var i = 0; i < 36; i++) {
+        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+      }
+      s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+      s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+      s[8] = s[13] = s[18] = s[23] = "-";
+
+      var uuid = s.join("");
+      return uuid;
     },
     filterTextMessage(data) {
       if (this.config.blockGiftDanmaku && data.isGiftDanmaku) {

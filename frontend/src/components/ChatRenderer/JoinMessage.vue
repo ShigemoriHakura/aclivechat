@@ -1,30 +1,32 @@
 <template>
   <yt-live-chat-text-message-renderer :author-type="authorTypeText">
     <img-shadow id="author-photo" height="24" width="24" class="style-scope yt-live-chat-text-message-renderer"
-      :imgUrl="avatarUrl"
-    ></img-shadow>
+      :imgUrl="avatarUrl"></img-shadow>
     <div id="content" class="style-scope yt-live-chat-text-message-renderer">
       <span id="timestamp" class="style-scope yt-live-chat-text-message-renderer">{{timeText}}</span>
-      <span v-if="getShowMedal" :id="`medalName-${medalDisplayColorLV}`" class="style-scope yt-live-chat-text-message-renderer">{{medal.ClubName}}</span>
-      <span v-if="getShowMedal" :id="`medalLevel-${medalDisplayColorLV}`" class="style-scope yt-live-chat-text-message-renderer">({{medal.Level}})</span>
-      <span v-if="userMark !== ''" id="usermark" class="style-scope yt-live-chat-text-message-renderer">{{userMark}}</span>
+      <span v-if="getShowMedal" :id="`medalName-${medalDisplayColorLV}`"
+        class="style-scope yt-live-chat-text-message-renderer">{{medal.ClubName}}</span>
+      <span v-if="getShowMedal" :id="`medalLevel-${medalDisplayColorLV}`"
+        class="style-scope yt-live-chat-text-message-renderer">({{medal.Level}})</span>
+      <span v-if="userMark !== ''" id="usermark"
+        class="style-scope yt-live-chat-text-message-renderer">{{userMark}}</span>
       <yt-live-chat-author-chip class="style-scope yt-live-chat-text-message-renderer">
         <span id="author-name" dir="auto" class="style-scope yt-live-chat-author-chip" :type="authorTypeText">{{
           authorName
-          }}<!-- 这里是已验证勋章 -->
+          }}
+          <!-- 这里是已验证勋章 -->
           <span id="chip-badges" class="style-scope yt-live-chat-author-chip"></span>
         </span>
         <span id="chat-badges" class="style-scope yt-live-chat-author-chip">
-          <author-badge class="style-scope yt-live-chat-author-chip"
-            :isAdmin="authorType === 2" :privilegeType="privilegeType"
-          ></author-badge>
+          <author-badge class="style-scope yt-live-chat-author-chip" :isAdmin="authorType === 2"
+            :privilegeType="privilegeType"></author-badge>
         </span>
       </yt-live-chat-author-chip>
       <span id="joinMessage" class="style-scope yt-live-chat-text-message-renderer">{{
         content
-        }}<el-badge :value="repeated" :max="99" v-show="repeated > 1" class="style-scope yt-live-chat-text-message-renderer"
-          :style="{'--repeated-mark-color': repeatedMarkColor}"
-        ></el-badge>
+        }}<el-badge :value="repeated" :max="99" v-show="repeated > 1"
+          class="style-scope yt-live-chat-text-message-renderer" :style="{'--repeated-mark-color': repeatedMarkColor}">
+        </el-badge>
       </span>
     </div>
   </yt-live-chat-text-message-renderer>
@@ -55,7 +57,7 @@ export default {
     privilegeType: Number,
     repeated: Number,
     userMark: String,
-    medal: Array,
+    medal: Object,
     medalDisplayColorLV: {
       type: Number,
       default: 1
@@ -92,16 +94,20 @@ export default {
 </script>
 
 <style>
-yt-live-chat-text-message-renderer>#content>#joinMessage>.el-badge {
+yt-live-chat-text-message-renderer > #content > #joinMessage > .el-badge {
   margin-left: 10px;
 }
 
-yt-live-chat-text-message-renderer>#content>#joinMessage>.el-badge .el-badge__content {
+yt-live-chat-text-message-renderer
+  > #content
+  > #joinMessage
+  > .el-badge
+  .el-badge__content {
   font-size: 12px !important;
   line-height: 18px !important;
   text-shadow: none !important;
   font-family: sans-serif !important;
-  color: #FFF !important;
+  color: #fff !important;
   background-color: var(--repeated-mark-color) !important;
   border: none;
 }

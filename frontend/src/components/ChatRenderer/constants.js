@@ -118,7 +118,7 @@ export const PRICE_CONFIGS = [
   }
 ]
 
-export function getPriceConfig (price) {
+export function getPriceConfig(price) {
   for (const config of PRICE_CONFIGS) {
     if (price >= config.price) {
       return config

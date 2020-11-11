@@ -7,17 +7,16 @@
       '--yt-live-chat-paid-message-author-name-color': color.authorName,
       '--yt-live-chat-paid-message-timestamp-color': color.time,
       '--yt-live-chat-paid-message-color': color.content
-    }"
-  >
+    }">
     <div id="card" class="style-scope yt-live-chat-paid-message-renderer">
       <div id="header" class="style-scope yt-live-chat-paid-message-renderer">
         <img-shadow id="author-photo" height="40" width="40" class="style-scope yt-live-chat-paid-message-renderer"
-          :imgUrl="getUrl"
-        ></img-shadow>
+          :imgUrl="getUrl"></img-shadow>
         <div id="header-content" class="style-scope yt-live-chat-paid-message-renderer">
           <div id="header-content-primary-column" class="style-scope yt-live-chat-paid-message-renderer">
             <div id="author-name" class="style-scope yt-live-chat-paid-message-renderer">{{authorName}}</div>
-            <div v-if="showGiftPrice" id="purchase-amount" class="style-scope yt-live-chat-paid-message-renderer">{{priceText}}</div>
+            <div v-if="showGiftPrice" id="purchase-amount" class="style-scope yt-live-chat-paid-message-renderer">
+              {{priceText}}</div>
           </div>
           <span id="timestamp" class="style-scope yt-live-chat-paid-message-renderer">{{timeText}}</span>
         </div>
@@ -67,17 +66,17 @@ export default {
     }
   },
   computed: {
-    getUrl(){
-      if(this.showGiftPngInstead){
+    getUrl() {
+      if (this.showGiftPngInstead) {
         return this.webpPicUrl
       }
       return this.avatarUrl
     },
     color() {
-      return constants.getPriceConfig(this.price/this.exchangeRate).colors
+      return constants.getPriceConfig(this.price / this.exchangeRate).colors
     },
     priceText() {
-      if(this.showACCoinInstead){
+      if (this.showACCoinInstead) {
         return parseInt(this.price * 10) + "AC币"
       }
       return '¥' + utils.formatCurrency(this.price)
