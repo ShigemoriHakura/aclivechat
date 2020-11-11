@@ -2,20 +2,20 @@
   <yt-live-chat-ticker-renderer :hidden="showMessages.length === 0">
     <div id="container" dir="ltr" class="style-scope yt-live-chat-ticker-renderer">
       <div id="items" class="style-scope yt-live-chat-ticker-renderer">
-        <yt-live-chat-ticker-paid-message-item-renderer v-for="message in showMessages" :key="message.raw.id"
+        <yt-live-chat-ticker-paid-message-item-renderer v-for="message in showMessages" :key="message.raw.uniqueId"
           tabindex="0" class="style-scope yt-live-chat-ticker-renderer" style="overflow: hidden;"
-          @click="onItemClick(message.raw)"
-        >
+          @click="onItemClick(message.raw)">
           <div id="container" dir="ltr" class="style-scope yt-live-chat-ticker-paid-message-item-renderer" :style="{
             background: message.bgColor,
           }">
             <div id="content" class="style-scope yt-live-chat-ticker-paid-message-item-renderer" :style="{
               color: message.color
             }">
-              <img-shadow id="author-photo" height="24" width="24" class="style-scope yt-live-chat-ticker-paid-message-item-renderer"
-                :imgUrl="message.raw.avatarUrl"
-              ></img-shadow>
-              <span id="text" dir="ltr" class="style-scope yt-live-chat-ticker-paid-message-item-renderer">{{message.text}}</span>
+              <img-shadow id="author-photo" height="24" width="24"
+                class="style-scope yt-live-chat-ticker-paid-message-item-renderer" :imgUrl="message.raw.avatarUrl">
+              </img-shadow>
+              <span id="text" dir="ltr"
+                class="style-scope yt-live-chat-ticker-paid-message-item-renderer">{{message.text}}</span>
             </div>
           </div>
         </yt-live-chat-ticker-paid-message-item-renderer>
@@ -23,22 +23,19 @@
     </div>
     <template v-if="pinnedMessage">
       <membership-item :key="pinnedMessage.id" v-if="pinnedMessage.type === MESSAGE_TYPE_MEMBER"
-        class="style-scope yt-live-chat-ticker-renderer"
-        :avatarUrl="pinnedMessage.avatarUrl" :authorName="pinnedMessage.authorName" :privilegeType="pinnedMessage.privilegeType"
-        :title="pinnedMessage.title" :time="pinnedMessage.time"
-      ></membership-item>
-      <paid-message :key="pinnedMessage.id" v-else
-        class="style-scope yt-live-chat-ticker-renderer"
+        class="style-scope yt-live-chat-ticker-renderer" :avatarUrl="pinnedMessage.avatarUrl"
+        :authorName="pinnedMessage.authorName" :privilegeType="pinnedMessage.privilegeType" :title="pinnedMessage.title"
+        :time="pinnedMessage.time"></membership-item>
+      <paid-message :key="pinnedMessage.id" v-else class="style-scope yt-live-chat-ticker-renderer"
         :price="pinnedMessage.price" :avatarUrl="pinnedMessage.avatarUrl" :authorName="pinnedMessage.authorName"
-        :time="pinnedMessage.time" :content="pinnedMessageShowContent"
-      ></paid-message>
+        :time="pinnedMessage.time" :content="pinnedMessageShowContent"></paid-message>
     </template>
   </yt-live-chat-ticker-renderer>
 </template>
 
 <script>
 import * as chatConfig from '@/api/chatConfig'
-import {formatCurrency} from '@/utils'
+import { formatCurrency } from '@/utils'
 import ImgShadow from './ImgShadow.vue'
 import MembershipItem from './MembershipItem.vue'
 import PaidMessage from './PaidMessage.vue'
@@ -120,7 +117,7 @@ export default {
         color1 = 'rgba(15,157,88,1)'
         color2 = 'rgba(11,128,67,1)'
       } else {
-        let config = constants.getPriceConfig(message.price/this.exchangeRate)
+        let config = constants.getPriceConfig(message.price / this.exchangeRate)
         color1 = config.colors.contentBg
         color2 = config.colors.headerBg
       }
@@ -137,13 +134,13 @@ export default {
       if (message.type === constants.MESSAGE_TYPE_MEMBER) {
         return 'rgb(255,255,255)'
       }
-      return constants.getPriceConfig(message.price/this.exchangeRate).colors.header
+      return constants.getPriceConfig(message.price / this.exchangeRate).colors.header
     },
     getText(message) {
-      if(!this.showGiftPrice){
+      if (!this.showGiftPrice) {
         return ''
       }
-      if(this.showACCoinInstead){
+      if (this.showACCoinInstead) {
         return parseInt(message.price * 10) + 'AC币'
       }
       if (message.type === constants.MESSAGE_TYPE_MEMBER) {
@@ -155,7 +152,7 @@ export default {
       if (message.type === constants.MESSAGE_TYPE_MEMBER) {
         return 2
       }
-      return constants.getPriceConfig(message.price/this.exchangeRate).pinTime
+      return constants.getPriceConfig(message.price / this.exchangeRate).pinTime
     },
     updateProgress() {
       this.curTime = new Date()
