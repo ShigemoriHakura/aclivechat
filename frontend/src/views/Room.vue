@@ -37,6 +37,7 @@ export default {
       websocket: null,
       retryCount: 0,
       isDestroying: false,
+      isfirstLoad: true,
       heartbeatTimerId: null
     }
   },
@@ -116,6 +117,7 @@ export default {
         cmd: COMMAND_JOIN_ROOM,
         data: {
           roomId: parseInt(this.$route.params.roomId),
+          isfirstLoad: this.isfirstLoad,
           version: this.VERSION,
           config: {
             autoTranslate: this.config.autoTranslate
@@ -132,6 +134,9 @@ export default {
         return
       }
       window.console.log(`掉线重连中${++this.retryCount}`)
+      if (this.retryCount > 1) {
+        this.isfirstLoad = false
+      }
       this.wsConnect()
     },
     onWsMessage(event) {
