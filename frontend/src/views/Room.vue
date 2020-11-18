@@ -36,6 +36,11 @@ export default {
 
       websocket: null,
       retryCount: 0,
+
+      serverHeartbeatTime: 0, //服务器返回心跳的时间
+      clientHeartbeatTime: 0, //客户端发送心跳的时间
+      noHeartbeatCount: 0, //丢失心跳次数
+
       isDestroying: false,
       isfirstLoad: true,
       heartbeatTimerId: null
@@ -104,12 +109,22 @@ export default {
       this.websocket.onopen = this.onWsOpen
       this.websocket.onclose = this.onWsClose
       this.websocket.onmessage = this.onWsMessage
-      this.heartbeatTimerId = window.setInterval(this.sendHeartbeat, 10 * 1000)
+      this.heartbeatTimerId = window.setInterval(this.sendHeartbeat, 1 * 1000)
     },
     sendHeartbeat() {
       this.websocket.send(JSON.stringify({
         cmd: COMMAND_HEARTBEAT
       }))
+      this.clientHeartbeatTime = Date.now()
+      if (this.clientHeartbeatTime - this.serverHeartbeatTime > 2 * 1000) {
+        window.console.log(`无心跳 ${++this.noHeartbeatCount}`)
+      } else {
+        this.noHeartbeatCount = 0
+      }
+      if (this.noHeartbeatCount >= 2) {
+        window.console.log(`无心跳重连`)
+        this.websocket.close()
+      }
     },
     onWsOpen() {
       this.retryCount = 0
@@ -133,7 +148,7 @@ export default {
       if (this.isDestroying) {
         return
       }
-      window.console.log(`掉线重连中${++this.retryCount}`)
+      window.console.log(`掉线重连中 ${++this.retryCount}`)
       if (this.retryCount > 1) {
         this.isfirstLoad = false
       }
@@ -143,6 +158,9 @@ export default {
       let { cmd, data } = JSON.parse(event.data)
       let message = null
       switch (cmd) {
+        case COMMAND_HEARTBEAT:
+          this.serverHeartbeatTime = Date.now()
+          break
         case COMMAND_JOIN_ROOM:
           if (!this.config.showJoin || this.mergeSimilarOther(data.authorName, this.config.joinText)) {
             break
@@ -202,7 +220,7 @@ export default {
           if (!this.config.showGift) {
             break
           }
-          let price = data.totalCoin / 1000
+          let price = (data.totalCoin / 1000)
           if (this.mergeSimilarGift(data.authorName, price, data.giftName, data.num)) {
             break
           }
@@ -225,7 +243,7 @@ export default {
           }
           break
         }
-        case COMMAND_ADD_LOVE: {
+        case COMMAND_ADD_LOVE:
           if (!this.config.showLove || this.mergeSimilarOther(data.authorName, this.config.loveText)) {
             break
           }
@@ -241,8 +259,7 @@ export default {
             repeated: 1,
           }
           break
-        }
-        case COMMAND_ADD_FOLLOW: {
+        case COMMAND_ADD_FOLLOW:
           if (!this.config.showFollow || this.mergeSimilarOther(data.authorName, this.config.followText)) {
             break
           }
@@ -257,8 +274,7 @@ export default {
             content: this.config.followText,
           }
           break
-        }
-        case COMMAND_ADD_JOIN_GROUP: {
+        case COMMAND_ADD_JOIN_GROUP:
           if (!this.config.showJoinGroup) {
             break
           }
@@ -273,7 +289,6 @@ export default {
             content: this.config.joinGroupText,
           }
           break
-        }
         case COMMAND_ADD_MEMBER:
           if (!this.config.showGift || !this.filterNewMemberMessage(data)) {
             break

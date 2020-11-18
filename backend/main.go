@@ -364,7 +364,7 @@ func startACWS(roomID int) {
 					dataQ.RoomID = roomID
 					dataQ.Data = data
 					MessageQ.Enqueue(dataQ)
-					log.Printf("%s（%d）加入主播%s（%d）的守护团", d.FansInfo.Nickname, d.FansInfo.UserID, d.UperInfo.Nickname, d.UperInfo.UserID)
+					log.Printf("%s（%d）加入主播 %s（%d）的守护团", d.FansInfo.Nickname, d.FansInfo.UserID, d.UperInfo.Nickname, d.UperInfo.UserID)
 				}
 			}
 		} else {

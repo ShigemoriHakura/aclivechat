@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	jsoniter "github.com/json-iterator/go"
 )
 
 func (c *Client) readPump() {
@@ -15,11 +16,20 @@ func (c *Client) readPump() {
 	}()
 	log.Println("[WS Hub] 用户处理启动")
 	for {
-		_, _, err := c.conn.ReadMessage()
+		_, msg, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("[WS Hub] WS连接发生未知错误: %v", err)
 			}
+			break
+		}
+		any := jsoniter.Get(msg)
+		var cmd = any.Get("cmd").ToString()
+		//log.Println("Conn: ", 1, string(msg))
+		//log.Println("Conn cmd: ", cmd)
+		switch cmd {
+		case "0":
+			c.conn.WriteMessage(1, []byte(`{"cmd":0}`))
 			break
 		}
 	}
