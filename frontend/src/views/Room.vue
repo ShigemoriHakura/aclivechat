@@ -121,13 +121,15 @@ export default {
       } else {
         this.noHeartbeatCount = 0
       }
-      if (this.noHeartbeatCount >= 2) {
+      if (this.noHeartbeatCount > 2) {
         window.console.log(`无心跳重连`)
         this.websocket.close()
       }
     },
     onWsOpen() {
       this.retryCount = 0
+      this.noHeartbeatCount = 0
+      this.serverHeartbeatTime = Date.now()
       this.websocket.send(JSON.stringify({
         cmd: COMMAND_JOIN_ROOM,
         data: {
