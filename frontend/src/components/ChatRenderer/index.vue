@@ -1,6 +1,6 @@
 <template>
-  <yt-live-chat-renderer class="style-scope yt-live-chat-app" style="--scrollbar-width:11px;" hide-timestamps
-    hide-usermark hide-medal @mousemove="refreshCantScrollStartTime">
+  <yt-live-chat-renderer class="style-scope yt-live-chat-app" style="--scrollbar-width:11px;" hide-timestamps hide-medal
+    @mousemove="refreshCantScrollStartTime">
     <ticker class="style-scope yt-live-chat-renderer" :messages="paidMessages" :showGiftName="showGiftName"
       :exchangeRate="exchangeRate" :showGiftPrice="showGiftPrice" :showACCoinInstead="showACCoinInstead"></ticker>
     <yt-live-chat-item-list-renderer class="style-scope yt-live-chat-renderer" allow-scroll>

@@ -1,4 +1,4 @@
-import {mergeConfig} from '@/utils'
+import { mergeConfig } from '@/utils'
 import * as fonts from './fonts'
 
 export const DEFAULT_CONFIG = {
@@ -25,7 +25,7 @@ export const DEFAULT_CONFIG = {
   medalLevelColorLV4: '#C43D37',
   medalLevelColorLV5: '#6630E9',
 
-  showUserMark: false,
+  showUserMark: true,
   userMarkFont: 'Changa One',
   userMarkFontSize: 20,
   userMarkLineHeight: 0,
@@ -96,19 +96,19 @@ export const DEFAULT_CONFIG = {
 
 const FALLBACK_FONTS = ', "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "\\5FAE\\8F6F\\96C5\\9ED1", SimHei, Arial, sans-serif'
 
-export function setLocalConfig (config) {
+export function setLocalConfig(config) {
   config = mergeConfig(config, DEFAULT_CONFIG)
   window.localStorage.stylegenConfig = JSON.stringify(config)
 }
 
-export function getLocalConfig () {
+export function getLocalConfig() {
   if (!window.localStorage.stylegenConfig) {
     return DEFAULT_CONFIG
   }
   return mergeConfig(JSON.parse(window.localStorage.stylegenConfig), DEFAULT_CONFIG)
 }
 
-export function getStyle (config) {
+export function getStyle(config) {
   config = mergeConfig(config, DEFAULT_CONFIG)
   return `${getImports(config)}
 
@@ -483,7 +483,7 @@ ${getAnimationStyle(config)}
 `
 }
 
-function getImports (config) {
+function getImports(config) {
   let fontsNeedToImport = new Set()
   for (let name of ['userNameFont', 'messageFont', 'timeFont', 'firstLineFont', 'secondLineFont', 'scContentFont']) {
     let font = config[name]
@@ -498,7 +498,7 @@ function getImports (config) {
   return res.join('\n')
 }
 
-function getMessageColorStyle (authorType, color, useBarsInsteadOfBg) {
+function getMessageColorStyle(authorType, color, useBarsInsteadOfBg) {
   let typeSelector = authorType ? `[author-type="${authorType}"]` : ''
   if (!useBarsInsteadOfBg) {
     return `yt-live-chat-text-message-renderer${typeSelector},
@@ -521,7 +521,7 @@ yt-live-chat-text-message-renderer${typeSelector}[is-highlighted] {
   }
 }
 
-function getShowOutlinesStyle (config) {
+function getShowOutlinesStyle(config) {
   if (!config.showOutlines || !config.outlineSize) {
     return ''
   }
@@ -534,7 +534,7 @@ function getShowOutlinesStyle (config) {
   return `text-shadow: ${shadow.join(', ')};`
 }
 
-function cssEscapeStr (str) {
+function cssEscapeStr(str) {
   let res = []
   for (let char of str) {
     res.push(cssEscapeChar(char))
@@ -542,7 +542,7 @@ function cssEscapeStr (str) {
   return res.join('')
 }
 
-function cssEscapeChar (char) {
+function cssEscapeChar(char) {
   if (!needEscapeChar(char)) {
     return char
   }
@@ -551,7 +551,7 @@ function cssEscapeChar (char) {
   return `\\${hexCode} `
 }
 
-function needEscapeChar (char) {
+function needEscapeChar(char) {
   let code = char.codePointAt(0)
   if (0x20 <= code && code <= 0x7E) {
     return char === '"'
@@ -559,12 +559,12 @@ function needEscapeChar (char) {
   return true
 }
 
-function getPaddingStyle (config) {
+function getPaddingStyle(config) {
   return `padding-left: ${config.useBarsInsteadOfBg ? 20 : 4}px !important;
   padding-right: 4px !important;`
 }
 
-function getShowColonStyle (config) {
+function getShowColonStyle(config) {
   if (!config.showColon) {
     return ''
   }
@@ -574,7 +574,7 @@ function getShowColonStyle (config) {
 }`
 }
 
-function getShowNewMemberBgStyle (config) {
+function getShowNewMemberBgStyle(config) {
   if (config.showNewMemberBg) {
     return `background-color: ${config.memberUserNameColor} !important;
   margin: 4px 0 !important;`
@@ -585,7 +585,7 @@ function getShowNewMemberBgStyle (config) {
   }
 }
 
-function getAnimationStyle (config) {
+function getAnimationStyle(config) {
   if (!config.animateIn && !config.animateOut) {
     return ''
   }
@@ -602,7 +602,7 @@ function getAnimationStyle (config) {
   if (config.animateIn) {
     keyframes.push(`  0% { opacity: 0;${!config.slide ? ''
       : ` transform: translateX(${config.reverseSlide ? 16 : -16}px);`
-    } }`)
+      } }`)
     curTime += config.fadeInTime
     keyframes.push(`  ${(curTime / totalTime) * 100}% { opacity: 1; transform: none; }`)
   }
@@ -612,7 +612,7 @@ function getAnimationStyle (config) {
     curTime += config.fadeOutTime
     keyframes.push(`  ${(curTime / totalTime) * 100}% { opacity: 0;${!config.slide ? ''
       : ` transform: translateX(${config.reverseSlide ? -16 : 16}px);`
-    } }`)
+      } }`)
   }
   return `@keyframes anim {
 ${keyframes.join('\n')}

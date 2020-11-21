@@ -54,10 +54,6 @@ yt-live-chat-renderer[hide-timestamps] {
   --yt-live-chat-item-timestamp-display: none;
 }
 
-yt-live-chat-renderer[hide-usermark] {
-  --yt-live-chat-item-usermark-display: none;
-}
-
 yt-live-chat-renderer[hide-medal] {
   --yt-live-chat-item-medal-display: none;
 }
