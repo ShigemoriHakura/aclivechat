@@ -109,12 +109,13 @@ export default {
       this.websocket.onopen = this.onWsOpen
       this.websocket.onclose = this.onWsClose
       this.websocket.onmessage = this.onWsMessage
-      this.heartbeatTimerId = window.setInterval(this.sendHeartbeat, 1 * 1000)
     },
     sendHeartbeat() {
-      this.websocket.send(JSON.stringify({
-        cmd: COMMAND_HEARTBEAT
-      }))
+      if (this.websocket.readyState === 1) {
+        this.websocket.send(JSON.stringify({
+          cmd: COMMAND_HEARTBEAT
+        }))
+      }
       this.clientHeartbeatTime = Date.now()
       if (this.clientHeartbeatTime - this.serverHeartbeatTime > 2 * 1000) {
         window.console.log(`无心跳 ${++this.noHeartbeatCount}`)
@@ -130,6 +131,7 @@ export default {
       this.retryCount = 0
       this.noHeartbeatCount = 0
       this.serverHeartbeatTime = Date.now()
+      this.heartbeatTimerId = window.setInterval(this.sendHeartbeat, 1 * 1000)
       this.websocket.send(JSON.stringify({
         cmd: COMMAND_JOIN_ROOM,
         data: {
