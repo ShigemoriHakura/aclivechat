@@ -10,46 +10,46 @@
           <div ref="items" id="items" class="style-scope yt-live-chat-item-list-renderer" style="overflow: hidden"
             :style="{transform: `translateY(${Math.floor(scrollPixelsRemaining)}px)`}">
             <template v-for="message in messages">
-              <text-message :key="message.uniqueId" v-if="message.type === MESSAGE_TYPE_TEXT"
+              <text-message :key="message.id" v-if="message.type === MESSAGE_TYPE_TEXT"
                 class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl" :time="message.time"
                 :authorName="message.authorName" :authorType="message.authorType" :content="getShowContent(message)"
                 :privilegeType="message.privilegeType" :repeated="message.repeated" :userMark="message.userMark"
                 :medal="message.medal" :getShowMedal="getShowMedal(message.medal)"
                 :medalDisplayColorLV="getMedalLVType(message.medal)"></text-message>
-              <paid-message :key="message.uniqueId" v-else-if="message.type === MESSAGE_TYPE_GIFT"
+              <paid-message :key="message.id" v-else-if="message.type === MESSAGE_TYPE_GIFT"
                 class="style-scope yt-live-chat-item-list-renderer" :price="message.price"
                 :avatarUrl="message.avatarUrl" :webpPicUrl="message.webpPicUrl" :authorName="message.authorName"
                 :time="message.time" :content="getGiftShowContent(message)" :showGiftPrice="showGiftPrice"
                 :exchangeRate="exchangeRate" :showACCoinInstead="showACCoinInstead"
                 :showGiftPngInstead="showGiftPngInstead"></paid-message>
-              <membership-item :key="message.uniqueId" v-else-if="message.type === MESSAGE_TYPE_MEMBER"
+              <membership-item :key="message.id" v-else-if="message.type === MESSAGE_TYPE_MEMBER"
                 class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl"
                 :authorName="message.authorName" :privilegeType="message.privilegeType" :title="message.title"
                 :time="message.time"></membership-item>
-              <paid-message :key="message.uniqueId" v-else-if="message.type === MESSAGE_TYPE_SUPER_CHAT"
+              <paid-message :key="message.id" v-else-if="message.type === MESSAGE_TYPE_SUPER_CHAT"
                 class="style-scope yt-live-chat-item-list-renderer" :price="message.price"
                 :avatarUrl="message.avatarUrl" :authorName="message.authorName" :time="message.time"
                 :content="getShowContent(message)"></paid-message>
-              <join-message :key="message.uniqueId" v-if="message.type === MESSAGE_TYPE_JOIN"
+              <join-message :key="message.id" v-if="message.type === MESSAGE_TYPE_JOIN"
                 class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl" :time="message.time"
                 :authorName="message.authorName" :authorType="message.authorType" :content="getShowContent(message)"
                 :privilegeType="message.privilegeType" :repeated="message.repeated" :userMark="message.userMark"
                 :medal="message.medal" :getShowMedal="getShowMedal(message.medal)"
                 :medalDisplayColorLV="getMedalLVType(message.medal)"></join-message>
-              <join-group-message :key="message.uniqueId" v-if="message.type === MESSAGE_TYPE_JOIN_GROUP"
+              <join-group-message :key="message.id" v-if="message.type === MESSAGE_TYPE_JOIN_GROUP"
                 class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl" :time="message.time"
                 :authorName="message.authorName" :authorType="message.authorType" :content="getShowContent(message)"
                 :privilegeType="message.privilegeType" :repeated="message.repeated" :userMark="message.userMark">
               </join-group-message>
-              <quit-message :key="message.uniqueId" v-if="message.type === MESSAGE_TYPE_QUIT"
+              <quit-message :key="message.id" v-if="message.type === MESSAGE_TYPE_QUIT"
                 class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl" :time="message.time"
                 :authorName="message.authorName" :authorType="message.authorType" :content="getShowContent(message)"
                 :privilegeType="message.privilegeType" :repeated="message.repeated"></quit-message>
-              <love-message :key="message.uniqueId" v-if="message.type === MESSAGE_TYPE_LOVE"
+              <love-message :key="message.id" v-if="message.type === MESSAGE_TYPE_LOVE"
                 class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl" :time="message.time"
                 :authorName="message.authorName" :authorType="message.authorType" :content="getShowContent(message)"
                 :privilegeType="message.privilegeType" :repeated="message.repeated"></love-message>
-              <follow-message :key="message.uniqueId" v-if="message.type === MESSAGE_TYPE_FOLLOW"
+              <follow-message :key="message.id" v-if="message.type === MESSAGE_TYPE_FOLLOW"
                 class="style-scope yt-live-chat-item-list-renderer" :avatarUrl="message.avatarUrl" :time="message.time"
                 :authorName="message.authorName" :authorType="message.authorType" :content="getShowContent(message)"
                 :privilegeType="message.privilegeType" :repeated="message.repeated"></follow-message>

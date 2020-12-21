@@ -2,7 +2,7 @@
   <yt-live-chat-ticker-renderer :hidden="showMessages.length === 0">
     <div id="container" dir="ltr" class="style-scope yt-live-chat-ticker-renderer">
       <div id="items" class="style-scope yt-live-chat-ticker-renderer">
-        <yt-live-chat-ticker-paid-message-item-renderer v-for="message in showMessages" :key="message.raw.uniqueId"
+        <yt-live-chat-ticker-paid-message-item-renderer v-for="message in showMessages" :key="message.raw.id"
           tabindex="0" class="style-scope yt-live-chat-ticker-renderer" style="overflow: hidden;"
           @click="onItemClick(message.raw)">
           <div id="container" dir="ltr" class="style-scope yt-live-chat-ticker-paid-message-item-renderer" :style="{

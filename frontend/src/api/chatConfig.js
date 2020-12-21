@@ -33,7 +33,7 @@ export const DEFAULT_CONFIG = {
   autoTranslate: false
 }
 
-export const VERSION = "0.2.14";
+export const VERSION = "0.2.15";
 
 export function setLocalConfig(config) {
   config = mergeConfig(config, DEFAULT_CONFIG)

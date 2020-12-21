@@ -8,7 +8,8 @@ import (
 	"os"
 	"strconv"
 	"time"
-
+	
+	"github.com/satori/go.uuid"
 	"github.com/akkuman/parseConfig"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/orzogc/acfundanmu"
@@ -204,10 +205,12 @@ func startACWS(roomID int) {
 					for _, value := range removed {
 						d := processedList2[value]
 						if !d.AnonymousUser {
+							u1 := uuid.Must(uuid.NewV4())
 							avatar, AuthorType := getAvatarAndAuthorType(d.UserInfo, roomID)
 							var data = new(dataUserStruct)
 							data.Cmd = 9
-							data.Data.Id = d.UserID
+							data.Data.Id = u1.String()
+							data.Data.UserId = d.UserID
 							data.Data.AvatarUrl = avatar
 							data.Data.Timestamp = time.Now().Unix()
 							data.Data.AuthorName = d.Nickname
@@ -232,6 +235,7 @@ func startACWS(roomID int) {
 	for {
 		if danmu := dq.GetDanmu(); danmu != nil {
 			for _, d := range danmu {
+				u1 := uuid.Must(uuid.NewV4())
 				avatar, AuthorType := getAvatarAndAuthorType(d.GetUserInfo(), roomID)
 				// 根据Type处理弹幕
 				switch d := d.(type) {
@@ -239,7 +243,8 @@ func startACWS(roomID int) {
 					if !checkComments(d.Content) {
 						var data = new(dataUserStruct)
 						data.Cmd = 2
-						data.Data.Id = d.UserID
+						data.Data.Id = u1.String()
+						data.Data.UserId = d.UserID
 						data.Data.AvatarUrl = avatar
 						data.Data.Timestamp = time.Now().Unix()
 						data.Data.AuthorName = d.Nickname
@@ -257,7 +262,8 @@ func startACWS(roomID int) {
 				case *acfundanmu.Like:
 					var data = new(dataUserStruct)
 					data.Cmd = 8
-					data.Data.Id = d.UserID
+					data.Data.Id = u1.String()
+					data.Data.UserId = d.UserID
 					data.Data.AvatarUrl = avatar
 					data.Data.Timestamp = time.Now().Unix()
 					data.Data.AuthorName = d.Nickname
@@ -274,7 +280,8 @@ func startACWS(roomID int) {
 				case *acfundanmu.EnterRoom:
 					var data = new(dataUserStruct)
 					data.Cmd = 1
-					data.Data.Id = d.UserID
+					data.Data.Id = u1.String()
+					data.Data.UserId = d.UserID
 					data.Data.AvatarUrl = avatar
 					data.Data.Timestamp = time.Now().Unix()
 					data.Data.AuthorName = d.Nickname
@@ -291,7 +298,8 @@ func startACWS(roomID int) {
 				case *acfundanmu.FollowAuthor:
 					var data = new(dataUserStruct)
 					data.Cmd = 10
-					data.Data.Id = d.UserID
+					data.Data.Id = u1.String()
+					data.Data.UserId = d.UserID
 					data.Data.AvatarUrl = avatar
 					data.Data.Timestamp = time.Now().Unix()
 					data.Data.AuthorName = d.Nickname
@@ -308,7 +316,8 @@ func startACWS(roomID int) {
 				case *acfundanmu.ThrowBanana:
 					var data = new(dataGiftStruct)
 					data.Cmd = 3
-					data.Data.Id = d.UserID
+					data.Data.Id = u1.String()
+					data.Data.UserId = d.UserID
 					data.Data.AvatarUrl = avatar
 					data.Data.WebpPic = "https://static.yximgs.com/bs2/giftCenter/giftCenter-20200316101317UbXssBoH.webp"
 					data.Data.PngPic = "https://static.yximgs.com/bs2/giftCenter/giftCenter-20200812141711JRxMyUWH.png"
@@ -327,7 +336,8 @@ func startACWS(roomID int) {
 				case *acfundanmu.Gift:
 					var data = new(dataGiftStruct)
 					data.Cmd = 3
-					data.Data.Id = d.UserID
+					data.Data.Id = u1.String()
+					data.Data.UserId = d.UserID
 					data.Data.AvatarUrl = avatar
 					data.Data.WebpPic = d.WebpPic
 					data.Data.PngPic = d.PngPic
@@ -352,7 +362,8 @@ func startACWS(roomID int) {
 				case *acfundanmu.JoinClub:
 					var data = new(dataUserStruct)
 					data.Cmd = 11
-					data.Data.Id = d.FansInfo.UserID
+					data.Data.Id = u1.String()
+					data.Data.UserId = d.FansInfo.UserID
 					data.Data.AvatarUrl = avatar
 					data.Data.Timestamp = time.Now().Unix()
 					data.Data.AuthorName = d.FansInfo.Nickname

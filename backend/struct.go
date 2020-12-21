@@ -8,7 +8,8 @@ import (
 )
 
 type dataGift struct {
-	Id         int64                `json:"id"`         // 用户ID
+	Id         string               `json:"id"`         // 随机的UUID
+	UserId     int64                `json:"userId"`     // 用户ID
 	AvatarUrl  string               `json:"avatarUrl"`  // 用户头像URL
 	WebpPic    string               `json:"webpPicUrl"` // 礼物的webp格式图片（动图）
 	PngPic     string               `json:"pngPicUrl"`  // 礼物的png格式图片（大）
@@ -23,7 +24,8 @@ type dataGift struct {
 }
 
 type dataUser struct {
-	Id            int64                `json:"id"`         // 用户ID
+	Id            string               `json:"id"`         // 随机的UUID
+	UserId        int64                `json:"userId"`     // 用户ID
 	AvatarUrl     string               `json:"avatarUrl"`  // 头像URL
 	Timestamp     int64                `json:"timestamp"`  // 发送时间
 	AuthorName    string               `json:"authorName"` // 用户名
