@@ -12,6 +12,7 @@ import ChatRenderer from '@/components/ChatRenderer'
 import * as constants from '@/components/ChatRenderer/constants'
 
 const COMMAND_HEARTBEAT = 0
+const COMMAND_SERVER_HEARTBEAT = 233
 const COMMAND_JOIN_ROOM = 1
 const COMMAND_ADD_TEXT = 2
 const COMMAND_ADD_GIFT = 3
@@ -163,6 +164,9 @@ export default {
       let message = null
       switch (cmd) {
         case COMMAND_HEARTBEAT:
+          //this.serverHeartbeatTime = Date.now()
+          break
+        case COMMAND_SERVER_HEARTBEAT:
           this.serverHeartbeatTime = Date.now()
           break
         case COMMAND_JOIN_ROOM:

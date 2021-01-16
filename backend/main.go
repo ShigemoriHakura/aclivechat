@@ -40,6 +40,7 @@ func main() {
 	go processMessageQueue()
 	go processRoomQueue()
 	go processRoomRetryQueue()
+	go processHeartBeatQueue()
 	startHttpServer()
 }
 
@@ -96,7 +97,7 @@ func processMessageQueue() {
 	for {
 		for !MessageQ.IsEmpty() {
 			tmp := MessageQ.Dequeue()
-			log.Println("[Message Queue]", tmp.RoomID, "处理消息")
+			//log.Println("[Message Queue]", tmp.RoomID, "处理消息")
 			ACConnMap.Lock()
 			connHub, ok := ACConnMap.hubMap[tmp.RoomID]
 			ACConnMap.Unlock()
@@ -125,8 +126,6 @@ func processRoomQueue() {
 			if !ok {
 				log.Println("[Room Queue]", tmp.RoomID, "建立WS链接")
 				go startACWS(tmp.RoomID)
-			} else {
-				log.Println("[Room Queue]", tmp.RoomID, "已存在，不新建")
 			}
 		}
 		time.Sleep(1 * time.Second)
@@ -150,6 +149,26 @@ func processRoomRetryQueue() {
 		}
 		ACConnMap.Unlock()
 		//log.Println("[Room Retry Queue]", "检查完成")
+	}
+}
+
+func processHeartBeatQueue() {
+	for {
+		time.Sleep(1 * time.Second)
+		ACConnMap.Lock()
+		for _, v := range ACConnMap.hubMap {
+			ACRoomMap.Lock()
+			if _, ok := ACRoomMap.roomMap[v.roomId]; ok {
+				var data = new(dataHBStruct)
+				data.Cmd = 233
+				var dataQ = new(Message)
+				dataQ.RoomID = v.roomId
+				dataQ.Data = data
+				MessageQ.Enqueue(dataQ)
+			}
+			ACRoomMap.Unlock()
+		}
+		ACConnMap.Unlock()
 	}
 }
 

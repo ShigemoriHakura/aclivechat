@@ -37,6 +37,10 @@ type dataUser struct {
 	Medal         acfundanmu.MedalInfo `json:"medalInfo"` // 粉丝牌
 }
 
+type dataHBStruct struct {
+	Cmd  int      `json:"cmd"`
+}
+
 type dataGiftStruct struct {
 	Cmd  int      `json:"cmd"`
 	Data dataGift `json:"data"`
