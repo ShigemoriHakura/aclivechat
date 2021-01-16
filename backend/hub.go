@@ -29,7 +29,7 @@ func (c *Client) readPump() {
 		//log.Println("Conn cmd: ", cmd)
 		switch cmd {
 		case "0":
-			c.conn.WriteMessage(1, []byte(`{"cmd":0}`))
+			//c.conn.WriteMessage(1, []byte(`{"cmd":0}`))
 			break
 		}
 	}
