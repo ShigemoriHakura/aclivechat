@@ -1,9 +1,6 @@
 # aclivechat
 用于OBS/XSplit的仿YouTube风格的AcFun直播评论栏/弹幕姬
 
-## 重构计划
-重构中，新项目不开源，只开放编译后文件使用。
-
 部署方法： https://github.com/ShigemoriHakura/aclivechat/wiki/%E9%83%A8%E7%BD%B2%EF%BC%81
 
 ![XSplit截图](https://raw.githubusercontent.com/ShigemoriHakura/aclivechat/master/screenshots/xsplit.png)  
