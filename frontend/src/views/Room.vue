@@ -154,9 +154,6 @@ export default {
         return
       }
       window.console.log(`掉线重连中 ${++this.retryCount}`)
-      if (this.retryCount > 1) {
-        this.isfirstLoad = false
-      }
       this.wsConnect()
     },
     onWsMessage(event) {
@@ -167,6 +164,7 @@ export default {
           //this.serverHeartbeatTime = Date.now()
           break
         case COMMAND_SERVER_HEARTBEAT:
+          this.isfirstLoad = false
           this.serverHeartbeatTime = Date.now()
           break
         case COMMAND_JOIN_ROOM:
